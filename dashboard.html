@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Command Center — RentRoll</title>
+  <meta name="description" content="RentRoll member dashboard for independent landlords and tenants. Manage properties, units, leases, payments ledger, and maintenance triage.">
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+  <a href="#dashboard-container" class="skip-to-content">Skip to dashboard content</a>
+
+  <!-- Injected Sticky Glass Navbar -->
+  <header id="header-root"></header>
+
+  <main class="main-content dashboard-page" id="dashboard-container">
+    <div class="container">
+      <!-- Member Welcome Banner -->
+      <div class="glass-card dashboard-banner">
+        <div class="dashboard-banner__welcome">
+          <div class="dashboard-banner__avatar" id="dash-user-avatar">U</div>
+          <div>
+            <h1 class="dashboard-banner__name" id="dash-user-name">Welcome back!</h1>
+            <div class="dashboard-banner__meta">
+              <span id="dash-user-email">user@rentroll.com</span>
+              &bull;
+              <span id="dash-role-badge" class="badge badge--landlord">Landlord Account</span>
+              &bull;
+              <span class="badge badge--paid" style="font-size: 10px;">Phase 2 Fullstack Active</span>
+            </div>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap;">
+          <a href="index.html" class="btn btn--ghost btn--sm">View Landing Page</a>
+          <button id="dash-logout-btn" type="button" class="btn btn--danger btn--sm">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+            <span>Log Out</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Tactile Neomorphic Segmented Tab Navigation -->
+      <nav class="dash-tabs-nav" aria-label="Dashboard views">
+        <button type="button" class="dash-tab-btn dash-tab-btn--active" data-tab="overview" id="tab-nav-overview">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+          <span>Command Center</span>
+        </button>
+
+        <button type="button" class="dash-tab-btn" data-tab="properties" id="tab-nav-properties">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span>Properties & Units</span>
+          <span class="dash-tab-count" id="badge-count-properties">4</span>
+        </button>
+
+        <button type="button" class="dash-tab-btn" data-tab="leases" id="tab-nav-leases">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+          <span>Leases & Tenancy</span>
+          <span class="dash-tab-count" id="badge-count-leases">3</span>
+        </button>
+
+        <button type="button" class="dash-tab-btn" data-tab="payments" id="tab-nav-payments">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+          <span>Rent Ledger</span>
+          <span class="dash-tab-count" id="badge-count-payments">6</span>
+        </button>
+
+        <button type="button" class="dash-tab-btn" data-tab="maintenance" id="tab-nav-maintenance">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+          <span>Maintenance Triage</span>
+          <span class="dash-tab-count" id="badge-count-tickets" style="background-color: #fee2e2; color: #991b1b;">2</span>
+        </button>
+      </nav>
+
+      <!-- Active Tab Dynamic View Slot -->
+      <section id="dash-tab-content" aria-live="polite">
+        <!-- Rendered by js/dashboard.js -->
+      </section>
+    </div>
+  </main>
+
+  <!-- ======================================================================
+       Phase 2 Neomorphic Modal Dialogs
+       ====================================================================== -->
+
+  <!-- Modal 1: Add Property -->
+  <div class="neo-modal-backdrop" id="modal-add-property" role="dialog" aria-modal="true" aria-labelledby="modal-add-prop-title" aria-hidden="true">
+    <div class="neo-modal-card">
+      <div class="neo-modal-header">
+        <h2 class="neo-modal-title" id="modal-add-prop-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+          <span>Add Rental Property</span>
+        </h2>
+        <button type="button" class="neo-modal-close" aria-label="Close modal">&times;</button>
+      </div>
+      <form id="form-add-property">
+        <div class="form-group">
+          <label class="form-label" for="prop-name">Property Name *</label>
+          <input type="text" id="prop-name" class="form-control" placeholder="e.g. Pine Ridge Apartments" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="prop-address">Street Address *</label>
+          <input type="text" id="prop-address" class="form-control" placeholder="e.g. 520 Willow Lane" required>
+        </div>
+        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--space-3);">
+          <div class="form-group">
+            <label class="form-label" for="prop-city">City *</label>
+            <input type="text" id="prop-city" class="form-control" placeholder="Austin" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="prop-state">State *</label>
+            <input type="text" id="prop-state" class="form-control" placeholder="TX" maxlength="2" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="prop-zip">Zip Code *</label>
+            <input type="text" id="prop-zip" class="form-control" placeholder="78701" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="prop-type">Property Type</label>
+          <select id="prop-type" class="form-control">
+            <option value="Multi-Family">Multi-Family</option>
+            <option value="Apartment Building">Apartment Building</option>
+            <option value="Single-Family">Single-Family Home</option>
+            <option value="Duplex/Triplex">Duplex / Triplex</option>
+            <option value="Townhouse">Townhouse</option>
+            <option value="Condo">Condo</option>
+          </select>
+        </div>
+        <div class="neo-modal-footer">
+          <button type="button" class="btn btn--ghost btn--sm btn-modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn--primary btn--sm">
+            <span class="btn__spinner" aria-hidden="true"></span>
+            <span class="btn__text">Create Property</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 2: Add Unit -->
+  <div class="neo-modal-backdrop" id="modal-add-unit" role="dialog" aria-modal="true" aria-labelledby="modal-add-unit-title" aria-hidden="true">
+    <div class="neo-modal-card">
+      <div class="neo-modal-header">
+        <h2 class="neo-modal-title" id="modal-add-unit-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"></rect><circle cx="9" cy="12" r="1"></circle></svg>
+          <span>Add Unit / Door</span>
+        </h2>
+        <button type="button" class="neo-modal-close" aria-label="Close modal">&times;</button>
+      </div>
+      <form id="form-add-unit">
+        <div class="form-group">
+          <label class="form-label" for="unit-property-select">Belongs to Property *</label>
+          <select id="unit-property-select" class="form-control" required>
+            <option value="prop_1">Oakwood Manor Apartments</option>
+            <option value="prop_2">Highland Lofts</option>
+            <option value="prop_3">Maple Court Duplex</option>
+            <option value="prop_4">Sunset Palms Residences</option>
+          </select>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+          <div class="form-group">
+            <label class="form-label" for="unit-number">Unit Number / Name *</label>
+            <input type="text" id="unit-number" class="form-control" placeholder="e.g. Apt 3C or Unit 102" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="unit-rent">Monthly Rent ($) *</label>
+            <input type="number" id="unit-rent" class="form-control" placeholder="1850" min="0" required>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3);">
+          <div class="form-group">
+            <label class="form-label" for="unit-beds">Bedrooms</label>
+            <input type="number" id="unit-beds" class="form-control" value="2" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="unit-baths">Bathrooms</label>
+            <input type="number" id="unit-baths" class="form-control" value="1.5" step="0.5" min="0">
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="unit-sqft">Sq Footage</label>
+            <input type="number" id="unit-sqft" class="form-control" placeholder="950">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="unit-deposit">Security Deposit ($)</label>
+          <input type="number" id="unit-deposit" class="form-control" placeholder="Same as rent">
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="unit-notes">Door Notes</label>
+          <input type="text" id="unit-notes" class="form-control" placeholder="Patio access, recently refinished floors">
+        </div>
+        <div class="neo-modal-footer">
+          <button type="button" class="btn btn--ghost btn--sm btn-modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn--primary btn--sm">
+            <span class="btn__spinner" aria-hidden="true"></span>
+            <span class="btn__text">Save Unit</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 3: Create Lease -->
+  <div class="neo-modal-backdrop" id="modal-create-lease" role="dialog" aria-modal="true" aria-labelledby="modal-lease-title" aria-hidden="true">
+    <div class="neo-modal-card">
+      <div class="neo-modal-header">
+        <h2 class="neo-modal-title" id="modal-lease-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path></svg>
+          <span>Create Lease Agreement</span>
+        </h2>
+        <button type="button" class="neo-modal-close" aria-label="Close modal">&times;</button>
+      </div>
+      <form id="form-create-lease">
+        <div class="form-group">
+          <label class="form-label" for="lease-unit-select">Assign Unit *</label>
+          <select id="lease-unit-select" class="form-control" required>
+            <option value="unit_106">Apt 6C — Oakwood Manor (Vacant)</option>
+            <option value="unit_101">Apt 1A — Oakwood Manor</option>
+            <option value="unit_202">Loft 102 — Highland Lofts</option>
+            <option value="unit_301">Unit A — Maple Court Duplex</option>
+          </select>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+          <div class="form-group">
+            <label class="form-label" for="lease-tenant-name">Tenant Full Name *</label>
+            <input type="text" id="lease-tenant-name" class="form-control" placeholder="e.g. David Miller" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lease-tenant-email">Tenant Email Address *</label>
+            <input type="email" id="lease-tenant-email" class="form-control" placeholder="david.miller@example.com" required>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+          <div class="form-group">
+            <label class="form-label" for="lease-start">Start Date *</label>
+            <input type="date" id="lease-start" class="form-control" value="2026-11-01" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lease-end">End Date *</label>
+            <input type="date" id="lease-end" class="form-control" value="2027-10-31" required>
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+          <div class="form-group">
+            <label class="form-label" for="lease-rent">Monthly Rent ($) *</label>
+            <input type="number" id="lease-rent" class="form-control" placeholder="1650" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="lease-deposit">Deposit Amount ($)</label>
+            <input type="number" id="lease-deposit" class="form-control" placeholder="1650">
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="lease-terms">Agreement Terms / Special Conditions</label>
+          <textarea id="lease-terms" class="form-control" rows="2" placeholder="Standard 12-month agreement. 1 dog approved. No smoking."></textarea>
+        </div>
+        <div class="neo-modal-footer">
+          <button type="button" class="btn btn--ghost btn--sm btn-modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn--primary btn--sm">
+            <span class="btn__spinner" aria-hidden="true"></span>
+            <span class="btn__text">Bind & Activate Lease</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 4: Record Payment (Landlord) / Pay Rent (Tenant) -->
+  <div class="neo-modal-backdrop" id="modal-record-payment" role="dialog" aria-modal="true" aria-labelledby="modal-pay-title" aria-hidden="true">
+    <div class="neo-modal-card">
+      <div class="neo-modal-header">
+        <h2 class="neo-modal-title" id="modal-pay-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+          <span>Record Rent Payment</span>
+        </h2>
+        <button type="button" class="neo-modal-close" aria-label="Close modal">&times;</button>
+      </div>
+      <form id="form-record-payment">
+        <div class="form-group">
+          <label class="form-label" for="pay-amount">Payment Amount ($) *</label>
+          <input type="number" id="pay-amount" class="form-control" placeholder="1650" step="0.01" min="1" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pay-method">Payment Channel / Method *</label>
+          <select id="pay-method" class="form-control" required>
+            <option value="ach">ACH Direct Debit</option>
+            <option value="credit_card">Credit / Debit Card</option>
+            <option value="check">Paper Check / Cashier Check</option>
+            <option value="cash">Cash Received with Receipt</option>
+            <option value="bank_transfer">Wire / External Transfer</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="pay-notes">Memo / Transaction Reference</label>
+          <input type="text" id="pay-notes" class="form-control" placeholder="November Rent - Check #1042">
+        </div>
+        <div class="neo-modal-footer">
+          <button type="button" class="btn btn--ghost btn--sm btn-modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn--primary btn--sm">
+            <span class="btn__spinner" aria-hidden="true"></span>
+            <span class="btn__text">Commit to Ledger</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 5: Pay Rent (Tenant quick payment) -->
+  <div class="neo-modal-backdrop" id="modal-pay-rent" role="dialog" aria-modal="true" aria-labelledby="modal-pay-rent-title" aria-hidden="true">
+    <div class="neo-modal-card">
+      <div class="neo-modal-header">
+        <h2 class="neo-modal-title" id="modal-pay-rent-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+          <span>Pay Rent — Apt 4B</span>
+        </h2>
+        <button type="button" class="neo-modal-close" aria-label="Close modal">&times;</button>
+      </div>
+      <form id="form-tenant-pay-rent">
+        <div style="background-color: var(--color-bg-inset); padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-4); border: var(--neo-border-inset);">
+          <div style="font-size: var(--font-size-xs); color: var(--color-text-muted);">Current Due for November 1, 2026:</div>
+          <div style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-extrabold); color: var(--color-text-main);">$1,650.00</div>
+          <div style="font-size: 11px; color: var(--color-success);">&check; Zero late fees accrued</div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="tenant-pay-method">Payment Source</label>
+          <select id="tenant-pay-method" class="form-control">
+            <option value="ach">Chase Premier Checking (...4820) — No fee</option>
+            <option value="credit_card">Visa Debit (...9104) — 2.9% fee</option>
+          </select>
+        </div>
+        <div class="neo-modal-footer">
+          <button type="button" class="btn btn--ghost btn--sm btn-modal-cancel">Cancel</button>
+          <button type="button" class="btn btn--primary btn--sm" id="btn-confirm-tenant-pay">
+            <span>Authorize $1,650.00 Payment</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 6: Create Maintenance Ticket -->
+  <div class="neo-modal-backdrop" id="modal-create-ticket" role="dialog" aria-modal="true" aria-labelledby="modal-ticket-title" aria-hidden="true">
+    <div class="neo-modal-card">
+      <div class="neo-modal-header">
+        <h2 class="neo-modal-title" id="modal-ticket-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+          <span>Submit Repair Request</span>
+        </h2>
+        <button type="button" class="neo-modal-close" aria-label="Close modal">&times;</button>
+      </div>
+      <form id="form-create-ticket">
+        <div class="form-group">
+          <label class="form-label" for="ticket-title">Issue Summary *</label>
+          <input type="text" id="ticket-title" class="form-control" placeholder="e.g. Dishwasher leaking water onto floor" required>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+          <div class="form-group">
+            <label class="form-label" for="ticket-category">Category *</label>
+            <select id="ticket-category" class="form-control" required>
+              <option value="plumbing">Plumbing</option>
+              <option value="electrical">Electrical</option>
+              <option value="hvac">HVAC / Heating & Cooling</option>
+              <option value="appliance">Kitchen Appliance</option>
+              <option value="structural">Doors, Windows & Locks</option>
+              <option value="general">General Repair</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="ticket-priority">Urgency Priority *</label>
+            <select id="ticket-priority" class="form-control" required>
+              <option value="low">Low — Routine repair</option>
+              <option value="medium" selected>Medium — Attention needed soon</option>
+              <option value="high">High — Significant impairment</option>
+              <option value="emergency">Emergency — Flooding / No Heat</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="ticket-desc">Detailed Description *</label>
+          <textarea id="ticket-desc" class="form-control" rows="3" placeholder="Please describe what happened, when it started, and where the issue is located." required></textarea>
+        </div>
+        <div class="neo-modal-footer">
+          <button type="button" class="btn btn--ghost btn--sm btn-modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn--primary btn--sm">
+            <span class="btn__spinner" aria-hidden="true"></span>
+            <span class="btn__text">Dispatch Ticket</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Injected Glass Footer -->
+  <footer id="footer-root"></footer>
+
+  <!-- Scripts -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

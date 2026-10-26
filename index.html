@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RentRoll — Modern Property Management for Independent Landlords</title>
+  <meta name="description" content="Streamline properties, automate rent collection, screen tenants, and track maintenance for 1-50 units with RentRoll. Zero spreadsheets.">
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body id="top">
+  <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
+  <!-- Injected Sticky Glass Navbar -->
+  <header id="header-root"></header>
+
+  <main id="main-content" class="main-content">
+    <!-- Hero Section -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="container hero__grid">
+        <div class="hero__content">
+          <div class="hero__badge">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+            <span>Built specifically for 1–50 units</span>
+          </div>
+
+          <h1 id="hero-title" class="hero__title">
+            Property management <span class="text-gradient">without the corporate bloat.</span>
+          </h1>
+
+          <p class="hero__subtitle">
+            Say goodbye to messy spreadsheets, missed checks, and scattered texts. RentRoll gives independent landlords a sleek, automated command center for leases, rent, and repairs.
+          </p>
+
+          <div class="hero__cta-group">
+            <a href="signup.html" class="btn btn--primary btn--lg" id="hero-cta-signup">
+              <span>Start Free 30-Day Trial</span>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </a>
+            <a href="#portals" class="btn btn--ghost btn--lg" id="hero-cta-explore">
+              <span>Explore Portals</span>
+            </a>
+          </div>
+
+          <div class="hero__stats">
+            <div class="hero__stat-item">
+              <span class="hero__stat-val">$3.2M+</span>
+              <span class="hero__stat-label">Monthly Rent Collected</span>
+            </div>
+            <div class="hero__stat-item">
+              <span class="hero__stat-val">99.4%</span>
+              <span class="hero__stat-label">On-Time Payment Rate</span>
+            </div>
+            <div class="hero__stat-item">
+              <span class="hero__stat-val">Zero</span>
+              <span class="hero__stat-label">Spreadsheet Headaches</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Glass Mockup Visual Preview -->
+        <div class="hero__preview" aria-hidden="true">
+          <div class="glass-card hero-mockup">
+            <div class="hero-mockup__header">
+              <div class="hero-mockup__user">
+                <div class="hero-mockup__avatar">MV</div>
+                <div>
+                  <div class="hero-mockup__property-title">Oakwood & Highland Portfolio</div>
+                  <div class="hero-mockup__property-sub">18 Units &bull; 100% Occupied</div>
+                </div>
+              </div>
+              <span class="badge badge--landlord">Live Feed</span>
+            </div>
+
+            <div class="hero-mockup__stat-grid">
+              <div class="hero-mockup__mini-stat">
+                <div class="hero-mockup__mini-stat-title">Collected (Oct)</div>
+                <div class="hero-mockup__mini-stat-val">$26,450</div>
+              </div>
+              <div class="hero-mockup__mini-stat">
+                <div class="hero-mockup__mini-stat-title">ACH Autopay</div>
+                <div class="hero-mockup__mini-stat-val">17 / 18</div>
+              </div>
+            </div>
+
+            <div class="hero-mockup__activity-list">
+              <div class="hero-mockup__activity-item">
+                <div class="hero-mockup__activity-info">
+                  <span class="hero-mockup__activity-dot"></span>
+                  <span><strong>Unit 4B</strong> - Rent payment received ($1,650)</span>
+                </div>
+                <span class="text-subtle">Today</span>
+              </div>
+              <div class="hero-mockup__activity-item">
+                <div class="hero-mockup__activity-info">
+                  <span class="hero-mockup__activity-dot"></span>
+                  <span><strong>Unit 2A</strong> - Digital lease signed by Sarah C.</span>
+                </div>
+                <span class="text-subtle">Yesterday</span>
+              </div>
+              <div class="hero-mockup__activity-item">
+                <div class="hero-mockup__activity-info">
+                  <span class="hero-mockup__activity-dot hero-mockup__activity-dot--warning"></span>
+                  <span><strong>Unit 1F</strong> - Repair ticket: AC filter maintenance</span>
+                </div>
+                <span class="text-subtle">In Progress</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section" id="features" aria-labelledby="features-title">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Purpose-Built Features</span>
+          <h2 id="features-title" class="section-title">Everything you need to run your rentals like a pro</h2>
+          <p class="section-desc">Designed from the ground up for indie landlords who want enterprise efficiency without the complex training manuals.</p>
+        </div>
+
+        <div class="features-grid">
+          <!-- Feature 1 -->
+          <div class="glass-card glass-card--interactive feature-card">
+            <div class="feature-card__icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+            </div>
+            <h3 class="feature-card__title">Automated Rent Collection</h3>
+            <p class="feature-card__desc">Deposit rent directly into your bank via bank ACH or card. Automatic payment reminders and late fees apply without awkward conversations.</p>
+          </div>
+
+          <!-- Feature 2 -->
+          <div class="glass-card glass-card--interactive feature-card">
+            <div class="feature-card__icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            </div>
+            <h3 class="feature-card__title">Digital Leases & Screening</h3>
+            <p class="feature-card__desc">Screen prospective tenants with comprehensive credit and criminal background checks. Send state-specific digital leases for e-signature in clicks.</p>
+          </div>
+
+          <!-- Feature 3 -->
+          <div class="glass-card glass-card--interactive feature-card">
+            <div class="feature-card__icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
+            </div>
+            <h3 class="feature-card__title">Smart Maintenance Hub</h3>
+            <p class="feature-card__desc">Tenants snap photos and describe issues from their phones. Triage repair requests, assign contractors, and keep everyone updated in real-time.</p>
+          </div>
+
+          <!-- Feature 4 -->
+          <div class="glass-card glass-card--interactive feature-card">
+            <div class="feature-card__icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+            </div>
+            <h3 class="feature-card__title">Multi-Unit & Portfolio View</h3>
+            <p class="feature-card__desc">Organize single-family homes, duplexes, and multi-unit complexes under one roof. Track vacancy periods, lease expirations, and turnover checklists.</p>
+          </div>
+
+          <!-- Feature 5 -->
+          <div class="glass-card glass-card--interactive feature-card">
+            <div class="feature-card__icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
+            </div>
+            <h3 class="feature-card__title">Financial & Tax Insights</h3>
+            <p class="feature-card__desc">Categorize property expenses automatically. Generate clean Schedule E tax-ready reports and view cash flow breakdowns per unit anytime.</p>
+          </div>
+
+          <!-- Feature 6 -->
+          <div class="glass-card glass-card--interactive feature-card">
+            <div class="feature-card__icon-wrap">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </div>
+            <h3 class="feature-card__title">Tenant Self-Service Portal</h3>
+            <p class="feature-card__desc">Delight your renters with a polished mobile-friendly portal to review lease documents, set autopay, view payment history, and submit tickets.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works-section" id="how-it-works" aria-labelledby="how-title">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Simple 3-Step Setup</span>
+          <h2 id="how-title" class="section-title">Up and running in less than 15 minutes</h2>
+          <p class="section-desc">Migrating from spreadsheets or paper checks has never been smoother.</p>
+        </div>
+
+        <div class="steps-grid">
+          <div class="glass-card step-card">
+            <div class="step-card__number">01</div>
+            <h3 class="step-card__title">Add Properties & Units</h3>
+            <p class="step-card__desc">Enter your addresses, unit numbers, monthly rent rates, and deposit amounts. Batch import existing properties in seconds.</p>
+          </div>
+
+          <div class="glass-card step-card">
+            <div class="step-card__number">02</div>
+            <h3 class="step-card__title">Invite Tenants Digitally</h3>
+            <p class="step-card__desc">Send a simple invite link. Tenants join their personal portal, configure autopay via secure ACH, and store their digital lease.</p>
+          </div>
+
+          <div class="glass-card step-card">
+            <div class="step-card__number">03</div>
+            <h3 class="step-card__title">Relax on Autopilot</h3>
+            <p class="step-card__desc">Rent deposits directly into your account on the 1st. Repairs, reminders, and financial summaries run hands-free in the background.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Landlord vs Tenant Portals Section -->
+    <section class="portals-section" id="portals" aria-labelledby="portals-title">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Two Dedicated Experiences</span>
+          <h2 id="portals-title" class="section-title">Crafted for both landlords and tenants</h2>
+          <p class="section-desc">Each user gets a tailored interface with the exact tools they need, with zero confusion.</p>
+        </div>
+
+        <div class="portals-grid">
+          <!-- Landlord Card -->
+          <div class="glass-card portal-card">
+            <div class="portal-card__badge">
+              <span class="badge badge--landlord">Landlord Command Center</span>
+            </div>
+            <h3 class="portal-card__title">Total Portfolio Control</h3>
+            <p class="portal-card__desc">
+              Designed specifically for owners managing 1 to 50 doors. Get a birds-eye view of your occupancy, cash flows, and repair dispatches.
+            </p>
+            <div class="portal-card__checklist">
+              <div class="portal-checklist-item">
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Automated ACH rent deposits & overdue reminders</span>
+              </div>
+              <div class="portal-checklist-item">
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Full applicant credit checks & criminal screening</span>
+              </div>
+              <div class="portal-checklist-item">
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Contractor maintenance dispatch & photo logs</span>
+              </div>
+              <div class="portal-checklist-item">
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Schedule E tax export & categorized expense tracking</span>
+              </div>
+            </div>
+            <a href="signup.html" class="btn btn--primary">Create Landlord Account</a>
+          </div>
+
+          <!-- Tenant Card -->
+          <div class="glass-card portal-card">
+            <div class="portal-card__badge">
+              <span class="badge badge--tenant">Tenant Self-Service</span>
+            </div>
+            <h3 class="portal-card__title">Stress-Free Renting</h3>
+            <p class="portal-card__desc">
+              Give your tenants the frictionless, modern rental experience they expect. No more checks to mail or phone tag for repairs.
+            </p>
+            <div class="portal-card__checklist">
+              <div class="portal-checklist-item">
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>1-Click autopay setup with zero transaction surprise</span>
+              </div>
+              <div class="portal-checklist-item">
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Submit photo repair requests anytime from mobile</span>
+              </div>
+              <div class="portal-checklist-item">
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Access signed lease agreements and payment receipts 24/7</span>
+              </div>
+              <div class="portal-checklist-item">
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Direct messages and maintenance resolution notifications</span>
+              </div>
+            </div>
+            <a href="login.html" class="btn btn--ghost">Enter Tenant Portal</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section" aria-labelledby="cta-title">
+      <div class="container">
+        <div class="glass-card cta-banner">
+          <h2 id="cta-title" class="cta-banner__title">Ready to modernize your rental portfolio?</h2>
+          <p class="cta-banner__desc">Join hundreds of independent landlords who automated rent collection and reclaimed their weekends.</p>
+          <div class="cta-banner__buttons">
+            <a href="signup.html" class="btn btn--primary btn--lg" id="cta-get-started">Start 30-Day Free Trial</a>
+            <a href="login.html" class="btn btn--ghost btn--lg">Sign In to Account</a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Injected Glass Footer -->
+  <footer id="footer-root"></footer>
+
+  <!-- Scripts -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>

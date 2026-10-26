@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="rentroll-grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366f1" />
+      <stop offset="100%" stop-color="#06b6d4" />
+    </linearGradient>
+    <linearGradient id="door-grad" x1="24" y1="32" x2="40" y2="52" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#8b5cf6" />
+      <stop offset="100%" stop-color="#6366f1" />
+    </linearGradient>
+  </defs>
+  <rect width="64" height="64" rx="16" fill="url(#rentroll-grad)" />
+  <path d="M12 28L32 12L52 28V50C52 51.1046 51.1046 52 50 52H14C12.8954 52 12 51.1046 12 50V28Z" fill="#ffffff" fill-opacity="0.15" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M25 52V34C25 32.8954 25.8954 32 27 32H37C38.1046 32 39 32.8954 39 34V52" fill="url(#door-grad)" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+  <circle cx="35.5" cy="42.5" r="1.5" fill="#ffffff" />
+  <path d="M32 20V23" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" />
+  <circle cx="32" cy="23" r="2" fill="#ffffff" />
+</svg>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log In — RentRoll</title>
+  <meta name="description" content="Sign in to your RentRoll landlord or tenant account to manage properties, pay rent, or submit repair requests.">
+  
+  <!-- Google Fonts: Inter -->
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/pages.css">
+</head>
+<body>
+  <a href="#login-card" class="skip-to-content">Skip to login form</a>
+
+  <!-- Injected Sticky Glass Navbar -->
+  <header id="header-root"></header>
+
+  <main class="main-content auth-wrapper">
+    <div class="glass-card auth-card" id="login-card">
+      <div class="auth-header">
+        <div class="auth-header__logo" aria-hidden="true">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+        </div>
+        <h1 class="auth-header__title">Welcome back</h1>
+        <p class="auth-header__sub">Sign in to your RentRoll account</p>
+      </div>
+
+      <!-- Quick Demo Testing Helper -->
+      <div class="auth-demo-bar">
+        <span class="auth-demo-bar__label">Quick Demo 1-Click Fill:</span>
+        <div class="auth-demo-bar__actions">
+          <button type="button" id="fill-demo-landlord" class="btn btn--ghost btn--sm">
+            Landlord Demo
+          </button>
+          <button type="button" id="fill-demo-tenant" class="btn btn--ghost btn--sm">
+            Tenant Demo
+          </button>
+        </div>
+      </div>
+
+      <!-- General Form Alert Box -->
+      <div id="login-general-alert" class="form-error" role="alert" aria-live="polite" style="margin-bottom: var(--space-4);"></div>
+
+      <!-- Login Form -->
+      <form id="login-form" novalidate>
+        <!-- Email Field -->
+        <div class="form-group">
+          <label for="login-email" class="form-label">Email address</label>
+          <div class="form-input-wrap">
+            <input 
+              type="email" 
+              id="login-email" 
+              name="email" 
+              class="form-input" 
+              placeholder="you@domain.com" 
+              autocomplete="email" 
+              required
+              aria-required="true"
+            >
+          </div>
+          <div id="login-email-error" class="form-error" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- Password Field -->
+        <div class="form-group">
+          <div class="form-label">
+            <label for="login-password">Password</label>
+            <a href="javascript:void(0)" id="forgot-password-link" class="form-label__link" onclick="alert('Password reset link simulation: In Phase 2, a secure reset token will be emailed via our Node backend.')">Forgot password?</a>
+          </div>
+          <div class="form-input-wrap">
+            <input 
+              type="password" 
+              id="login-password" 
+              name="password" 
+              class="form-input form-input--has-icon-right" 
+              placeholder="Enter your password" 
+              autocomplete="current-password" 
+              required
+              aria-required="true"
+            >
+            <button type="button" id="login-toggle-password" class="form-icon-btn" aria-label="Toggle password visibility"></button>
+          </div>
+          <div id="login-password-error" class="form-error" role="alert" aria-live="polite"></div>
+        </div>
+
+        <!-- Remember Me Checkbox -->
+        <div class="form-group form-group--horizontal">
+          <label class="custom-checkbox">
+            <input type="checkbox" id="login-remember" name="remember">
+            <span class="custom-checkbox__box">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            </span>
+            <span class="custom-checkbox__label">Remember me for 30 days</span>
+          </label>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" id="login-submit-btn" class="btn btn--primary btn--full btn--lg">
+          <span class="btn__spinner" aria-hidden="true"></span>
+          <span class="btn__text">Log In</span>
+        </button>
+      </form>
+
+      <!-- Auth Footer Switch -->
+      <div class="auth-footer">
+        Don't have an account yet? <a href="signup.html">Sign up for free</a>
+      </div>
+    </div>
+  </main>
+
+  <!-- Injected Glass Footer -->
+  <footer id="footer-root"></footer>
+
+  <!-- Scripts -->
+  <script type="module" src="js/main.js"></script>
+</body>
+</html>
