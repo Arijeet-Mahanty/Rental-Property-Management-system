@@ -1,7 +1,7 @@
 /**
  * RentRoll - Auth Flows & Page Logic (Login, Signup, Dashboard Guard)
  */
-import { login, signup, getCurrentUser, logout } from './api.js';
+import { login, signup, getCurrentUser, logout, getStoredToken, clearStoredToken } from './api.js';
 import {
   validateEmail,
   validateName,
@@ -46,10 +46,12 @@ export function initLoginForm() {
   const form = document.getElementById('login-form');
   if (!form) return;
 
-  // Route guard: if already logged in, redirect to dashboard
-  if (getCurrentUser()) {
+  // Route guard: if already logged in with active token, redirect to dashboard
+  if (getCurrentUser() && getStoredToken()) {
     window.location.replace('dashboard.html');
     return;
+  } else if (!getStoredToken()) {
+    clearStoredToken();
   }
 
   const emailInput = document.getElementById('login-email');
@@ -188,10 +190,12 @@ export function initSignupForm() {
   const form = document.getElementById('signup-form');
   if (!form) return;
 
-  // Route guard: if already logged in, redirect to dashboard
-  if (getCurrentUser()) {
+  // Route guard: if already logged in with active token, redirect to dashboard
+  if (getCurrentUser() && getStoredToken()) {
     window.location.replace('dashboard.html');
     return;
+  } else if (!getStoredToken()) {
+    clearStoredToken();
   }
 
   const nameInput = document.getElementById('signup-name');

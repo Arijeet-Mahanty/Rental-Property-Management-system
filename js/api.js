@@ -6,7 +6,19 @@
  * is momentarily unreachable or running in a standalone file:// preview context.
  */
 
-const API_BASE = '/api';
+function getApiBase() {
+  if (typeof window === 'undefined') return '/api';
+  const { protocol, port, hostname } = window.location;
+  if (protocol === 'file:') {
+    return 'http://localhost:3000/api';
+  }
+  if (port && port !== '3000') {
+    return `http://${hostname || 'localhost'}:3000/api`;
+  }
+  return '/api';
+}
+
+const API_BASE = getApiBase();
 const STORAGE_KEY_TOKEN = 'rentroll_token';
 const STORAGE_KEY_SESSION = 'rentroll_active_session';
 const STORAGE_KEY_USERS = 'rentroll_users';
@@ -16,23 +28,29 @@ const ARTIFICIAL_DELAY_MS = 350;
  * Gets the stored JWT token.
  */
 export function getStoredToken() {
-  return localStorage.getItem(STORAGE_KEY_TOKEN) || sessionStorage.getItem(STORAGE_KEY_TOKEN);
+  const token = sessionStorage.getItem(STORAGE_KEY_TOKEN) || localStorage.getItem(STORAGE_KEY_TOKEN);
+  if (!token || token === 'null' || token === 'undefined') return null;
+  return token;
 }
 
 /**
  * Saves the session token.
  */
-function setStoredToken(token, rememberMe = false) {
-  if (token) {
-    const storage = rememberMe ? localStorage : sessionStorage;
-    storage.setItem(STORAGE_KEY_TOKEN, token);
+export function setStoredToken(token, rememberMe = false) {
+  if (!token) return;
+  if (rememberMe) {
+    sessionStorage.removeItem(STORAGE_KEY_TOKEN);
+    localStorage.setItem(STORAGE_KEY_TOKEN, token);
+  } else {
+    localStorage.removeItem(STORAGE_KEY_TOKEN);
+    sessionStorage.setItem(STORAGE_KEY_TOKEN, token);
   }
 }
 
 /**
  * Clears stored tokens.
  */
-function clearStoredToken() {
+export function clearStoredToken() {
   localStorage.removeItem(STORAGE_KEY_TOKEN);
   sessionStorage.removeItem(STORAGE_KEY_TOKEN);
   localStorage.removeItem(STORAGE_KEY_SESSION);
@@ -81,14 +99,27 @@ async function request(endpoint, options = {}) {
     }
 
     if (!response.ok) {
+      if (response.status === 401 && !endpoint.includes('/login') && !endpoint.includes('/signup')) {
+        console.warn(`[RentRoll API Client] 401 Unauthorized at ${endpoint}. Invalidating session.`);
+        clearStoredToken();
+        const path = window.location.pathname.toLowerCase();
+        if (path.includes('dashboard')) {
+          window.location.replace('login.html');
+        }
+      }
       throw new Error(data.message || `Request failed with status ${response.status}`);
     }
 
     return data;
   } catch (err) {
     // If running offline or file:// protocol, delegate to local handler
-    if (err.name === 'TypeError' || err.message.includes('Failed to fetch') || window.location.protocol === 'file:') {
-      console.warn(`[RentRoll API Client] Backend server unreachable at ${endpoint}. Using client-side simulation.`, err);
+    if (
+      err.name === 'TypeError' ||
+      err.message.includes('Failed to fetch') ||
+      err.message.includes('NetworkError') ||
+      window.location.protocol === 'file:'
+    ) {
+      console.warn(`[RentRoll API Client] Backend server unreachable at ${endpoint}. Using client-side simulation.`, err.message);
       return handleOfflineRequest(endpoint, options);
     }
     throw err;
@@ -118,8 +149,17 @@ export async function login(email, password, rememberMe = false) {
     }
 
     const user = res.user;
-    const storage = rememberMe ? localStorage : sessionStorage;
-    storage.setItem(STORAGE_KEY_SESSION, JSON.stringify(user));
+    if (!user) {
+      throw new Error('Invalid credentials or response from login service.');
+    }
+
+    if (rememberMe) {
+      sessionStorage.removeItem(STORAGE_KEY_SESSION);
+      localStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(user));
+    } else {
+      localStorage.removeItem(STORAGE_KEY_SESSION);
+      sessionStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(user));
+    }
 
     return user;
   } catch (err) {
@@ -143,10 +183,15 @@ export async function signup(data) {
     });
 
     if (res.token) {
-      setStoredToken(res.token, false);
+      setStoredToken(res.token, true);
     }
 
     const user = res.user;
+    if (!user) {
+      throw new Error('Invalid response from registration service.');
+    }
+
+    sessionStorage.removeItem(STORAGE_KEY_SESSION);
     localStorage.setItem(STORAGE_KEY_SESSION, JSON.stringify(user));
     return user;
   } catch (err) {
@@ -175,8 +220,8 @@ export async function logout() {
  */
 export function getCurrentUser() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY_SESSION) || sessionStorage.getItem(STORAGE_KEY_SESSION);
-    return raw ? JSON.parse(raw) : null;
+    const raw = sessionStorage.getItem(STORAGE_KEY_SESSION) || localStorage.getItem(STORAGE_KEY_SESSION);
+    return raw && raw !== 'undefined' && raw !== 'null' ? JSON.parse(raw) : null;
   } catch (err) {
     console.error('Failed to retrieve current user session:', err);
     return null;
@@ -189,13 +234,17 @@ export function getCurrentUser() {
 export async function verifySession() {
   try {
     const res = await request('/auth/me', { method: 'GET' });
-    if (res.success && res.user) {
+    if (res && res.success && res.user) {
       const storage = localStorage.getItem(STORAGE_KEY_SESSION) ? localStorage : sessionStorage;
       storage.setItem(STORAGE_KEY_SESSION, JSON.stringify(res.user));
       return res.user;
     }
     return null;
-  } catch {
+  } catch (err) {
+    if (err && err.message && err.message.includes('401')) {
+      clearStoredToken();
+      return null;
+    }
     return getCurrentUser();
   }
 }
@@ -359,6 +408,22 @@ function initOfflineStorage() {
         password: 'Password123!',
         role: 'tenant',
         phone: '(555) 876-5432'
+      },
+      {
+        id: 'usr_tenant_2',
+        name: 'Liam Chen',
+        email: 'liam.chen@example.com',
+        password: 'Password123!',
+        role: 'tenant',
+        phone: '(555) 345-6789'
+      },
+      {
+        id: 'usr_tenant_3',
+        name: 'Sophia Rodriguez',
+        email: 'sophia.r@example.com',
+        password: 'Password123!',
+        role: 'tenant',
+        phone: '(555) 456-7890'
       }
     ];
     localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(seed));
@@ -418,9 +483,48 @@ async function offlineSignup(data) {
   return sessionUser;
 }
 
-async function handleOfflineRequest(endpoint) {
+async function handleOfflineRequest(endpoint, options = {}) {
   await delay(150);
   const user = getCurrentUser() || { id: 'usr_landlord_demo', role: 'landlord', name: 'Marcus Vance' };
+
+  if (endpoint.startsWith('/auth/login')) {
+    const body = typeof options.body === 'string' ? JSON.parse(options.body) : (options.body || {});
+    const sessionUser = await offlineLogin(body.email, body.password, body.rememberMe);
+    const mockToken = `mock_jwt_${sessionUser.id}_${Date.now()}`;
+    return {
+      success: true,
+      message: 'Login successful (offline fallback)',
+      user: sessionUser,
+      token: mockToken
+    };
+  }
+
+  if (endpoint.startsWith('/auth/signup')) {
+    const body = typeof options.body === 'string' ? JSON.parse(options.body) : (options.body || {});
+    const sessionUser = await offlineSignup(body);
+    const mockToken = `mock_jwt_${sessionUser.id}_${Date.now()}`;
+    return {
+      success: true,
+      message: 'Account created successfully (offline fallback)',
+      user: sessionUser,
+      token: mockToken
+    };
+  }
+
+  if (endpoint.startsWith('/auth/logout')) {
+    clearStoredToken();
+    return { success: true, message: 'Logged out successfully' };
+  }
+
+  if (endpoint.startsWith('/auth/me')) {
+    const currentUser = getCurrentUser();
+    if (!currentUser) {
+      const err = new Error('Authentication required.');
+      err.status = 401;
+      throw err;
+    }
+    return { success: true, user: currentUser };
+  }
 
   if (endpoint.startsWith('/dashboard/stats')) {
     if (user.role === 'landlord') {

@@ -8,10 +8,10 @@
 -- 1. SEED USERS
 INSERT INTO users (id, name, email, password_hash, role, phone, created_at)
 VALUES 
-('usr_landlord_demo', 'Marcus Vance', 'landlord@rentroll.com', '$2a$10$0d2m0qL1b/JbOQW5G5f7j.6V1XqY1qjZ7n4qT9L7pUqg2n7e4qTm', 'landlord', '(555) 234-5678', '2026-01-15 09:00:00+00'),
-('usr_tenant_demo', 'Elena Rostova', 'tenant@rentroll.com', '$2a$10$0d2m0qL1b/JbOQW5G5f7j.6V1XqY1qjZ7n4qT9L7pUqg2n7e4qTm', 'tenant', '(555) 876-5432', '2026-02-01 10:00:00+00'),
-('usr_tenant_2', 'Liam Chen', 'liam.chen@example.com', '$2a$10$0d2m0qL1b/JbOQW5G5f7j.6V1XqY1qjZ7n4qT9L7pUqg2n7e4qTm', 'tenant', '(555) 345-6789', '2026-02-10 11:30:00+00'),
-('usr_tenant_3', 'Sophia Rodriguez', 'sophia.r@example.com', '$2a$10$0d2m0qL1b/JbOQW5G5f7j.6V1XqY1qjZ7n4qT9L7pUqg2n7e4qTm', 'tenant', '(555) 456-7890', '2026-03-01 14:15:00+00')
+('usr_landlord_demo', 'Marcus Vance', 'landlord@rentroll.com', '$2b$10$YmPhB2QkFhsj4Vrkt2Yc1O/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC', 'landlord', '(555) 234-5678', '2026-01-15 09:00:00+00'),
+('usr_tenant_demo', 'Elena Rostova', 'tenant@rentroll.com', '$2b$10$YmPhB2QkFhsj4Vrkt2Yc1O/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC', 'tenant', '(555) 876-5432', '2026-02-01 10:00:00+00'),
+('usr_tenant_2', 'Liam Chen', 'liam.chen@example.com', '$2b$10$YmPhB2QkFhsj4Vrkt2Yc1O/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC', 'tenant', '(555) 345-6789', '2026-02-10 11:30:00+00'),
+('usr_tenant_3', 'Sophia Rodriguez', 'sophia.r@example.com', '$2b$10$YmPhB2QkFhsj4Vrkt2Yc1O/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC', 'tenant', '(555) 456-7890', '2026-03-01 14:15:00+00')
 ON CONFLICT (id) DO NOTHING;
 
 -- 2. SEED PROPERTIES

@@ -45,7 +45,7 @@ const INITIAL_DB_STATE = {
       name: 'Marcus Vance',
       email: 'landlord@rentroll.com',
       // bcrypt hash for 'Password123!'
-      password_hash: '$2a$10$wE7/L2iIqQ9p1J6Yq3b7t.m9xRzVv8sV5F3qU0L7pWqg2n7e4qTmy',
+      password_hash: '$2b$10$YmPhB2QkFhsj4Vrkt2Yc1O/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC',
       role: 'landlord',
       phone: '(555) 234-5678',
       created_at: '2026-01-15T09:00:00.000Z'
@@ -55,7 +55,7 @@ const INITIAL_DB_STATE = {
       name: 'Elena Rostova',
       email: 'tenant@rentroll.com',
       // bcrypt hash for 'Password123!'
-      password_hash: '$2a$10$wE7/L2iIqQ9p1J6Yq3b7t.m9xRzVv8sV5F3qU0L7pWqg2n7e4qTmy',
+      password_hash: '$2b$10$YmPhB2QkFhsj4Vrkt2Yc1O/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC',
       role: 'tenant',
       phone: '(555) 876-5432',
       created_at: '2026-02-01T10:00:00.000Z'
@@ -64,7 +64,7 @@ const INITIAL_DB_STATE = {
       id: 'usr_tenant_2',
       name: 'Liam Chen',
       email: 'liam.chen@example.com',
-      password_hash: '$2a$10$wE7/L2iIqQ9p1J6Yq3b7t.m9xRzVv8sV5F3qU0L7pWqg2n7e4qTmy',
+      password_hash: '$2b$10$YmPhB2QkFhsj4Vrkt2Yc1O/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC',
       role: 'tenant',
       phone: '(555) 345-6789',
       created_at: '2026-02-10T11:30:00.000Z'
@@ -73,7 +73,7 @@ const INITIAL_DB_STATE = {
       id: 'usr_tenant_3',
       name: 'Sophia Rodriguez',
       email: 'sophia.r@example.com',
-      password_hash: '$2a$10$wE7/L2iIqQ9p1J6Yq3b7t.m9xRzVv8sV5F3qU0L7pWqg2n7e4qTmy',
+      password_hash: '$2b$10$YmPhB2QkFhsj4Vrkt2Yc1O/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC',
       role: 'tenant',
       phone: '(555) 456-7890',
       created_at: '2026-03-01T14:15:00.000Z'
@@ -380,17 +380,32 @@ const db = {
   // USERS
   async findUserByEmail(email) {
     const norm = (email || '').trim().toLowerCase();
+    if (pgPool) {
+      try {
+        const res = await pgPool.query('SELECT * FROM users WHERE LOWER(email) = $1 LIMIT 1', [norm]);
+        if (res.rows && res.rows.length) return res.rows[0];
+      } catch (err) {
+        console.warn('[RentRoll DB] pgPool findUserByEmail failed, falling back to local store:', err.message);
+      }
+    }
     const data = readDb();
     return data.users.find(u => u.email.toLowerCase() === norm) || null;
   },
 
   async findUserById(id) {
+    if (pgPool) {
+      try {
+        const res = await pgPool.query('SELECT * FROM users WHERE id = $1 LIMIT 1', [id]);
+        if (res.rows && res.rows.length) return res.rows[0];
+      } catch (err) {
+        console.warn('[RentRoll DB] pgPool findUserById failed, falling back to local store:', err.message);
+      }
+    }
     const data = readDb();
     return data.users.find(u => u.id === id) || null;
   },
 
   async createUser(userData) {
-    const data = readDb();
     const newUser = {
       id: userData.id || `usr_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
       name: userData.name,
@@ -400,6 +415,18 @@ const db = {
       phone: userData.phone || null,
       created_at: new Date().toISOString()
     };
+    if (pgPool) {
+      try {
+        await pgPool.query(
+          `INSERT INTO users (id, name, email, password_hash, role, phone, created_at)
+           VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+          [newUser.id, newUser.name, newUser.email, newUser.password_hash, newUser.role, newUser.phone, newUser.created_at]
+        );
+      } catch (err) {
+        console.warn('[RentRoll DB] pgPool createUser failed, falling back to local store:', err.message);
+      }
+    }
+    const data = readDb();
     data.users.push(newUser);
     writeDb(data);
     return newUser;
@@ -567,7 +594,7 @@ const db = {
           id: `usr_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
           name: leaseData.tenant_name || 'Invited Tenant',
           email: leaseData.tenant_email.trim().toLowerCase(),
-          password_hash: '$2a$10$wE7/L2iIqQ9p1J6Yq3b7t.m9xRzVv8sV5F3qU0L7pWqg2n7e4qTmy', // default temp password
+          password_hash: '$2b$10$YmPhB2QkFhsj4Vrkt2Yc1O/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC', // default temp password for Password123!
           role: 'tenant',
           phone: leaseData.tenant_phone || null,
           created_at: new Date().toISOString()

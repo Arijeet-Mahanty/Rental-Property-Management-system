@@ -4,7 +4,7 @@
       "id": "usr_landlord_demo",
       "name": "Marcus Vance",
       "email": "landlord@rentroll.com",
-      "password_hash": "$2a$10$wE7/L2iIqQ9p1J6Yq3b7t.m9xRzVv8sV5F3qU0L7pWqg2n7e4qTmy",
+      "password_hash": "\\/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC",
       "role": "landlord",
       "phone": "(555) 234-5678",
       "created_at": "2026-01-15T09:00:00.000Z"
@@ -13,7 +13,7 @@
       "id": "usr_tenant_demo",
       "name": "Elena Rostova",
       "email": "tenant@rentroll.com",
-      "password_hash": "$2a$10$wE7/L2iIqQ9p1J6Yq3b7t.m9xRzVv8sV5F3qU0L7pWqg2n7e4qTmy",
+      "password_hash": "\\/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC",
       "role": "tenant",
       "phone": "(555) 876-5432",
       "created_at": "2026-02-01T10:00:00.000Z"
@@ -22,7 +22,7 @@
       "id": "usr_tenant_2",
       "name": "Liam Chen",
       "email": "liam.chen@example.com",
-      "password_hash": "$2a$10$wE7/L2iIqQ9p1J6Yq3b7t.m9xRzVv8sV5F3qU0L7pWqg2n7e4qTmy",
+      "password_hash": "\\/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC",
       "role": "tenant",
       "phone": "(555) 345-6789",
       "created_at": "2026-02-10T11:30:00.000Z"
@@ -31,10 +31,28 @@
       "id": "usr_tenant_3",
       "name": "Sophia Rodriguez",
       "email": "sophia.r@example.com",
-      "password_hash": "$2a$10$wE7/L2iIqQ9p1J6Yq3b7t.m9xRzVv8sV5F3qU0L7pWqg2n7e4qTmy",
+      "password_hash": "\\/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC",
       "role": "tenant",
       "phone": "(555) 456-7890",
       "created_at": "2026-03-01T14:15:00.000Z"
+    },
+    {
+      "id": "usr_1792998535129_33ttc",
+      "name": "Test Landlord",
+      "email": "test_1792998535055@example.com",
+      "password_hash": "\\/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC",
+      "role": "landlord",
+      "phone": null,
+      "created_at": "2026-10-26T07:08:55.129Z"
+    },
+    {
+      "id": "usr_1792999165082_77od8",
+      "name": "Alexander Wright",
+      "email": "new_landlord_1792999165012@example.com",
+      "password_hash": "$2b$10$fUp5d4FQA1iSON4MRBnuUeulJb4hDLkj9MN4S6fvvxzlR2ZsSM88u",
+      "role": "landlord",
+      "phone": null,
+      "created_at": "2026-10-26T07:19:25.082Z"
     }
   ],
   "properties": [

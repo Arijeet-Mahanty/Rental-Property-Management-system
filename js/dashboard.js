@@ -5,6 +5,7 @@
 
 import {
   getCurrentUser,
+  verifySession,
   logout,
   getDashboardStats,
   getProperties,
@@ -51,10 +52,23 @@ function formatDate(dateStr) {
  * Initializes the entire Phase 2 dashboard.
  */
 export async function initDashboard() {
-  const user = getCurrentUser();
+  let user = getCurrentUser();
   if (!user) {
     window.location.replace('login.html');
     return;
+  }
+
+  // Verify live session with REST API
+  try {
+    const verified = await verifySession();
+    if (verified) {
+      user = verified;
+    } else if (verified === null && !window.location.protocol.startsWith('file')) {
+      window.location.replace('login.html');
+      return;
+    }
+  } catch (err) {
+    console.warn('[Dashboard] Live session verification notice:', err);
   }
 
   // Populate Banner

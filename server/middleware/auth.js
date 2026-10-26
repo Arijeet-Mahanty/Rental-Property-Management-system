@@ -11,13 +11,17 @@ const JWT_SECRET = process.env.JWT_SECRET || 'rentroll_phase2_jwt_secret_secure_
 function authenticateToken(req, res, next) {
   let token = null;
 
-  // 1. Check HttpOnly cookie
-  if (req.cookies && req.cookies.token) {
-    token = req.cookies.token;
+  // 1. Check Authorization Header (Bearer token) - client explicitly passed
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    const parts = req.headers.authorization.split(' ');
+    if (parts.length === 2 && parts[1] && parts[1] !== 'null' && parts[1] !== 'undefined') {
+      token = parts[1].trim();
+    }
   }
-  // 2. Check Authorization Header (Bearer token)
-  else if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
-    token = req.headers.authorization.split(' ')[1];
+
+  // 2. Fall back to HttpOnly cookie
+  if (!token && req.cookies && req.cookies.token && req.cookies.token !== 'null' && req.cookies.token !== 'undefined') {
+    token = req.cookies.token.trim();
   }
 
   if (!token) {
@@ -30,9 +34,20 @@ function authenticateToken(req, res, next) {
   try {
     const decoded = jwt.verify(token, JWT_SECRET);
     req.user = decoded;
-    next();
+    return next();
   } catch (err) {
-    return res.status(403).json({
+    // If Bearer token was expired/invalid, try HttpOnly cookie as fallback if different
+    if (req.cookies && req.cookies.token && req.cookies.token !== token && req.cookies.token !== 'null' && req.cookies.token !== 'undefined') {
+      try {
+        const decoded = jwt.verify(req.cookies.token.trim(), JWT_SECRET);
+        req.user = decoded;
+        return next();
+      } catch (cookieErr) {
+        // Fall through to 401
+      }
+    }
+
+    return res.status(401).json({
       success: false,
       message: 'Invalid or expired session. Please log in again.'
     });

@@ -91,8 +91,9 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server
-app.listen(PORT, () => {
-  console.log(`
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`
 ================================================================
   RentRoll Server (Phase 2 Active)
   --------------------------------------------------------------
@@ -102,7 +103,8 @@ app.listen(PORT, () => {
   Dashboard:          http://localhost:${PORT}/dashboard.html
   Health Status:      http://localhost:${PORT}/api/health
 ================================================================
-  `);
-});
+    `);
+  });
+}
 
 module.exports = app;

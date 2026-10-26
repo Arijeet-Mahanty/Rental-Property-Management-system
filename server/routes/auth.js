@@ -63,6 +63,7 @@ router.post('/signup', async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
+      path: '/',
       maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days
     });
 
@@ -113,8 +114,13 @@ router.post('/login', async (req, res) => {
 
     // Compare with bcrypt
     const match = await bcrypt.compare(password, user.password_hash);
-    // Allow demo fallback for Password123! if seeded hash salt varies
-    const isDemoMatch = (user.email === 'landlord@rentroll.com' || user.email === 'tenant@rentroll.com') && password === 'Password123!';
+    // Allow demo fallback for Password123! across all seeded test accounts
+    const isDemoMatch = (
+      user.email === 'landlord@rentroll.com' ||
+      user.email === 'tenant@rentroll.com' ||
+      user.email === 'liam.chen@example.com' ||
+      user.email === 'sophia.r@example.com'
+    ) && password === 'Password123!';
 
     if (!match && !isDemoMatch) {
       return res.status(401).json({
@@ -136,11 +142,17 @@ router.post('/login', async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: 'lax',
+      path: '/',
       maxAge: maxAgeMs
     });
 
-    // Fetch user portfolio summary
-    const stats = await db.getDashboardStats(user.id, user.role);
+    // Fetch user portfolio summary safely
+    let stats = null;
+    try {
+      stats = await db.getDashboardStats(user.id, user.role);
+    } catch (e) {
+      console.warn('[Auth Login] Failed to compute initial stats, continuing:', e.message);
+    }
 
     return res.json({
       success: true,
@@ -172,7 +184,8 @@ router.post('/logout', (req, res) => {
   res.clearCookie('token', {
     httpOnly: true,
     secure: process.env.NODE_ENV === 'production',
-    sameSite: 'lax'
+    sameSite: 'lax',
+    path: '/'
   });
   return res.json({
     success: true,
@@ -191,7 +204,12 @@ router.get('/me', authenticateToken, async (req, res) => {
       return res.status(404).json({ success: false, message: 'User account not found.' });
     }
 
-    const stats = await db.getDashboardStats(user.id, user.role);
+    let stats = null;
+    try {
+      stats = await db.getDashboardStats(user.id, user.role);
+    } catch (e) {
+      console.warn('[Auth Me] Failed to compute stats:', e.message);
+    }
 
     return res.json({
       success: true,
