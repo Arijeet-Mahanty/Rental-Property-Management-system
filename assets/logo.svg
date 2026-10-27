@@ -1,18 +1,66 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
   <defs>
-    <linearGradient id="rentroll-grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#6366f1" />
-      <stop offset="100%" stop-color="#06b6d4" />
-    </linearGradient>
-    <linearGradient id="door-grad" x1="24" y1="32" x2="40" y2="52" gradientUnits="userSpaceOnUse">
-      <stop offset="0%" stop-color="#8b5cf6" />
+    <!-- Background Gradient: Deep Royal Indigo to Twilight Violet -->
+    <linearGradient id="bg-grad" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#312e81" />
+      <stop offset="50%" stop-color="#4338ca" />
       <stop offset="100%" stop-color="#6366f1" />
     </linearGradient>
+
+    <!-- Warm Amber / Terracotta Accent -->
+    <linearGradient id="accent-grad" x1="28" y1="18" x2="42" y2="32" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#f59e0b" />
+      <stop offset="100%" stop-color="#c25e36" />
+    </linearGradient>
+
+    <!-- Crisp White Architectural Facade Gradient -->
+    <linearGradient id="facade-grad" x1="16" y1="14" x2="48" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" />
+      <stop offset="100%" stop-color="#f1f5f9" />
+    </linearGradient>
+
+    <!-- Inner Shadow / Bevel -->
+    <linearGradient id="bevel-grad" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.3" />
+      <stop offset="100%" stop-color="#ffffff" stop-opacity="0.03" />
+    </linearGradient>
+
+    <filter id="logo-shadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="3" stdDeviation="3" flood-color="#0f172a" flood-opacity="0.35" />
+    </filter>
   </defs>
-  <rect width="64" height="64" rx="16" fill="url(#rentroll-grad)" />
-  <path d="M12 28L32 12L52 28V50C52 51.1046 51.1046 52 50 52H14C12.8954 52 12 51.1046 12 50V28Z" fill="#ffffff" fill-opacity="0.15" stroke="#ffffff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
-  <path d="M25 52V34C25 32.8954 25.8954 32 27 32H37C38.1046 32 39 32.8954 39 34V52" fill="url(#door-grad)" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-  <circle cx="35.5" cy="42.5" r="1.5" fill="#ffffff" />
-  <path d="M32 20V23" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round" />
-  <circle cx="32" cy="23" r="2" fill="#ffffff" />
+
+  <!-- Container -->
+  <rect width="64" height="64" rx="16" fill="url(#bg-grad)" />
+  <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="15.25" stroke="url(#bevel-grad)" stroke-width="1.5" />
+
+  <!-- Modern Geometric Architectural "R" Mark -->
+  <g filter="url(#logo-shadow)">
+    <!-- Vertical Building Tower / Left Spine -->
+    <rect x="16" y="14" width="9" height="36" rx="2" fill="url(#facade-grad)" />
+
+    <!-- Upper Penthouse Unit / Loop -->
+    <path d="M25 14H37C42.5228 14 47 18.4772 47 24C47 29.5228 42.5228 34 37 34H25V14Z" fill="url(#facade-grad)" />
+
+    <!-- Penthouse Negative Space -->
+    <rect x="25" y="20" width="12" height="8" rx="2" fill="#312e81" />
+
+    <!-- Illuminated Penthouse Unit Window -->
+    <rect x="27" y="21.5" width="7" height="5" rx="1" fill="url(#accent-grad)" />
+
+    <!-- Cantilevered Foundation / Dynamic Strut (Leg) -->
+    <path d="M33 32L44.2 48.6C44.7 49.4 44.1 50 43.1 50H36.3C35.4 50 34.6 49.5 34.1 48.7L25 35.5V32H33Z" fill="url(#facade-grad)" />
+
+    <!-- Multi-Story Architectural Floor Lines -->
+    <line x1="19" y1="20" x2="22" y2="20" stroke="#4338ca" stroke-width="1.8" stroke-linecap="round" />
+    <line x1="19" y1="26" x2="22" y2="26" stroke="#4338ca" stroke-width="1.8" stroke-linecap="round" />
+    <line x1="19" y1="32" x2="22" y2="32" stroke="#4338ca" stroke-width="1.8" stroke-linecap="round" />
+
+    <!-- Ground Level Tenant Entrance Arch -->
+    <path d="M18.5 50V43C18.5 41.8954 19.3954 41 20.5 41C21.6046 41 22.5 41.8954 22.5 43V50" fill="#312e81" />
+  </g>
+
+  <!-- Accent Key Light / Compass Star -->
+  <circle cx="45" cy="15" r="2.5" fill="url(#accent-grad)" />
+  <circle cx="45" cy="15" r="4.5" stroke="#f59e0b" stroke-opacity="0.3" stroke-width="1" />
 </svg>

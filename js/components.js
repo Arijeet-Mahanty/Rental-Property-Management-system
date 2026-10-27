@@ -5,7 +5,42 @@ import { getCurrentUser, logout } from './api.js';
 
 // SVG Icon definitions for injection
 const ICONS = {
-  logo: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>`,
+  logo: `<svg width="38" height="38" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" style="display:block;border-radius:12px;">
+    <defs>
+      <linearGradient id="nav-logo-bg" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#312e81" />
+        <stop offset="50%" stop-color="#4338ca" />
+        <stop offset="100%" stop-color="#6366f1" />
+      </linearGradient>
+      <linearGradient id="nav-logo-accent" x1="28" y1="18" x2="42" y2="32" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#f59e0b" />
+        <stop offset="100%" stop-color="#c25e36" />
+      </linearGradient>
+      <linearGradient id="nav-logo-facade" x1="16" y1="14" x2="48" y2="50" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#ffffff" />
+        <stop offset="100%" stop-color="#f1f5f9" />
+      </linearGradient>
+      <linearGradient id="nav-logo-bevel" x1="0" y1="0" x2="64" y2="64" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#ffffff" stop-opacity="0.32" />
+        <stop offset="100%" stop-color="#ffffff" stop-opacity="0.04" />
+      </linearGradient>
+    </defs>
+    <rect width="64" height="64" rx="16" fill="url(#nav-logo-bg)" />
+    <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="15.25" stroke="url(#nav-logo-bevel)" stroke-width="1.5" />
+    <g>
+      <rect x="16" y="14" width="9" height="36" rx="2" fill="url(#nav-logo-facade)" />
+      <path d="M25 14H37C42.5228 14 47 18.4772 47 24C47 29.5228 42.5228 34 37 34H25V14Z" fill="url(#nav-logo-facade)" />
+      <rect x="25" y="20" width="12" height="8" rx="2" fill="#312e81" />
+      <rect x="27" y="21.5" width="7" height="5" rx="1" fill="url(#nav-logo-accent)" />
+      <path d="M33 32L44.2 48.6C44.7 49.4 44.1 50 43.1 50H36.3C35.4 50 34.6 49.5 34.1 48.7L25 35.5V32H33Z" fill="url(#nav-logo-facade)" />
+      <line x1="19" y1="20" x2="22" y2="20" stroke="#4338ca" stroke-width="1.8" stroke-linecap="round" />
+      <line x1="19" y1="26" x2="22" y2="26" stroke="#4338ca" stroke-width="1.8" stroke-linecap="round" />
+      <line x1="19" y1="32" x2="22" y2="32" stroke="#4338ca" stroke-width="1.8" stroke-linecap="round" />
+      <path d="M18.5 50V43C18.5 41.8954 19.3954 41 20.5 41C21.6046 41 22.5 41.8954 22.5 43V50" fill="#312e81" />
+    </g>
+    <circle cx="45" cy="15" r="2.5" fill="url(#nav-logo-accent)" />
+    <circle cx="45" cy="15" r="4.5" stroke="#f59e0b" stroke-opacity="0.3" stroke-width="1" />
+  </svg>`,
   hamburger: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>`,
   close: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`,
   logout: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>`,
@@ -172,7 +207,7 @@ export function injectNavbar() {
       <div class="container navbar__inner">
         <a href="${homeLink}" class="navbar__brand" aria-label="RentRoll Home">
           <span class="navbar__brand-logo">${ICONS.logo}</span>
-          <span>RentRoll</span>
+          <span class="navbar__brand-name">Rent<span class="brand-accent">Roll</span></span>
         </a>
 
         <div class="navbar__nav" role="navigation">
@@ -295,7 +330,7 @@ export function injectFooter() {
           <div class="footer__brand-col">
             <div class="navbar__brand" style="margin-bottom: var(--space-3);">
               <span class="navbar__brand-logo">${ICONS.logo}</span>
-              <span>RentRoll</span>
+              <span class="navbar__brand-name">Rent<span class="brand-accent">Roll</span></span>
             </div>
             <p>
               The intuitive property management platform designed specifically for independent landlords with 1-50 units. Modernize leases, automate rent collection, and manage maintenance effortlessly.

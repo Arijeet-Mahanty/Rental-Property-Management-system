@@ -954,16 +954,22 @@
 }
 
 .auth-header__logo {
-  width: 46px;
-  height: 46px;
-  border-radius: var(--radius-md);
-  background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
+  width: 48px;
+  height: 48px;
+  border-radius: 13px;
+  background: transparent;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: #ffffff;
   margin-bottom: var(--space-3);
-  box-shadow: 4px 4px 10px rgba(197, 186, 172, 0.45), -4px -4px 10px #ffffff, 0 4px 14px var(--color-primary-glow);
+  box-shadow: 4px 4px 12px rgba(197, 186, 172, 0.45), -4px -4px 10px #ffffff, 0 6px 18px var(--color-primary-glow);
+  transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+  overflow: hidden;
+}
+
+.auth-header__logo:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 4px 8px 18px rgba(197, 186, 172, 0.55), -4px -4px 10px #ffffff, 0 8px 22px var(--color-primary-glow);
 }
 
 .auth-header__title {
