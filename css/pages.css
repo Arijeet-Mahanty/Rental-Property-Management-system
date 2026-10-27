@@ -471,12 +471,457 @@
   line-height: var(--line-height-relaxed);
 }
 
-.cta-banner__buttons {
-  display: flex;
+}
+
+/* ==========================================================================
+   1.1 3D LOW-POLY MODELS & PROPERTY IMAGE GALLERY
+   ========================================================================== */
+
+/* Hero Preview Switcher Tabs */
+.hero-preview-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  background-color: var(--color-bg-inset);
+  border: var(--neo-border-inset);
+  border-radius: var(--radius-full);
+  padding: 4px;
+  box-shadow: var(--neo-shadow-pressed-sm);
+  margin-bottom: var(--space-4);
+  width: 100%;
+  max-width: 380px;
+}
+
+.hero-preview-tab {
+  flex: 1;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: var(--space-4);
+  gap: var(--space-2);
+  padding: 0.5rem 0.85rem;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.hero-preview-tab.is-active {
+  background-color: var(--color-bg-surface);
+  color: var(--color-primary);
+  box-shadow: var(--neo-shadow-raised-sm);
+  border: 1px solid rgba(220, 208, 194, 0.6);
+}
+
+.hero-preview-tab:hover:not(.is-active) {
+  color: var(--color-text-main);
+}
+
+/* Hero 3D Frameless Container (No box around model, things in box removed) */
+.hero-3d-frameless-wrap {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+  padding: 0;
+  transition: opacity var(--transition-normal);
+}
+
+.hero-3d-frameless-wrap.is-hidden,
+.hero-mockup.is-hidden {
+  display: none !important;
+}
+
+/* 3D Canvas Viewport - Frameless & Transparent */
+.hero-3d-canvas-frameless {
+  width: 100%;
+  height: 380px;
+  cursor: grab;
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.hero-3d-canvas-frameless:active {
+  cursor: grabbing;
+}
+
+/* 3D Controls Bar Kept Around the Model */
+.hero-3d-controls-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 440px;
+  margin-top: var(--space-2);
+  gap: var(--space-3);
   flex-wrap: wrap;
+}
+
+.hero-3d-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  max-width: 460px;
+  margin-top: var(--space-2);
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.hero-3d-lighting-controls {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: var(--color-bg-inset);
+  padding: 3px;
+  border-radius: var(--radius-full);
+  border: var(--neo-border-inset);
+  box-shadow: var(--neo-shadow-pressed-sm);
+}
+
+.hero-3d-mode-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.hero-3d-mode-btn.is-active {
+  background-color: var(--color-bg-surface);
+  color: var(--color-text-main);
+  font-weight: var(--font-weight-bold);
+  box-shadow: var(--neo-shadow-raised-sm);
+}
+
+.hero-3d-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.hero-3d-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 9px;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-subtle);
+  background-color: var(--color-bg-surface);
+  border: var(--neo-border);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+  box-shadow: var(--neo-shadow-raised-sm);
+  transition: all var(--transition-fast);
+}
+
+.hero-3d-tool-btn:hover,
+.hero-3d-tool-btn.is-active {
+  color: var(--color-primary);
+  border-color: rgba(67, 56, 202, 0.3);
+}
+
+/* Architecture & Portfolio Showcase Section */
+.portfolio-showcase-section {
+  padding: var(--space-16) 0;
+  position: relative;
+  background: linear-gradient(180deg, transparent 0%, rgba(235, 228, 218, 0.45) 50%, transparent 100%);
+}
+
+/* Static Architecture Property Cards Grid */
+.architecture-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
+  margin-bottom: var(--space-14);
+}
+
+@media (max-width: 992px) {
+  .architecture-cards-grid {
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+}
+
+.architecture-card {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-2xl);
+  transition: transform var(--transition-normal), box-shadow var(--transition-normal);
+}
+
+.architecture-card:hover {
+  transform: translateY(-4px);
+}
+
+.architecture-card__img-wrap {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  margin-bottom: var(--space-5);
+  border: var(--neo-border);
+  box-shadow: var(--neo-shadow-raised-sm);
+}
+
+.architecture-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.architecture-card:hover .architecture-card__img {
+  transform: scale(1.05);
+}
+
+.architecture-card__badge {
+  position: absolute;
+  top: var(--space-3);
+  left: var(--space-3);
+}
+
+.architecture-card__title-group {
+  margin-bottom: var(--space-4);
+}
+
+.architecture-card__title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-text-main);
+  margin-bottom: 4px;
+}
+
+.architecture-card__location {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.architecture-card__stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+}
+
+.architecture-card__stat-box {
+  background-color: var(--color-bg-inset);
+  border: var(--neo-border-inset);
+  border-radius: var(--radius-md);
+  box-shadow: var(--neo-shadow-pressed-sm);
+  padding: var(--space-3);
+}
+
+.architecture-card__stat-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+  margin-bottom: 2px;
+  font-weight: var(--font-weight-medium);
+}
+
+.architecture-card__stat-val {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-text-main);
+}
+
+.architecture-card__checklist {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin-bottom: var(--space-6);
+  flex-grow: 1;
+}
+
+.architecture-card__checklist-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-main);
+}
+
+.architecture-card__check-icon {
+  width: 15px;
+  height: 15px;
+  min-width: 15px;
+  color: var(--color-success);
+}
+
+.portfolio-details__feature-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-main);
+}
+
+.portfolio-details__feature-icon {
+  width: 14px;
+  height: 14px;
+  color: var(--color-success);
+}
+
+/* Property Photo Gallery Grid */
+.property-gallery-header {
+  text-align: center;
+  margin-bottom: var(--space-8);
+}
+
+.property-gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-6);
+}
+
+@media (max-width: 1024px) {
+  .property-gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 600px) {
+  .property-gallery-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.property-photo-card {
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.property-photo-card__img-wrap {
+  position: relative;
+  width: 100%;
+  height: 180px;
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  margin-bottom: var(--space-3);
+  border: var(--neo-border);
+}
+
+.property-photo-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.5s ease;
+}
+
+.property-photo-card:hover .property-photo-card__img {
+  transform: scale(1.06);
+}
+
+.property-photo-card__badge {
+  position: absolute;
+  top: var(--space-2);
+  left: var(--space-2);
+}
+
+.property-photo-card__title {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-main);
+  margin-bottom: 2px;
+}
+
+.property-photo-card__sub {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-subtle);
+  margin-bottom: var(--space-3);
+}
+
+.property-photo-card__meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--space-3);
+  border-top: 1px solid rgba(220, 208, 194, 0.6);
+  font-size: var(--font-size-xs);
+  margin-top: auto;
+}
+
+.property-photo-card__rent {
+  font-weight: var(--font-weight-extrabold);
+  color: var(--color-text-main);
+}
+
+.property-photo-card__tag {
+  color: var(--color-success);
+  font-weight: var(--font-weight-semibold);
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+/* Portals Section Image Enhancements */
+.portal-card__img-wrapper {
+  position: relative;
+  width: 100%;
+  height: 190px;
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  margin-bottom: var(--space-6);
+  border: var(--neo-border);
+  box-shadow: var(--neo-shadow-raised-sm);
+}
+
+.portal-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.portal-card:hover .portal-card__img {
+  transform: scale(1.05);
+}
+
+.portal-card__img-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.1) 0%, rgba(20, 20, 25, 0.55) 100%);
+  display: flex;
+  align-items: flex-end;
+  padding: var(--space-4);
+}
+
+.portal-card__img-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: 0.35rem 0.85rem;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-main);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
 }
 
 /* ==========================================================================
