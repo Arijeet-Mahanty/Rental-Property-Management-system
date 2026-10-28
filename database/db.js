@@ -871,7 +871,65 @@ const db = {
         totalTicketsCount: tickets.length
       };
     }
+  },
+
+  /**
+   * Save contact inquiry message
+   */
+  async createContactMessage(msgData) {
+    const data = readDb();
+    if (!data.contact_messages) {
+      data.contact_messages = [];
+    }
+    const newMsg = {
+      id: `msg_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      name: msgData.name || '',
+      email: msgData.email || '',
+      phone: msgData.phone || '',
+      subject: msgData.subject || 'General Inquiry',
+      portfolio_size: msgData.portfolioSize || 'Not specified',
+      message: msgData.message || '',
+      status: 'new',
+      created_at: new Date().toISOString()
+    };
+    data.contact_messages.push(newMsg);
+    writeDb(data);
+    return newMsg;
+  },
+
+  /**
+   * Get all feedback reviews
+   */
+  async getFeedbackReviews() {
+    const data = readDb();
+    return data.feedback_reviews || [];
+  },
+
+  /**
+   * Submit and save a customer feedback review
+   */
+  async createFeedbackReview(revData) {
+    const data = readDb();
+    if (!data.feedback_reviews) {
+      data.feedback_reviews = [];
+    }
+    const newRev = {
+      id: `rev_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      name: revData.name || 'Anonymous User',
+      role: revData.role === 'tenant' ? 'tenant' : 'landlord',
+      rating: Number(revData.rating) || 5,
+      property_name: revData.propertyName || '',
+      title: revData.title || '',
+      comment: revData.comment || '',
+      helpful_count: 0,
+      verified: true,
+      created_at: new Date().toISOString()
+    };
+    data.feedback_reviews.unshift(newRev);
+    writeDb(data);
+    return newRev;
   }
 };
 
 module.exports = db;
+

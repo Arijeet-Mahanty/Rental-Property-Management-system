@@ -64,8 +64,15 @@ The project is structured into three iterative milestones:
   - [x] **My Home Spotlight Banner**: Unit details, property address, lease dates, and security deposit.
   - [x] **Rent Pay Action**: Upcoming payment due date, monthly rent amount, and 1-click "Pay Rent Now" modal.
   - [x] **Repair Dispatcher**: Direct maintenance ticket creation with urgency selection and live status tracking.
+- [x] **Landing Page Enhancements & Conversion Funnel (`index.html`)**
+  - [x] **Customer Feedback & Social Proof (`#feedback`)**: Verified landlord and tenant testimonial cards, overall 4.9/5 rating stats capsule, live role filter tabs (All, Landlords, Tenants), and tactile "Helpful" vote counters.
+  - [x] **Share Feedback Modal Dialog**: Interactive 5-star rating picker, review headline, detailed comment, and live review publishing with persistent `localStorage` and `/api/feedback` syncing.
+  - [x] **Contact Us Section (`#contact`)**: Direct channels (support email with 1-click clipboard copy, advisory phone hotline, headquarters location), live glowing green operational status beacon, and 4-question interactive FAQ accordion.
+  - [x] **Interactive Contact Form**: Client-side validated form (Full Name, Email, Phone, Topic, Portfolio Units, Message with live character counter) with submission loading state, in-form confirmation card, and REST dispatch to `POST /api/contact`.
+  - [x] **Trust & Compliance Guarantee Banner**: Bank-grade 256-bit encryption, Nacha ACH certified, FCRA-compliant screening, 99.98% high availability badges.
+  - [x] **Sticky Navigation & Footer Updates**: Integrated "Reviews" and "Contact" links in desktop navbar, mobile drawer, and footer.
 - [x] **Unified Fullstack REST Client Layer (`js/api.js`)**
-  - [x] Seamless asynchronous client connecting to Express endpoints.
+  - [x] Seamless asynchronous client connecting to Express endpoints including `/api/contact` and `/api/feedback`.
   - [x] Resilient offline fallback simulation ensuring standalone `file://` or static servers remain fully interactive.
 
 ---

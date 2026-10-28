@@ -552,5 +552,32 @@
       "resolution_notes": "Cleared small coin obstruction using hex key wrench. Motor running smoothly.",
       "created_at": "2026-10-18T16:45:00.000Z"
     }
+  ],
+  "contact_messages": [
+    {
+      "id": "msg_1793167603638_d5xul",
+      "name": "Test Prospect",
+      "email": "test@example.com",
+      "phone": "",
+      "subject": "General Inquiry",
+      "portfolio_size": "Not specified",
+      "message": "Hello, testing contact form!",
+      "status": "new",
+      "created_at": "2026-10-28T06:06:43.639Z"
+    }
+  ],
+  "feedback_reviews": [
+    {
+      "id": "rev_1793168071182_5dtvv",
+      "name": "Chloe Martin",
+      "role": "landlord",
+      "rating": 5,
+      "property_name": "Beacon Lofts (4 Doors)",
+      "title": "Super fast tenant screening",
+      "comment": "Screens tenants thoroughly with instant background checks. Saved our weekend!",
+      "helpful_count": 0,
+      "verified": true,
+      "created_at": "2026-10-28T06:14:31.182Z"
+    }
   ]
 }

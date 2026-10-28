@@ -17,6 +17,8 @@ const leasesRoutes = require('./routes/leases');
 const paymentsRoutes = require('./routes/payments');
 const maintenanceRoutes = require('./routes/maintenance');
 const dashboardRoutes = require('./routes/dashboard');
+const contactRoutes = require('./routes/contact');
+const feedbackRoutes = require('./routes/feedback');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -62,6 +64,8 @@ app.use('/api/leases', leasesRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/maintenance', maintenanceRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/contact', contactRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 // Serve static frontend files from project root
 const PUBLIC_DIR = path.join(__dirname, '..');

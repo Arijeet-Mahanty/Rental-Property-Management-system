@@ -71,22 +71,10 @@
           </div>
         </div>
 
-        <!-- Interactive 3D Model & Mockup Preview -->
+        <!-- Interactive 3D Model Hero Visual -->
         <div class="hero__preview">
-          <!-- View Toggle Switcher -->
-          <div class="hero-preview-toggle" role="tablist" aria-label="Hero Visual Preview Mode">
-            <button type="button" class="hero-preview-tab is-active" id="hero-tab-3d" role="tab" aria-selected="true" aria-controls="hero-3d-card">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
-              <span>Interactive 3D Model</span>
-            </button>
-            <button type="button" class="hero-preview-tab" id="hero-tab-mockup" role="tab" aria-selected="false" aria-controls="hero-mockup-card">
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="3" y1="9" x2="21" y2="9"></line><line x1="9" y1="21" x2="9" y2="9"></line></svg>
-              <span>Live Activity Feed</span>
-            </button>
-          </div>
-
-          <!-- Hero 3D Frameless Container (No box around 3D model, things in the box removed, model and buttons kept) -->
-          <div class="hero-3d-frameless-wrap" id="hero-3d-card" role="tabpanel" aria-labelledby="hero-tab-3d">
+          <!-- Hero 3D Frameless Container -->
+          <div class="hero-3d-frameless-wrap" id="hero-3d-card">
             <!-- 3D Model WebGL Canvas directly on page -->
             <div id="hero-3d-canvas-container" class="hero-3d-canvas-frameless" title="Click and drag to rotate the 3D property model"></div>
 
@@ -112,55 +100,6 @@
                 <button type="button" class="hero-3d-tool-btn" id="hero-3d-btn-reset" title="Reset Camera View">
                   <span>Reset</span>
                 </button>
-              </div>
-            </div>
-          </div>
-
-          <!-- Glass Mockup Visual Preview (Preserved in full) -->
-          <div class="glass-card hero-mockup is-hidden" id="hero-mockup-card" role="tabpanel" aria-labelledby="hero-tab-mockup">
-            <div class="hero-mockup__header">
-              <div class="hero-mockup__user">
-                <div class="hero-mockup__avatar">MV</div>
-                <div>
-                  <div class="hero-mockup__property-title">Oakwood & Highland Portfolio</div>
-                  <div class="hero-mockup__property-sub">18 Units &bull; 100% Occupied</div>
-                </div>
-              </div>
-              <span class="badge badge--landlord">Live Feed</span>
-            </div>
-
-            <div class="hero-mockup__stat-grid">
-              <div class="hero-mockup__mini-stat">
-                <div class="hero-mockup__mini-stat-title">Collected (Oct)</div>
-                <div class="hero-mockup__mini-stat-val">$26,450</div>
-              </div>
-              <div class="hero-mockup__mini-stat">
-                <div class="hero-mockup__mini-stat-title">ACH Autopay</div>
-                <div class="hero-mockup__mini-stat-val">17 / 18</div>
-              </div>
-            </div>
-
-            <div class="hero-mockup__activity-list">
-              <div class="hero-mockup__activity-item">
-                <div class="hero-mockup__activity-info">
-                  <span class="hero-mockup__activity-dot"></span>
-                  <span><strong>Unit 4B</strong> - Rent payment received ($1,650)</span>
-                </div>
-                <span class="text-subtle">Today</span>
-              </div>
-              <div class="hero-mockup__activity-item">
-                <div class="hero-mockup__activity-info">
-                  <span class="hero-mockup__activity-dot"></span>
-                  <span><strong>Unit 2A</strong> - Digital lease signed by Sarah C.</span>
-                </div>
-                <span class="text-subtle">Yesterday</span>
-              </div>
-              <div class="hero-mockup__activity-item">
-                <div class="hero-mockup__activity-info">
-                  <span class="hero-mockup__activity-dot hero-mockup__activity-dot--warning"></span>
-                  <span><strong>Unit 1F</strong> - Repair ticket: AC filter maintenance</span>
-                </div>
-                <span class="text-subtle">In Progress</span>
               </div>
             </div>
           </div>
@@ -590,6 +529,507 @@
       </div>
     </section>
 
+    <!-- Trust & Compliance Badges Banner -->
+    <section class="trust-banner-section" aria-label="Security and Compliance Guarantees">
+      <div class="container">
+        <div class="glass-card trust-banner">
+          <div class="trust-badge-item">
+            <div class="trust-badge-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+            </div>
+            <div>
+              <div class="trust-badge-title">256-Bit SSL Encryption</div>
+              <div class="trust-badge-sub">Bank-grade data protection</div>
+            </div>
+          </div>
+
+          <div class="trust-badge-item">
+            <div class="trust-badge-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            </div>
+            <div>
+              <div class="trust-badge-title">Nacha ACH Certified</div>
+              <div class="trust-badge-sub">Zero-friction direct deposits</div>
+            </div>
+          </div>
+
+          <div class="trust-badge-item">
+            <div class="trust-badge-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>
+            </div>
+            <div>
+              <div class="trust-badge-title">FCRA Tenant Screening</div>
+              <div class="trust-badge-sub">Accurate TransUnion checks</div>
+            </div>
+          </div>
+
+          <div class="trust-badge-item">
+            <div class="trust-badge-icon">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
+            </div>
+            <div>
+              <div class="trust-badge-title">99.98% High Availability</div>
+              <div class="trust-badge-sub">24/7 cloud reliability</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Customer Feedback & Verified Reviews Section -->
+    <section class="feedback-section" id="feedback" aria-labelledby="feedback-title">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Social Proof & Reviews</span>
+          <h2 id="feedback-title" class="section-title">Loved by independent landlords and happy residents</h2>
+          <p class="section-desc">Real stories from property owners managing 1 to 50 doors and residents enjoying frictionless living.</p>
+        </div>
+
+        <!-- Rating & Stats Summary Capsule -->
+        <div class="feedback-stats-bar">
+          <div class="feedback-score-card">
+            <div class="feedback-score-val">4.9<span class="feedback-score-max">/5</span></div>
+            <div class="feedback-stars" aria-label="5 out of 5 stars">
+              ★★★★★
+            </div>
+            <div class="feedback-score-label">Based on 1,250+ verified reviews</div>
+          </div>
+
+          <div class="feedback-metrics-grid">
+            <div class="feedback-metric-item">
+              <span class="feedback-metric-num">99.4%</span>
+              <span class="feedback-metric-desc">On-time rent payment rate with automated ACH autopay</span>
+            </div>
+            <div class="feedback-metric-item">
+              <span class="feedback-metric-num">&lt; 15 min</span>
+              <span class="feedback-metric-desc">Average onboarding & spreadsheet migration time</span>
+            </div>
+            <div class="feedback-metric-item">
+              <span class="feedback-metric-num">98.7%</span>
+              <span class="feedback-metric-desc">Tenant satisfaction rating with digital repairs & leases</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Filter Controls & Leave Feedback Action -->
+        <div class="feedback-controls-bar">
+          <div class="feedback-filter-tabs" role="tablist" aria-label="Review role filters">
+            <button type="button" class="feedback-filter-btn is-active" data-filter="all" role="tab" aria-selected="true">
+              <span>All Reviews</span>
+              <span class="feedback-filter-count" id="count-all">6</span>
+            </button>
+            <button type="button" class="feedback-filter-btn" data-filter="landlord" role="tab" aria-selected="false">
+              <span>Landlords & Owners</span>
+              <span class="feedback-filter-count" id="count-landlords">4</span>
+            </button>
+            <button type="button" class="feedback-filter-btn" data-filter="tenant" role="tab" aria-selected="false">
+              <span>Tenants & Residents</span>
+              <span class="feedback-filter-count" id="count-tenants">2</span>
+            </button>
+          </div>
+
+          <button type="button" class="btn btn--primary btn--sm" id="btn-open-feedback-modal">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+            <span>Share Your Experience</span>
+          </button>
+        </div>
+
+        <!-- Feedback Cards Grid -->
+        <div class="feedback-grid" id="feedback-grid">
+          <!-- Review 1: Landlord -->
+          <div class="glass-card feedback-card" data-role="landlord">
+            <div class="feedback-card__header">
+              <div class="feedback-card__author">
+                <div class="feedback-card__avatar feedback-card__avatar--indigo">MV</div>
+                <div>
+                  <div class="feedback-card__name">Marcus Vance</div>
+                  <div class="feedback-card__meta">Highland Park Portfolio &bull; Austin, TX</div>
+                </div>
+              </div>
+              <span class="badge badge--landlord">Landlord &bull; 18 Doors</span>
+            </div>
+
+            <div class="feedback-card__stars">★★★★★</div>
+            <h3 class="feedback-card__title">"Automated ACH collection reclaimed my entire first week of the month"</h3>
+            <p class="feedback-card__quote">
+              "Before RentRoll, I was chasing 18 separate paper checks, tracking partial payments across Venmo, and logging late fees manually. Now, 99% of my tenants are on autopay. Deposits hit my account like clockwork on the 1st, and my accountant loved the Schedule E export."
+            </p>
+
+            <div class="feedback-card__footer">
+              <div class="feedback-verified-badge">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Verified Landlord &bull; 2 Yrs</span>
+              </div>
+              <button type="button" class="feedback-helpful-btn" data-id="rev-1" title="Mark as helpful">
+                <span class="helpful-icon">👍</span>
+                <span>Helpful (<strong class="helpful-count">38</strong>)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Review 2: Landlord -->
+          <div class="glass-card feedback-card" data-role="landlord">
+            <div class="feedback-card__header">
+              <div class="feedback-card__author">
+                <div class="feedback-card__avatar feedback-card__avatar--emerald">ER</div>
+                <div>
+                  <div class="feedback-card__name">Elena Rostova</div>
+                  <div class="feedback-card__meta">West End Duplexes &bull; Portland, OR</div>
+                </div>
+              </div>
+              <span class="badge badge--landlord">Duplex Owner &bull; 5 Doors</span>
+            </div>
+
+            <div class="feedback-card__stars">★★★★★</div>
+            <h3 class="feedback-card__title">"The photo repair triage saved me thousands in emergency dispatch fees"</h3>
+            <p class="feedback-card__quote">
+              "When an HVAC issue happened on a freezing Sunday evening, my resident submitted a video ticket with sound directly from her phone. I was able to diagnose the filter issue remotely and save a $450 emergency dispatch fee. Unbelievably intuitive."
+            </p>
+
+            <div class="feedback-card__footer">
+              <div class="feedback-verified-badge">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Verified Landlord &bull; 1.5 Yrs</span>
+              </div>
+              <button type="button" class="feedback-helpful-btn" data-id="rev-2" title="Mark as helpful">
+                <span class="helpful-icon">👍</span>
+                <span>Helpful (<strong class="helpful-count">27</strong>)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Review 3: Tenant -->
+          <div class="glass-card feedback-card" data-role="tenant">
+            <div class="feedback-card__header">
+              <div class="feedback-card__author">
+                <div class="feedback-card__avatar feedback-card__avatar--terracotta">SC</div>
+                <div>
+                  <div class="feedback-card__name">Sarah Chen</div>
+                  <div class="feedback-card__meta">Penthouse Skyline Suite &bull; Seattle, WA</div>
+                </div>
+              </div>
+              <span class="badge badge--tenant">Resident &bull; Unit 4B</span>
+            </div>
+
+            <div class="feedback-card__stars">★★★★★</div>
+            <h3 class="feedback-card__title">"Finally a tenant portal that feels like a polished consumer fintech app"</h3>
+            <p class="feedback-card__quote">
+              "No clunky legacy software, no confusing fees. I set up autopay in literally 60 seconds with my bank. Whenever a maintenance ticket is resolved, I get a clear notification with notes. It makes renting feel luxurious and stress-free."
+            </p>
+
+            <div class="feedback-card__footer">
+              <div class="feedback-verified-badge">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Verified Resident &bull; 18 Mos</span>
+              </div>
+              <button type="button" class="feedback-helpful-btn" data-id="rev-3" title="Mark as helpful">
+                <span class="helpful-icon">👍</span>
+                <span>Helpful (<strong class="helpful-count">19</strong>)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Review 4: Landlord -->
+          <div class="glass-card feedback-card" data-role="landlord">
+            <div class="feedback-card__header">
+              <div class="feedback-card__author">
+                <div class="feedback-card__avatar feedback-card__avatar--violet">DP</div>
+                <div>
+                  <div class="feedback-card__name">David & Priya Patel</div>
+                  <div class="feedback-card__meta">Oakwood Manor Portfolio &bull; Denver, CO</div>
+                </div>
+              </div>
+              <span class="badge badge--landlord">Boutique Portfolio &bull; 12 Doors</span>
+            </div>
+
+            <div class="feedback-card__stars">★★★★★</div>
+            <h3 class="feedback-card__title">"Schedule E tax export made our accountant literally cheer"</h3>
+            <p class="feedback-card__quote">
+              "Tax season used to be a nightmare of shoebox receipts and bank reconciliation. With RentRoll, all rent income and contractor expenses are categorized automatically. We exported our Schedule E report in one click without sweating."
+            </p>
+
+            <div class="feedback-card__footer">
+              <div class="feedback-verified-badge">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Verified Landlord &bull; 14 Mos</span>
+              </div>
+              <button type="button" class="feedback-helpful-btn" data-id="rev-4" title="Mark as helpful">
+                <span class="helpful-icon">👍</span>
+                <span>Helpful (<strong class="helpful-count">31</strong>)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Review 5: Tenant -->
+          <div class="glass-card feedback-card" data-role="tenant">
+            <div class="feedback-card__header">
+              <div class="feedback-card__author">
+                <div class="feedback-card__avatar feedback-card__avatar--blue">JT</div>
+                <div>
+                  <div class="feedback-card__name">James Thorne</div>
+                  <div class="feedback-card__meta">Cedar Grove Duplex &bull; West End</div>
+                </div>
+              </div>
+              <span class="badge badge--tenant">Resident &bull; Unit 42A</span>
+            </div>
+
+            <div class="feedback-card__stars">★★★★★</div>
+            <h3 class="feedback-card__title">"Digital lease signing and instant receipts on my phone"</h3>
+            <p class="feedback-card__quote">
+              "Moving in was seamless. I signed the state lease agreement on my phone, paid the security deposit securely, and had immediate access to my countersigned copy and rent receipts anytime. Best rental experience I've had."
+            </p>
+
+            <div class="feedback-card__footer">
+              <div class="feedback-verified-badge">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Verified Resident &bull; 1 Yr</span>
+              </div>
+              <button type="button" class="feedback-helpful-btn" data-id="rev-5" title="Mark as helpful">
+                <span class="helpful-icon">👍</span>
+                <span>Helpful (<strong class="helpful-count">14</strong>)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Review 6: Landlord -->
+          <div class="glass-card feedback-card" data-role="landlord">
+            <div class="feedback-card__header">
+              <div class="feedback-card__author">
+                <div class="feedback-card__avatar feedback-card__avatar--amber">RG</div>
+                <div>
+                  <div class="feedback-card__name">Robert Gallagher</div>
+                  <div class="feedback-card__meta">147 Elmwood Historic Triplex &bull; Boston, MA</div>
+                </div>
+              </div>
+              <span class="badge badge--landlord">Historic Triplex &bull; 3 Doors</span>
+            </div>
+
+            <div class="feedback-card__stars">★★★★★</div>
+            <h3 class="feedback-card__title">"Built for indie owners, not corporate mega-conglomerates"</h3>
+            <p class="feedback-card__quote">
+              "Every other property management platform wants $250/month and requires a week of training webinars. RentRoll was built for people like me who own 3 to 10 doors and just want things to run flawlessly without technical friction."
+            </p>
+
+            <div class="feedback-card__footer">
+              <div class="feedback-verified-badge">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                <span>Verified Landlord &bull; 2.5 Yrs</span>
+              </div>
+              <button type="button" class="feedback-helpful-btn" data-id="rev-6" title="Mark as helpful">
+                <span class="helpful-icon">👍</span>
+                <span>Helpful (<strong class="helpful-count">42</strong>)</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Us Section -->
+    <section class="contact-section" id="contact" aria-labelledby="contact-title">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag">Get In Touch</span>
+          <h2 id="contact-title" class="section-title">Have questions? We're here to help you succeed.</h2>
+          <p class="section-desc">Whether you want a personalized walk-through, help onboarding your units, or have general questions, our property specialists respond swiftly.</p>
+        </div>
+
+        <div class="contact-grid">
+          <!-- Left Column: Channels & FAQ -->
+          <div class="contact-info-col">
+            <!-- Direct Channels Card -->
+            <div class="glass-card contact-channel-card">
+              <h3 class="contact-col-heading">Direct Channels</h3>
+
+              <div class="contact-channel-list">
+                <div class="contact-channel-item">
+                  <div class="contact-channel-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                  </div>
+                  <div class="contact-channel-details">
+                    <div class="contact-channel-label">Email Support & Sales</div>
+                    <a href="mailto:support@rentroll.io" class="contact-channel-value" id="contact-email-link">support@rentroll.io</a>
+                    <div class="contact-channel-sub">Average response time: &lt; 2 business hours</div>
+                  </div>
+                  <button type="button" class="contact-copy-btn" id="btn-copy-email" title="Copy email address" aria-label="Copy email address">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                  </button>
+                </div>
+
+                <div class="contact-channel-item">
+                  <div class="contact-channel-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                  </div>
+                  <div class="contact-channel-details">
+                    <div class="contact-channel-label">Landlord Advisory Line</div>
+                    <a href="tel:+18005557655" class="contact-channel-value">+1 (800) 555-ROLL (7655)</a>
+                    <div class="contact-channel-sub">Mon–Fri: 8:00 AM – 8:00 PM EST</div>
+                  </div>
+                </div>
+
+                <div class="contact-channel-item">
+                  <div class="contact-channel-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  </div>
+                  <div class="contact-channel-details">
+                    <div class="contact-channel-label">Headquarters</div>
+                    <div class="contact-channel-value" style="font-size: var(--font-size-sm); color: var(--color-text-main);">500 Howard Street, Suite 300</div>
+                    <div class="contact-channel-sub">San Francisco, CA 94105 &bull; Remote First</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Live Beacon Status -->
+              <div class="contact-status-beacon">
+                <span class="contact-beacon-dot"></span>
+                <span>System Status: <strong>Operational</strong> &bull; Specialists Online</span>
+              </div>
+            </div>
+
+            <!-- Quick FAQ Accordion -->
+            <div class="glass-card contact-faq-card">
+              <h3 class="contact-col-heading">Frequently Asked Questions</h3>
+
+              <div class="faq-accordion" id="faq-accordion">
+                <div class="faq-item is-open">
+                  <button type="button" class="faq-question" aria-expanded="true" aria-controls="faq-ans-1">
+                    <span>How quickly can I migrate my current tenants?</span>
+                    <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </button>
+                  <div class="faq-answer" id="faq-ans-1">
+                    <p>Under 15 minutes! Simply enter your property address and unit numbers, then send automated digital invitations to your tenants. They connect autopay in 60 seconds with their bank via secure Nacha ACH.</p>
+                  </div>
+                </div>
+
+                <div class="faq-item">
+                  <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-ans-2">
+                    <span>Does RentRoll charge hidden transaction fees on ACH?</span>
+                    <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </button>
+                  <div class="faq-answer is-collapsed" id="faq-ans-2">
+                    <p>Zero hidden fees. Bank ACH rent deposits are 100% free for both landlords and tenants. Optional credit or debit card payments carry standard 2.9% + 30¢ card processing fees covered by the payer.</p>
+                  </div>
+                </div>
+
+                <div class="faq-item">
+                  <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-ans-3">
+                    <span>Can I use RentRoll if I only have 1 or 2 duplex units?</span>
+                    <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </button>
+                  <div class="faq-answer is-collapsed" id="faq-ans-3">
+                    <p>Yes! RentRoll was purpose-built for indie landlords with 1 to 50 doors. There are no minimum unit requirements, no corporate contracts, and no bloated feature sets you will never touch.</p>
+                  </div>
+                </div>
+
+                <div class="faq-item">
+                  <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-ans-4">
+                    <span>How does the Schedule E tax export work?</span>
+                    <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                  </button>
+                  <div class="faq-answer is-collapsed" id="faq-ans-4">
+                    <p>All recorded rent collections and maintenance contractor expenses are automatically mapped to IRS Schedule E categories (Repairs, Cleaning, Utilities, Management). You can download an audit-ready PDF/CSV summary in 1 click.</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Column: Interactive Neomorphic Contact Form -->
+          <div class="contact-form-col">
+            <div class="glass-card contact-form-card" id="contact-form-card">
+              <div class="contact-form-header">
+                <h3 class="contact-form-title">Send Us a Direct Message</h3>
+                <p class="contact-form-subtitle">Fill out the fields below and our dedicated property advisor will get in touch.</p>
+              </div>
+
+              <form id="landing-contact-form" class="contact-form" novalidate>
+                <div class="form-row form-row--2col">
+                  <div class="form-group">
+                    <label for="contact-name" class="form-label">Full Name <span class="text-danger">*</span></label>
+                    <div class="form-input-wrap">
+                      <input type="text" id="contact-name" name="name" class="form-input" placeholder="e.g. Sarah Jenkins" required autocomplete="name">
+                    </div>
+                    <div class="form-error" id="error-contact-name">Please enter your full name.</div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="contact-email" class="form-label">Email Address <span class="text-danger">*</span></label>
+                    <div class="form-input-wrap">
+                      <input type="email" id="contact-email" name="email" class="form-input" placeholder="name@domain.com" required autocomplete="email">
+                    </div>
+                    <div class="form-error" id="error-contact-email">Please enter a valid email address.</div>
+                  </div>
+                </div>
+
+                <div class="form-row form-row--2col">
+                  <div class="form-group">
+                    <label for="contact-phone" class="form-label">Phone Number <span class="text-subtle" style="font-weight: normal;">(Optional)</span></label>
+                    <div class="form-input-wrap">
+                      <input type="tel" id="contact-phone" name="phone" class="form-input" placeholder="(555) 000-0000" autocomplete="tel">
+                    </div>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="contact-portfolio" class="form-label">Portfolio Size</label>
+                    <div class="form-input-wrap">
+                      <select id="contact-portfolio" name="portfolioSize" class="form-input">
+                        <option value="1-4 Units">1 – 4 Units (Single Family / Duplex)</option>
+                        <option value="5-15 Units">5 – 15 Units (Small Multi-Family)</option>
+                        <option value="16-50 Units">16 – 50 Units (Boutique Portfolio)</option>
+                        <option value="Resident">I am a Tenant / Resident</option>
+                        <option value="Exploring">Exploring / Future Investor</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <label for="contact-subject" class="form-label">Inquiry Topic</label>
+                  <div class="form-input-wrap">
+                    <select id="contact-subject" name="subject" class="form-input">
+                      <option value="Live Platform Demo">Request 1-on-1 Platform Demo</option>
+                      <option value="Landlord Sales & Migration">Landlord Sales & Spreadsheet Migration</option>
+                      <option value="Tenant Support">Tenant Support & Rent Pay Help</option>
+                      <option value="Pricing & Custom Quote">Pricing & 15+ Units Custom Quote</option>
+                      <option value="General Question">General Inquiry & Feedback</option>
+                    </select>
+                  </div>
+                </div>
+
+                <div class="form-group">
+                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
+                    <label for="contact-message" class="form-label" style="margin-bottom: 0;">How can we help? <span class="text-danger">*</span></label>
+                    <span class="form-char-count" id="contact-char-count">0 / 500</span>
+                  </div>
+                  <div class="form-input-wrap">
+                    <textarea id="contact-message" name="message" class="form-input form-textarea" rows="4" placeholder="Tell us about your properties, questions, or what you'd like to automate..." required maxlength="500"></textarea>
+                  </div>
+                  <div class="form-error" id="error-contact-message">Please enter a message (at least 10 characters).</div>
+                </div>
+
+                <button type="submit" class="btn btn--primary btn--lg btn--full" id="contact-submit-btn">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                  <span>Send Message</span>
+                </button>
+              </form>
+
+              <!-- In-form Success State -->
+              <div class="contact-success-state is-hidden" id="contact-success-state" role="status" aria-live="polite">
+                <div class="contact-success-icon">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                </div>
+                <h4 class="contact-success-title">Message Received!</h4>
+                <p class="contact-success-desc" id="contact-success-desc">
+                  Thank you for reaching out. We have received your message and sent a copy to your email. A property specialist will reply within 2 business hours.
+                </p>
+                <button type="button" class="btn btn--ghost btn--sm" id="btn-reset-contact-form">Send Another Message</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- CTA Section -->
     <section class="cta-section" aria-labelledby="cta-title">
       <div class="container">
@@ -604,6 +1044,88 @@
       </div>
     </section>
   </main>
+
+  <!-- Modal: Share Customer Feedback / Review -->
+  <div class="neo-modal-backdrop" id="modal-feedback" role="dialog" aria-modal="true" aria-labelledby="modal-feedback-title" aria-hidden="true">
+    <div class="neo-modal-card">
+      <div class="neo-modal-header">
+        <div class="neo-modal-title" id="modal-feedback-title">Share Your Experience</div>
+        <button type="button" class="neo-modal-close btn-modal-cancel" aria-label="Close dialog">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <form id="form-share-feedback" novalidate>
+        <div class="neo-modal-body">
+          <p class="neo-modal-sub" style="margin-bottom: var(--space-4); color: var(--color-text-muted); font-size: var(--font-size-sm);">
+            Your feedback helps other landlords and residents create transparent, modern rental relationships.
+          </p>
+
+          <!-- Star Rating Interactive Selector -->
+          <div class="form-group">
+            <label class="form-label">Your Rating</label>
+            <div class="feedback-star-picker" id="feedback-star-picker" role="radiogroup" aria-label="Rating out of 5 stars">
+              <button type="button" class="feedback-star-btn is-selected" data-rating="1" aria-label="1 star">★</button>
+              <button type="button" class="feedback-star-btn is-selected" data-rating="2" aria-label="2 stars">★</button>
+              <button type="button" class="feedback-star-btn is-selected" data-rating="3" aria-label="3 stars">★</button>
+              <button type="button" class="feedback-star-btn is-selected" data-rating="4" aria-label="4 stars">★</button>
+              <button type="button" class="feedback-star-btn is-selected" data-rating="5" aria-label="5 stars">★</button>
+              <span class="feedback-star-hint" id="feedback-star-hint">5.0 — Excellent</span>
+            </div>
+            <input type="hidden" id="feedback-rating-val" name="rating" value="5">
+          </div>
+
+          <div class="form-row form-row--2col">
+            <div class="form-group">
+              <label for="feedback-name" class="form-label">Full Name <span class="text-danger">*</span></label>
+              <div class="form-input-wrap">
+                <input type="text" id="feedback-name" name="name" class="form-input" placeholder="e.g. Samantha Miller" required>
+              </div>
+              <div class="form-error" id="error-feedback-name">Please provide your name.</div>
+            </div>
+
+            <div class="form-group">
+              <label for="feedback-role" class="form-label">Your Role</label>
+              <div class="form-input-wrap">
+                <select id="feedback-role" name="role" class="form-input">
+                  <option value="landlord">Landlord / Property Owner</option>
+                  <option value="tenant">Tenant / Resident</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="feedback-property" class="form-label">Property Name / Units <span class="text-subtle">(Optional)</span></label>
+            <div class="form-input-wrap">
+              <input type="text" id="feedback-property" name="propertyName" class="form-input" placeholder="e.g. Oakwood Triplex (3 Doors) or Unit 2B">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="feedback-headline" class="form-label">Review Headline <span class="text-danger">*</span></label>
+            <div class="form-input-wrap">
+              <input type="text" id="feedback-headline" name="title" class="form-input" placeholder="e.g. Autopay eliminated late rent completely" required>
+            </div>
+            <div class="form-error" id="error-feedback-headline">Please write a short review headline.</div>
+          </div>
+
+          <div class="form-group">
+            <label for="feedback-comment" class="form-label">Your Review <span class="text-danger">*</span></label>
+            <div class="form-input-wrap">
+              <textarea id="feedback-comment" name="comment" class="form-input form-textarea" rows="3" placeholder="Share your experience with rent collection, tenant screening, maintenance triage, or the tenant portal..." required></textarea>
+            </div>
+            <div class="form-error" id="error-feedback-comment">Please write at least 15 characters of feedback.</div>
+          </div>
+        </div>
+
+        <div class="neo-modal-footer">
+          <button type="button" class="btn btn--ghost btn-modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn--primary" id="btn-submit-feedback">Submit Verified Review</button>
+        </div>
+      </form>
+    </div>
+  </div>
 
   <!-- Injected Glass Footer -->
   <footer id="footer-root"></footer>

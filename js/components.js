@@ -150,6 +150,8 @@ export function injectNavbar() {
   const featuresLink = isLanding ? '#features' : 'index.html#features';
   const howItWorksLink = isLanding ? '#how-it-works' : 'index.html#how-it-works';
   const portalsLink = isLanding ? '#portals' : 'index.html#portals';
+  const feedbackLink = isLanding ? '#feedback' : 'index.html#feedback';
+  const contactLink = isLanding ? '#contact' : 'index.html#contact';
   const dashboardLink = 'dashboard.html';
 
   const isHomeActive = isLanding && !window.location.hash;
@@ -215,6 +217,8 @@ export function injectNavbar() {
           <a href="${featuresLink}" class="navbar__link">Features</a>
           <a href="${howItWorksLink}" class="navbar__link">How it works</a>
           <a href="${portalsLink}" class="navbar__link">Portals</a>
+          <a href="${feedbackLink}" class="navbar__link">Reviews</a>
+          <a href="${contactLink}" class="navbar__link">Contact</a>
           ${currentUser ? `<a href="${dashboardLink}" class="navbar__link ${isDashboardActive ? 'navbar__link--active' : ''}">Dashboard</a>` : ''}
         </div>
 
@@ -234,6 +238,8 @@ export function injectNavbar() {
           <a href="${featuresLink}" class="mobile-nav-link">Features</a>
           <a href="${howItWorksLink}" class="mobile-nav-link">How it works</a>
           <a href="${portalsLink}" class="mobile-nav-link">Portals</a>
+          <a href="${feedbackLink}" class="mobile-nav-link">Reviews</a>
+          <a href="${contactLink}" class="mobile-nav-link">Contact</a>
           ${currentUser ? `<a href="${dashboardLink}" class="mobile-nav-link ${isDashboardActive ? 'mobile-nav-link--active' : ''}">Dashboard</a>` : ''}
         </div>
         <div class="mobile-nav-actions">
@@ -343,7 +349,7 @@ export function injectFooter() {
               <li><a href="index.html#features" class="footer__link">Rent Collection</a></li>
               <li><a href="index.html#features" class="footer__link">Tenant Screening</a></li>
               <li><a href="index.html#features" class="footer__link">Maintenance Hub</a></li>
-              <li><a href="index.html#features" class="footer__link">Accounting & Reports</a></li>
+              <li><a href="index.html#feedback" class="footer__link">Customer Reviews</a></li>
             </ul>
           </div>
 
@@ -360,10 +366,10 @@ export function injectFooter() {
           <div>
             <div class="footer__title">RentRoll</div>
             <ul class="footer__list">
+              <li><a href="index.html#contact" class="footer__link">Contact Us</a></li>
               <li><a href="dashboard.html" class="footer__link">App Dashboard</a></li>
               <li><a href="login.html" class="footer__link">Member Sign In</a></li>
               <li><a href="signup.html" class="footer__link">Create Account</a></li>
-              <li><a href="README.md" target="_blank" class="footer__link">API & Architecture Docs</a></li>
             </ul>
           </div>
         </div>

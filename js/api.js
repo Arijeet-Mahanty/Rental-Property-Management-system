@@ -382,6 +382,38 @@ export async function updateMaintenanceTicket(ticketId, updates) {
   return res.data;
 }
 
+/**
+ * Submits a contact inquiry form.
+ */
+export async function submitContactForm(contactData) {
+  const res = await request('/contact', {
+    method: 'POST',
+    body: contactData
+  });
+  return res;
+}
+
+/**
+ * Submits customer feedback / review.
+ */
+export async function submitFeedbackReview(reviewData) {
+  const res = await request('/feedback', {
+    method: 'POST',
+    body: reviewData
+  });
+  return res;
+}
+
+/**
+ * Fetches feedback reviews from the API.
+ */
+export async function getFeedbackReviews() {
+  const res = await request('/feedback', {
+    method: 'GET'
+  });
+  return res.reviews || [];
+}
+
 // ----------------------------------------------------------------------------
 // CLIENT-SIDE OFFLINE FALLBACK ENGINE
 // ----------------------------------------------------------------------------
@@ -623,5 +655,43 @@ async function handleOfflineRequest(endpoint, options = {}) {
     };
   }
 
+  if (endpoint.startsWith('/contact')) {
+    const body = typeof options.body === 'string' ? JSON.parse(options.body) : (options.body || {});
+    return {
+      success: true,
+      message: 'Thank you for contacting RentRoll! Our specialist team will reach out to you within 2 business hours.',
+      inquiryId: `msg_offline_${Date.now()}`
+    };
+  }
+
+  if (endpoint.startsWith('/feedback')) {
+    if (options.method === 'POST') {
+      const body = typeof options.body === 'string' ? JSON.parse(options.body) : (options.body || {});
+      const newReview = {
+        id: `rev_offline_${Date.now()}`,
+        name: body.name || 'Anonymous User',
+        role: body.role || 'landlord',
+        rating: Number(body.rating) || 5,
+        property_name: body.propertyName || '',
+        title: body.title || '',
+        comment: body.comment || '',
+        helpful_count: 0,
+        verified: true,
+        created_at: new Date().toISOString()
+      };
+      return {
+        success: true,
+        message: 'Thank you for your feedback! Your review has been submitted.',
+        review: newReview
+      };
+    } else {
+      return {
+        success: true,
+        reviews: []
+      };
+    }
+  }
+
   return { success: true, data: {} };
 }
+
