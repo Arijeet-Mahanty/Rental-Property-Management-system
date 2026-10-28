@@ -115,31 +115,31 @@
         </div>
         <div class="form-group">
           <label class="form-label" for="prop-address">Street Address *</label>
-          <input type="text" id="prop-address" class="form-control" placeholder="e.g. 520 Willow Lane" required>
+          <input type="text" id="prop-address" class="form-control" placeholder="e.g. 14th Main, 4th Block, Koramangala" required>
         </div>
         <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--space-3);">
           <div class="form-group">
             <label class="form-label" for="prop-city">City *</label>
-            <input type="text" id="prop-city" class="form-control" placeholder="Austin" required>
+            <input type="text" id="prop-city" class="form-control" placeholder="Bengaluru" required>
           </div>
           <div class="form-group">
             <label class="form-label" for="prop-state">State *</label>
-            <input type="text" id="prop-state" class="form-control" placeholder="TX" maxlength="2" required>
+            <input type="text" id="prop-state" class="form-control" placeholder="KA" maxlength="20" required>
           </div>
           <div class="form-group">
-            <label class="form-label" for="prop-zip">Zip Code *</label>
-            <input type="text" id="prop-zip" class="form-control" placeholder="78701" required>
+            <label class="form-label" for="prop-zip">PIN Code *</label>
+            <input type="text" id="prop-zip" class="form-control" placeholder="560034" required>
           </div>
         </div>
         <div class="form-group">
           <label class="form-label" for="prop-type">Property Type</label>
           <select id="prop-type" class="form-control">
-            <option value="Multi-Family">Multi-Family</option>
-            <option value="Apartment Building">Apartment Building</option>
-            <option value="Single-Family">Single-Family Home</option>
-            <option value="Duplex/Triplex">Duplex / Triplex</option>
-            <option value="Townhouse">Townhouse</option>
-            <option value="Condo">Condo</option>
+            <option value="Apartment Building">Apartment Building / Gated Society</option>
+            <option value="Multi-Family">Independent Builder Floors</option>
+            <option value="Single-Family">Independent Villa / Bungalow</option>
+            <option value="Duplex/Triplex">Duplex / Penthouse</option>
+            <option value="Townhouse">Row House</option>
+            <option value="Condo">Gated Society Flat</option>
           </select>
         </div>
         <div class="neo-modal-footer">
@@ -167,20 +167,20 @@
         <div class="form-group">
           <label class="form-label" for="unit-property-select">Belongs to Property *</label>
           <select id="unit-property-select" class="form-control" required>
-            <option value="prop_1">Oakwood Manor Apartments</option>
-            <option value="prop_2">Highland Lofts</option>
-            <option value="prop_3">Maple Court Duplex</option>
-            <option value="prop_4">Sunset Palms Residences</option>
+            <option value="prop_1">Gulmohar Residency</option>
+            <option value="prop_2">Bandra Sea Breeze Heights</option>
+            <option value="prop_3">DLF Cyber Suites</option>
+            <option value="prop_4">Koregaon Palms Villa</option>
           </select>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
           <div class="form-group">
             <label class="form-label" for="unit-number">Unit Number / Name *</label>
-            <input type="text" id="unit-number" class="form-control" placeholder="e.g. Apt 3C or Unit 102" required>
+            <input type="text" id="unit-number" class="form-control" placeholder="e.g. Flat 3B or Villa 4" required>
           </div>
           <div class="form-group">
-            <label class="form-label" for="unit-rent">Monthly Rent ($) *</label>
-            <input type="number" id="unit-rent" class="form-control" placeholder="1850" min="0" required>
+            <label class="form-label" for="unit-rent">Monthly Rent (₹) *</label>
+            <input type="number" id="unit-rent" class="form-control" placeholder="28500" min="0" required>
           </div>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3);">
@@ -190,16 +190,16 @@
           </div>
           <div class="form-group">
             <label class="form-label" for="unit-baths">Bathrooms</label>
-            <input type="number" id="unit-baths" class="form-control" value="1.5" step="0.5" min="0">
+            <input type="number" id="unit-baths" class="form-control" value="2" step="0.5" min="0">
           </div>
           <div class="form-group">
             <label class="form-label" for="unit-sqft">Sq Footage</label>
-            <input type="number" id="unit-sqft" class="form-control" placeholder="950">
+            <input type="number" id="unit-sqft" class="form-control" placeholder="1150">
           </div>
         </div>
         <div class="form-group">
-          <label class="form-label" for="unit-deposit">Security Deposit ($)</label>
-          <input type="number" id="unit-deposit" class="form-control" placeholder="Same as rent">
+          <label class="form-label" for="unit-deposit">Security Deposit (₹)</label>
+          <input type="number" id="unit-deposit" class="form-control" placeholder="e.g. 85500 (3 months)">
         </div>
         <div class="form-group">
           <label class="form-label" for="unit-notes">Door Notes</label>
@@ -230,20 +230,20 @@
         <div class="form-group">
           <label class="form-label" for="lease-unit-select">Assign Unit *</label>
           <select id="lease-unit-select" class="form-control" required>
-            <option value="unit_106">Apt 6C — Oakwood Manor (Vacant)</option>
-            <option value="unit_101">Apt 1A — Oakwood Manor</option>
-            <option value="unit_202">Loft 102 — Highland Lofts</option>
-            <option value="unit_301">Unit A — Maple Court Duplex</option>
+            <option value="unit_106">Flat 6C — Gulmohar Residency (Vacant)</option>
+            <option value="unit_101">Flat 1A — Gulmohar Residency</option>
+            <option value="unit_202">Sea Breeze 8B — Bandra Heights</option>
+            <option value="unit_301">Villa A — Koregaon Palms</option>
           </select>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
           <div class="form-group">
             <label class="form-label" for="lease-tenant-name">Tenant Full Name *</label>
-            <input type="text" id="lease-tenant-name" class="form-control" placeholder="e.g. David Miller" required>
+            <input type="text" id="lease-tenant-name" class="form-control" placeholder="e.g. Rohan Deshmukh" required>
           </div>
           <div class="form-group">
             <label class="form-label" for="lease-tenant-email">Tenant Email Address *</label>
-            <input type="email" id="lease-tenant-email" class="form-control" placeholder="david.miller@example.com" required>
+            <input type="email" id="lease-tenant-email" class="form-control" placeholder="rohan.deshmukh@example.com" required>
           </div>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
@@ -258,17 +258,17 @@
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
           <div class="form-group">
-            <label class="form-label" for="lease-rent">Monthly Rent ($) *</label>
-            <input type="number" id="lease-rent" class="form-control" placeholder="1650" required>
+            <label class="form-label" for="lease-rent">Monthly Rent (₹) *</label>
+            <input type="number" id="lease-rent" class="form-control" placeholder="28500" required>
           </div>
           <div class="form-group">
-            <label class="form-label" for="lease-deposit">Deposit Amount ($)</label>
-            <input type="number" id="lease-deposit" class="form-control" placeholder="1650">
+            <label class="form-label" for="lease-deposit">Deposit Amount (₹)</label>
+            <input type="number" id="lease-deposit" class="form-control" placeholder="85500">
           </div>
         </div>
         <div class="form-group">
           <label class="form-label" for="lease-terms">Agreement Terms / Special Conditions</label>
-          <textarea id="lease-terms" class="form-control" rows="2" placeholder="Standard 12-month agreement. 1 dog approved. No smoking."></textarea>
+          <textarea id="lease-terms" class="form-control" rows="2" placeholder="Standard 11-month registered agreement with Karnataka e-Stamp. 10% annual escalation. Society maintenance paid by tenant."></textarea>
         </div>
         <div class="neo-modal-footer">
           <button type="button" class="btn btn--ghost btn--sm btn-modal-cancel">Cancel</button>
@@ -293,22 +293,23 @@
       </div>
       <form id="form-record-payment">
         <div class="form-group">
-          <label class="form-label" for="pay-amount">Payment Amount ($) *</label>
-          <input type="number" id="pay-amount" class="form-control" placeholder="1650" step="0.01" min="1" required>
+          <label class="form-label" for="pay-amount">Payment Amount (₹) *</label>
+          <input type="number" id="pay-amount" class="form-control" placeholder="28500" step="1" min="1" required>
         </div>
         <div class="form-group">
           <label class="form-label" for="pay-method">Payment Channel / Method *</label>
           <select id="pay-method" class="form-control" required>
-            <option value="ach">ACH Direct Debit</option>
-            <option value="credit_card">Credit / Debit Card</option>
-            <option value="check">Paper Check / Cashier Check</option>
-            <option value="cash">Cash Received with Receipt</option>
-            <option value="bank_transfer">Wire / External Transfer</option>
+            <option value="upi">UPI AutoPay (GPay / PhonePe / Paytm)</option>
+            <option value="ach">eNACH / NPCI Bank Auto-Debit</option>
+            <option value="bank_transfer">IMPS / NEFT / NetBanking</option>
+            <option value="credit_card">Debit / Credit Card</option>
+            <option value="check">Cheque / Demand Draft</option>
+            <option value="cash">Cash with Counterfoil</option>
           </select>
         </div>
         <div class="form-group">
           <label class="form-label" for="pay-notes">Memo / Transaction Reference</label>
-          <input type="text" id="pay-notes" class="form-control" placeholder="November Rent - Check #1042">
+          <input type="text" id="pay-notes" class="form-control" placeholder="November Rent - UPI/eNACH UTR Ref #90421">
         </div>
         <div class="neo-modal-footer">
           <button type="button" class="btn btn--ghost btn--sm btn-modal-cancel">Cancel</button>
@@ -327,27 +328,28 @@
       <div class="neo-modal-header">
         <h2 class="neo-modal-title" id="modal-pay-rent-title">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-          <span>Pay Rent — Apt 4B</span>
+          <span>Pay Rent — Flat 4B</span>
         </h2>
         <button type="button" class="neo-modal-close" aria-label="Close modal">&times;</button>
       </div>
       <form id="form-tenant-pay-rent">
         <div style="background-color: var(--color-bg-inset); padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-4); border: var(--neo-border-inset);">
           <div style="font-size: var(--font-size-xs); color: var(--color-text-muted);">Current Due for November 1, 2026:</div>
-          <div style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-extrabold); color: var(--color-text-main);">$1,650.00</div>
-          <div style="font-size: 11px; color: var(--color-success);">&check; Zero late fees accrued</div>
+          <div style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-extrabold); color: var(--color-text-main);">₹28,500.00</div>
+          <div style="font-size: 11px; color: var(--color-success);">&check; Zero late fees accrued &bull; Instant HRA Receipt</div>
         </div>
         <div class="form-group">
           <label class="form-label" for="tenant-pay-method">Payment Source</label>
           <select id="tenant-pay-method" class="form-control">
-            <option value="ach">Chase Premier Checking (...4820) — No fee</option>
-            <option value="credit_card">Visa Debit (...9104) — 2.9% fee</option>
+            <option value="upi">UPI AutoPay (priya.iyer@okaxis) — Instant &amp; Free</option>
+            <option value="ach">HDFC Bank Salary A/C (...4820) — eNACH Auto-Debit</option>
+            <option value="credit_card">ICICI Coral Credit Card (...9104) — Instant</option>
           </select>
         </div>
         <div class="neo-modal-footer">
           <button type="button" class="btn btn--ghost btn--sm btn-modal-cancel">Cancel</button>
           <button type="button" class="btn btn--primary btn--sm" id="btn-confirm-tenant-pay">
-            <span>Authorize $1,650.00 Payment</span>
+            <span>Authorize ₹28,500.00 Payment</span>
           </button>
         </div>
       </form>

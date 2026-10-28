@@ -427,35 +427,35 @@ function initOfflineStorage() {
     const seed = [
       {
         id: 'usr_landlord_demo',
-        name: 'Marcus Vance',
+        name: 'Rajesh Sharma',
         email: 'landlord@rentroll.com',
         password: 'Password123!',
         role: 'landlord',
-        phone: '(555) 234-5678'
+        phone: '+91 98450 12345'
       },
       {
         id: 'usr_tenant_demo',
-        name: 'Elena Rostova',
+        name: 'Priya Iyer',
         email: 'tenant@rentroll.com',
         password: 'Password123!',
         role: 'tenant',
-        phone: '(555) 876-5432'
+        phone: '+91 98765 43210'
       },
       {
         id: 'usr_tenant_2',
-        name: 'Liam Chen',
-        email: 'liam.chen@example.com',
+        name: 'Aarav Mehta',
+        email: 'aarav.mehta@example.com',
         password: 'Password123!',
         role: 'tenant',
-        phone: '(555) 345-6789'
+        phone: '+91 98200 54321'
       },
       {
         id: 'usr_tenant_3',
-        name: 'Sophia Rodriguez',
-        email: 'sophia.r@example.com',
+        name: 'Ananya Deshmukh',
+        email: 'ananya.d@example.com',
         password: 'Password123!',
         role: 'tenant',
-        phone: '(555) 456-7890'
+        phone: '+91 97654 32109'
       }
     ];
     localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(seed));
@@ -517,7 +517,7 @@ async function offlineSignup(data) {
 
 async function handleOfflineRequest(endpoint, options = {}) {
   await delay(150);
-  const user = getCurrentUser() || { id: 'usr_landlord_demo', role: 'landlord', name: 'Marcus Vance' };
+  const user = getCurrentUser() || { id: 'usr_landlord_demo', role: 'landlord', name: 'Rajesh Sharma' };
 
   if (endpoint.startsWith('/auth/login')) {
     const body = typeof options.body === 'string' ? JSON.parse(options.body) : (options.body || {});
@@ -568,9 +568,9 @@ async function handleOfflineRequest(endpoint, options = {}) {
           occupiedUnits: 17,
           vacantUnits: 1,
           occupancyRate: 94,
-          monthlyRentRoll: 43450,
-          paidRentThisMonth: 9000,
-          pendingRent: 1650,
+          monthlyRentRoll: 535000,
+          paidRentThisMonth: 128500,
+          pendingRent: 28500,
           openMaintenanceCount: 2,
           highPriorityMaintenanceCount: 1
         }
@@ -583,16 +583,16 @@ async function handleOfflineRequest(endpoint, options = {}) {
             id: 'lease_1',
             startDate: '2026-02-01',
             endDate: '2027-01-31',
-            rentAmount: 1650,
-            depositAmount: 1650,
-            unitName: 'Apt 4B',
-            propertyName: 'Oakwood Manor Apartments',
-            address: '742 Evergreen Terrace, Springfield, OR'
+            rentAmount: 28500,
+            depositAmount: 85500,
+            unitName: 'Flat 4B',
+            propertyName: 'Gulmohar Residency',
+            address: '14th Main, 4th Block, Koramangala, Bengaluru, KA 560034'
           },
-          monthlyRent: 1650,
+          monthlyRent: 28500,
           nextDueDate: '2026-11-01',
-          nextAmountDue: 1650,
-          lastPaidAmount: 1650,
+          nextAmountDue: 28500,
+          lastPaidAmount: 28500,
           lastPaidDate: '2026-10-01T08:30:00.000Z',
           openTicketsCount: 1,
           totalTicketsCount: 1
@@ -604,10 +604,10 @@ async function handleOfflineRequest(endpoint, options = {}) {
   if (endpoint.startsWith('/properties')) {
     return {
       data: [
-        { id: 'prop_1', name: 'Oakwood Manor Apartments', address: '742 Evergreen Terrace', city: 'Springfield', state: 'OR', zip_code: '97477', property_type: 'Apartment Building', units_count: 6, occupied_units_count: 5, occupancy_rate: 83, monthly_rent_total: 10450 },
-        { id: 'prop_2', name: 'Highland Lofts', address: '1280 Beacon Street', city: 'Brookline', state: 'MA', zip_code: '02446', property_type: 'Multi-Family', units_count: 5, occupied_units_count: 5, occupancy_rate: 100, monthly_rent_total: 14350 },
-        { id: 'prop_3', name: 'Maple Court Duplex', address: '452 Maple Ridge Rd', city: 'Austin', state: 'TX', zip_code: '78704', property_type: 'Duplex/Triplex', units_count: 2, occupied_units_count: 2, occupancy_rate: 100, monthly_rent_total: 5000 },
-        { id: 'prop_4', name: 'Sunset Palms Residences', address: '901 Ocean Drive', city: 'Santa Monica', state: 'CA', zip_code: '90401', property_type: 'Multi-Family', units_count: 5, occupied_units_count: 5, occupancy_rate: 100, monthly_rent_total: 13650 }
+        { id: 'prop_1', name: 'Gulmohar Residency', address: '14th Main, 4th Block, Koramangala', city: 'Bengaluru', state: 'KA', zip_code: '560034', property_type: 'Apartment Building', units_count: 6, occupied_units_count: 5, occupancy_rate: 83, monthly_rent_total: 165000 },
+        { id: 'prop_2', name: 'Bandra Sea Breeze Heights', address: 'Pali Hill, Bandra West', city: 'Mumbai', state: 'MH', zip_code: '400050', property_type: 'Multi-Family', units_count: 5, occupied_units_count: 5, occupancy_rate: 100, monthly_rent_total: 215000 },
+        { id: 'prop_3', name: 'DLF Cyber Suites', address: 'Phase 5, Golf Course Road', city: 'Gurugram', state: 'HR', zip_code: '122009', property_type: 'Duplex/Triplex', units_count: 2, occupied_units_count: 2, occupancy_rate: 100, monthly_rent_total: 75000 },
+        { id: 'prop_4', name: 'Koregaon Palms Villa', address: 'Lane 7, Koregaon Park', city: 'Pune', state: 'MH', zip_code: '411001', property_type: 'Multi-Family', units_count: 5, occupied_units_count: 5, occupancy_rate: 100, monthly_rent_total: 80000 }
       ]
     };
   }
@@ -615,11 +615,11 @@ async function handleOfflineRequest(endpoint, options = {}) {
   if (endpoint.startsWith('/units')) {
     return {
       data: [
-        { id: 'unit_101', property_name: 'Oakwood Manor Apartments', unit_number: 'Apt 1A', bedrooms: 1, bathrooms: 1, square_feet: 680, rent_amount: 1450, status: 'occupied', current_tenant: { name: 'Sarah Jenkins' } },
-        { id: 'unit_102', property_name: 'Oakwood Manor Apartments', unit_number: 'Apt 2A', bedrooms: 2, bathrooms: 1.5, square_feet: 920, rent_amount: 1850, status: 'occupied', current_tenant: { name: 'Liam Chen' } },
-        { id: 'unit_104', property_name: 'Oakwood Manor Apartments', unit_number: 'Apt 4B', bedrooms: 2, bathrooms: 1.5, square_feet: 950, rent_amount: 1650, status: 'occupied', current_tenant: { name: 'Elena Rostova' } },
-        { id: 'unit_106', property_name: 'Oakwood Manor Apartments', unit_number: 'Apt 6C', bedrooms: 1, bathrooms: 1, square_feet: 650, rent_amount: 1400, status: 'vacant', current_tenant: null },
-        { id: 'unit_201', property_name: 'Highland Lofts', unit_number: 'Loft 101', bedrooms: 1, bathrooms: 1, square_feet: 800, rent_amount: 2200, status: 'occupied', current_tenant: { name: 'Sophia Rodriguez' } }
+        { id: 'unit_101', property_name: 'Gulmohar Residency', unit_number: 'Flat 1A', bedrooms: 2, bathrooms: 2, square_feet: 1050, rent_amount: 26000, status: 'occupied', current_tenant: { name: 'Sanjay Verma' } },
+        { id: 'unit_102', property_name: 'Gulmohar Residency', unit_number: 'Flat 2A', bedrooms: 2, bathrooms: 2, square_feet: 1100, rent_amount: 28000, status: 'occupied', current_tenant: { name: 'Aarav Mehta' } },
+        { id: 'unit_104', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', bedrooms: 2, bathrooms: 2, square_feet: 1150, rent_amount: 28500, status: 'occupied', current_tenant: { name: 'Priya Iyer' } },
+        { id: 'unit_106', property_name: 'Gulmohar Residency', unit_number: 'Flat 6C', bedrooms: 1, bathrooms: 1, square_feet: 650, rent_amount: 21000, status: 'vacant', current_tenant: null },
+        { id: 'unit_201', property_name: 'Bandra Sea Breeze Heights', unit_number: 'Penthouse 12A', bedrooms: 3, bathrooms: 3, square_feet: 1850, rent_amount: 65000, status: 'occupied', current_tenant: { name: 'Ananya Deshmukh' } }
       ]
     };
   }
@@ -627,9 +627,9 @@ async function handleOfflineRequest(endpoint, options = {}) {
   if (endpoint.startsWith('/leases')) {
     return {
       data: [
-        { id: 'lease_1', unit_number: 'Apt 4B', property_name: 'Oakwood Manor Apartments', tenant_name: 'Elena Rostova', tenant_email: 'tenant@rentroll.com', start_date: '2026-02-01', end_date: '2027-01-31', rent_amount: 1650, deposit_amount: 1650, status: 'active' },
-        { id: 'lease_2', unit_number: 'Apt 2A', property_name: 'Oakwood Manor Apartments', tenant_name: 'Liam Chen', tenant_email: 'liam.chen@example.com', start_date: '2026-01-01', end_date: '2026-12-31', rent_amount: 1850, deposit_amount: 1850, status: 'active' },
-        { id: 'lease_3', unit_number: 'Loft 101', property_name: 'Highland Lofts', tenant_name: 'Sophia Rodriguez', tenant_email: 'sophia.r@example.com', start_date: '2026-03-01', end_date: '2027-02-28', rent_amount: 2200, deposit_amount: 2200, status: 'active' }
+        { id: 'lease_1', unit_number: 'Flat 4B', property_name: 'Gulmohar Residency', tenant_name: 'Priya Iyer', tenant_email: 'tenant@rentroll.com', start_date: '2026-02-01', end_date: '2027-01-31', rent_amount: 28500, deposit_amount: 85500, status: 'active' },
+        { id: 'lease_2', unit_number: 'Flat 2A', property_name: 'Gulmohar Residency', tenant_name: 'Aarav Mehta', tenant_email: 'aarav.mehta@example.com', start_date: '2026-01-01', end_date: '2026-12-31', rent_amount: 28000, deposit_amount: 84000, status: 'active' },
+        { id: 'lease_3', unit_number: 'Penthouse 12A', property_name: 'Bandra Sea Breeze Heights', tenant_name: 'Ananya Deshmukh', tenant_email: 'ananya.d@example.com', start_date: '2026-03-01', end_date: '2027-02-28', rent_amount: 65000, deposit_amount: 195000, status: 'active' }
       ]
     };
   }
@@ -637,10 +637,10 @@ async function handleOfflineRequest(endpoint, options = {}) {
   if (endpoint.startsWith('/payments')) {
     return {
       data: [
-        { id: 'pay_101', property_name: 'Oakwood Manor', unit_number: 'Apt 4B', tenant_name: 'Elena Rostova', amount: 1650, due_date: '2026-10-01', paid_date: '2026-10-01', status: 'paid', payment_method: 'ach', transaction_ref: 'ACH-RR-90421', notes: 'October 2026 Rent - Paid on time' },
-        { id: 'pay_104', property_name: 'Oakwood Manor', unit_number: 'Apt 2A', tenant_name: 'Liam Chen', amount: 1850, due_date: '2026-10-01', paid_date: '2026-10-02', status: 'paid', payment_method: 'credit_card', transaction_ref: 'CC-STRIPE-4028', notes: 'October 2026 Rent' },
-        { id: 'pay_105', property_name: 'Highland Lofts', unit_number: 'Loft 101', tenant_name: 'Sophia Rodriguez', amount: 2200, due_date: '2026-10-01', paid_date: '2026-10-01', status: 'paid', payment_method: 'bank_transfer', transaction_ref: 'WIRE-BTR-1192', notes: 'October 2026 Rent' },
-        { id: 'pay_106', property_name: 'Oakwood Manor', unit_number: 'Apt 4B', tenant_name: 'Elena Rostova', amount: 1650, due_date: '2026-11-01', paid_date: null, status: 'pending', payment_method: 'ach', transaction_ref: null, notes: 'November 2026 Rent (Upcoming)' }
+        { id: 'pay_101', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', tenant_name: 'Priya Iyer', amount: 28500, due_date: '2026-10-01', paid_date: '2026-10-01', status: 'paid', payment_method: 'upi', transaction_ref: 'UPI-RR-90421', notes: 'October 2026 Rent - Paid via UPI AutoPay' },
+        { id: 'pay_104', property_name: 'Gulmohar Residency', unit_number: 'Flat 2A', tenant_name: 'Aarav Mehta', amount: 28000, due_date: '2026-10-01', paid_date: '2026-10-02', status: 'paid', payment_method: 'ach', transaction_ref: 'NACH-HDFC-4028', notes: 'October 2026 Rent - eNACH debit' },
+        { id: 'pay_105', property_name: 'Bandra Sea Breeze Heights', unit_number: 'Penthouse 12A', tenant_name: 'Ananya Deshmukh', amount: 65000, due_date: '2026-10-01', paid_date: '2026-10-01', status: 'paid', payment_method: 'bank_transfer', transaction_ref: 'IMPS-ICICI-1192', notes: 'October 2026 Rent - IMPS transfer' },
+        { id: 'pay_106', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', tenant_name: 'Priya Iyer', amount: 28500, due_date: '2026-11-01', paid_date: null, status: 'pending', payment_method: 'upi', transaction_ref: null, notes: 'November 2026 Rent (Upcoming UPI AutoPay)' }
       ]
     };
   }
@@ -648,9 +648,9 @@ async function handleOfflineRequest(endpoint, options = {}) {
   if (endpoint.startsWith('/maintenance')) {
     return {
       data: [
-        { id: 'tkt_1', property_name: 'Oakwood Manor Apartments', unit_number: 'Apt 4B', tenant_name: 'Elena Rostova', title: 'Low hot water pressure in master shower', category: 'plumbing', priority: 'high', status: 'in_progress', description: 'The hot water tap in the master bathroom shower has noticeably lower pressure since yesterday evening.', estimated_cost: 180, actual_cost: 0, resolution_notes: 'Plumber scheduled for tomorrow morning 9:00 AM.', created_at: '2026-10-24T14:20:00.000Z' },
-        { id: 'tkt_2', property_name: 'Highland Lofts', unit_number: 'Loft 101', tenant_name: 'Sophia Rodriguez', title: 'HVAC heat pump making rhythmic clicking noise', category: 'hvac', priority: 'medium', status: 'open', description: 'When the heat turns on, there is a rhythmic click from the ceiling vent. Still heating fine.', estimated_cost: 150, actual_cost: 0, created_at: '2026-10-25T09:10:00.000Z' },
-        { id: 'tkt_3', property_name: 'Oakwood Manor Apartments', unit_number: 'Apt 2A', tenant_name: 'Liam Chen', title: 'Kitchen garbage disposal jam cleared', category: 'appliance', priority: 'low', status: 'resolved', description: 'Disposal humming but not spinning after dinner.', estimated_cost: 75, actual_cost: 65, resolution_notes: 'Cleared small coin obstruction with hex wrench.', created_at: '2026-10-18T16:45:00.000Z' }
+        { id: 'tkt_1', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', tenant_name: 'Priya Iyer', title: 'Low hot water pressure in master bathroom geyser', category: 'plumbing', priority: 'high', status: 'in_progress', description: 'The geyser pressure in the master bathroom shower has noticeably dropped since yesterday evening.', estimated_cost: 1500, actual_cost: 0, resolution_notes: 'Urban Company certified technician scheduled for tomorrow 9:00 AM.', created_at: '2026-10-24T14:20:00.000Z' },
+        { id: 'tkt_2', property_name: 'Bandra Sea Breeze Heights', unit_number: 'Penthouse 12A', tenant_name: 'Ananya Deshmukh', title: 'RO water purifier filter change warning indicator', category: 'appliance', priority: 'medium', status: 'open', description: 'The Kent RO unit on the kitchen wall has a red beeping filter indicator.', estimated_cost: 1800, actual_cost: 0, created_at: '2026-10-25T09:10:00.000Z' },
+        { id: 'tkt_3', property_name: 'Gulmohar Residency', unit_number: 'Flat 2A', tenant_name: 'Aarav Mehta', title: 'Living room ceiling fan regulator humming', category: 'electrical', priority: 'low', status: 'resolved', description: 'Fan making clicking sound on speed 3.', estimated_cost: 450, actual_cost: 400, resolution_notes: 'Replaced anchor capacitor and regulator.', created_at: '2026-10-18T16:45:00.000Z' }
       ]
     };
   }

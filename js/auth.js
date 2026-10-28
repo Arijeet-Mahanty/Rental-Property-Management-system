@@ -86,7 +86,7 @@ export function initLoginForm() {
       passwordInput.value = 'Password123!';
       clearFieldError(emailInput, emailError);
       clearFieldError(passwordInput, passwordError);
-      showToast('Credentials Populated', 'Filled Landlord demo account details.', 'info', 2500);
+      showToast('Credentials Populated', 'Filled Landlord demo account (Rajesh Sharma).', 'info', 2500);
     });
   }
 
@@ -96,7 +96,7 @@ export function initLoginForm() {
       passwordInput.value = 'Password123!';
       clearFieldError(emailInput, emailError);
       clearFieldError(passwordInput, passwordError);
-      showToast('Credentials Populated', 'Filled Tenant demo account details.', 'info', 2500);
+      showToast('Credentials Populated', 'Filled Tenant demo account (Priya Iyer).', 'info', 2500);
     });
   }
 
@@ -466,7 +466,7 @@ export function initDashboardPage() {
             <span class="dash-stat-card__title">Monthly Rent Roll</span>
             <span class="badge badge--landlord">October</span>
           </div>
-          <div class="dash-stat-card__val">$26,450</div>
+          <div class="dash-stat-card__val">₹4,34,500</div>
           <div class="dash-stat-card__sub">98.5% Collected on time</div>
         </div>
 
@@ -487,8 +487,8 @@ export function initDashboardPage() {
             <span class="dash-stat-card__title">Assigned Home</span>
             <span class="badge badge--tenant">Active Lease</span>
           </div>
-          <div class="dash-stat-card__val" style="font-size: var(--font-size-xl);">${user.unit || 'Apt 4B - Oakwood'}</div>
-          <div class="dash-stat-card__sub">Lease ends: Dec 31, 2026</div>
+          <div class="dash-stat-card__val" style="font-size: var(--font-size-xl);">${user.unit || 'Flat 4B - Gulmohar'}</div>
+          <div class="dash-stat-card__sub">Lease ends: Jan 31, 2027</div>
         </div>
 
         <div class="glass-card dash-stat-card">
@@ -496,7 +496,7 @@ export function initDashboardPage() {
             <span class="dash-stat-card__title">Monthly Rent</span>
             <span class="badge badge--tenant">Autopay ON</span>
           </div>
-          <div class="dash-stat-card__val">$${user.rentAmount || 1650}</div>
+          <div class="dash-stat-card__val">₹${(user.rentAmount || 28500).toLocaleString('en-IN')}</div>
           <div class="dash-stat-card__sub">Paid for current month</div>
         </div>
 
@@ -506,7 +506,7 @@ export function initDashboardPage() {
             <span class="badge badge--tenant">Scheduled</span>
           </div>
           <div class="dash-stat-card__val">Nov 1</div>
-          <div class="dash-stat-card__sub">ACH direct withdrawal</div>
+          <div class="dash-stat-card__sub">UPI / eNACH auto-debit</div>
         </div>
 
         <div class="glass-card dash-stat-card">

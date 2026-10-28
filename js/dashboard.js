@@ -36,7 +36,7 @@ let cachedTickets = [];
  */
 function formatCurrency(val) {
   const num = Number(val) || 0;
-  return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 }).format(num);
+  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(num);
 }
 
 /**
@@ -303,8 +303,8 @@ function renderOverviewTab(container, user, isLandlord) {
               <tbody>
                 ${cachedPayments.slice(0, 4).map(p => `
                   <tr>
-                    <td style="font-weight: var(--font-weight-semibold);">${p.tenant_name || 'Elena Rostova'}</td>
-                    <td>${p.unit_number || 'Apt 4B'}</td>
+                    <td style="font-weight: var(--font-weight-semibold);">${p.tenant_name || 'Priya Iyer'}</td>
+                    <td>${p.unit_number || 'Flat 4B'}</td>
                     <td style="font-weight: var(--font-weight-bold);">${formatCurrency(p.amount)}</td>
                     <td style="font-size: var(--font-size-xs); color: var(--color-text-muted);">${formatDate(p.due_date)}</td>
                     <td><span class="badge badge--${p.status}">${p.status}</span></td>
@@ -324,7 +324,7 @@ function renderOverviewTab(container, user, isLandlord) {
             </div>
             <h4 style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold); color: var(--color-text-main); margin-bottom: var(--space-2);">Low hot water pressure</h4>
             <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); line-height: var(--line-height-relaxed); margin-bottom: var(--space-4);">
-              Apt 4B (Oakwood Manor). Master shower pressure drop reported. Plumber scheduled for tomorrow 9:00 AM.
+              Flat 4B (Gulmohar Residency). Master bathroom water pressure drop reported. Plumber scheduled for tomorrow 9:00 AM.
             </p>
           </div>
           <button type="button" class="btn btn--outline btn--sm" id="btn-view-ticket-triage" style="width: 100%;">
@@ -340,7 +340,7 @@ function renderOverviewTab(container, user, isLandlord) {
   } else {
     // Tenant Overview
     const lease = stats.activeLease || {};
-    const monthlyRent = stats.monthlyRent || 1650;
+    const monthlyRent = stats.monthlyRent || 28500;
     const nextDue = stats.nextDueDate || '2026-11-01';
 
     container.innerHTML = `
@@ -353,21 +353,21 @@ function renderOverviewTab(container, user, isLandlord) {
               <span class="badge badge--paid">Autopay Active</span>
             </div>
             <h2 style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-extrabold); color: var(--color-text-main); margin-bottom: var(--space-1);">
-              ${lease.unitName || 'Apt 4B'} — ${lease.propertyName || 'Oakwood Manor Apartments'}
+              ${lease.unitName || 'Flat 4B'} — ${lease.propertyName || 'Gulmohar Residency'}
             </h2>
             <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--space-4);">
-              ${lease.address || '742 Evergreen Terrace, Springfield, OR 97477'}
+              ${lease.address || '14th Main, 4th Block, Koramangala, Bengaluru, KA 560034'}
             </p>
             <div style="display: flex; gap: var(--space-6); font-size: var(--font-size-xs); color: var(--color-text-muted);">
               <div><strong style="color: var(--color-text-main);">Lease Term:</strong> Feb 1, 2026 – Jan 31, 2027</div>
-              <div><strong style="color: var(--color-text-main);">Deposit:</strong> ${formatCurrency(lease.depositAmount || 1650)}</div>
+              <div><strong style="color: var(--color-text-main);">Deposit:</strong> ${formatCurrency(lease.depositAmount || 85500)}</div>
             </div>
           </div>
 
           <div class="tenant-due-panel">
             <span style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); color: var(--color-text-muted); text-transform: uppercase;">Next Payment Due</span>
             <div class="tenant-due-amount">${formatCurrency(monthlyRent)}</div>
-            <p style="font-size: var(--font-size-xs); color: var(--color-text-subtle); margin-bottom: var(--space-4);">Due on ${formatDate(nextDue)} via ACH</p>
+            <p style="font-size: var(--font-size-xs); color: var(--color-text-subtle); margin-bottom: var(--space-4);">Due on ${formatDate(nextDue)} via UPI / eNACH</p>
             <button type="button" class="btn btn--primary btn--sm" id="btn-tenant-pay-rent" style="width: 100%;">
               <span>Pay Rent Now</span>
             </button>
@@ -544,7 +544,7 @@ function renderPropertiesTab(container, isLandlord) {
           ${cachedUnits.map(unit => `
             <tr>
               <td style="font-weight: var(--font-weight-bold); color: var(--color-primary);">${unit.unit_number}</td>
-              <td>${unit.property_name || 'Oakwood Manor'}</td>
+              <td>${unit.property_name || 'Gulmohar Residency'}</td>
               <td>${unit.bedrooms} bd / ${unit.bathrooms} ba</td>
               <td>${unit.square_feet ? unit.square_feet + ' sq ft' : '—'}</td>
               <td style="font-weight: var(--font-weight-bold);">${formatCurrency(unit.rent_amount)}</td>
@@ -614,12 +614,12 @@ function renderLeasesTab(container, isLandlord) {
           ${cachedLeases.map(lease => `
             <tr>
               <td>
-                <div style="font-weight: var(--font-weight-semibold);">${lease.tenant_name || 'Elena Rostova'}</div>
+                <div style="font-weight: var(--font-weight-semibold);">${lease.tenant_name || 'Priya Iyer'}</div>
                 <div style="font-size: var(--font-size-xs); color: var(--color-text-subtle);">${lease.tenant_email || 'tenant@rentroll.com'}</div>
               </td>
               <td>
-                <div style="font-weight: var(--font-weight-medium);">${lease.unit_number || 'Apt 4B'}</div>
-                <div style="font-size: var(--font-size-xs); color: var(--color-text-subtle);">${lease.property_name || 'Oakwood Manor'}</div>
+                <div style="font-weight: var(--font-weight-medium);">${lease.unit_number || 'Flat 4B'}</div>
+                <div style="font-size: var(--font-size-xs); color: var(--color-text-subtle);">${lease.property_name || 'Gulmohar Residency'}</div>
               </td>
               <td style="font-size: var(--font-size-xs);">
                 ${formatDate(lease.start_date)} &rarr; ${formatDate(lease.end_date)}
@@ -699,12 +699,12 @@ function renderPaymentsTab(container, isLandlord) {
           ${cachedPayments.map(pay => `
             <tr>
               <td style="font-size: var(--font-size-xs); color: var(--color-text-muted);">${formatDate(pay.paid_date || pay.due_date)}</td>
-              <td style="font-weight: var(--font-weight-semibold);">${pay.tenant_name || 'Elena Rostova'}</td>
-              <td>${pay.unit_number || 'Apt 4B'}</td>
+              <td style="font-weight: var(--font-weight-semibold);">${pay.tenant_name || 'Priya Iyer'}</td>
+              <td>${pay.unit_number || 'Flat 4B'}</td>
               <td style="font-weight: var(--font-weight-extrabold);">${formatCurrency(pay.amount)}</td>
               <td style="text-transform: uppercase; font-size: 11px; font-weight: var(--font-weight-bold);">${pay.payment_method}</td>
               <td><span class="badge badge--${pay.status}">${pay.status}</span></td>
-              <td style="font-family: monospace; font-size: 11px; color: var(--color-text-subtle);">${pay.transaction_ref || 'PENDING-ACH'}</td>
+              <td style="font-family: monospace; font-size: 11px; color: var(--color-text-subtle);">${pay.transaction_ref || 'PENDING-UPI'}</td>
               <td>
                 <button type="button" class="btn btn--ghost btn--sm btn-download-receipt" data-ref="${pay.transaction_ref || 'RECEIPT'}">
                   Download
@@ -982,6 +982,30 @@ function setupModals(user) {
         showToast('Payment Failed', err.message, 'error', 3500);
       } finally {
         submitBtn.classList.remove('btn--loading');
+      }
+    });
+  }
+
+  // Tenant Quick Pay Rent Confirmation Button
+  const btnConfirmTenantPay = document.getElementById('btn-confirm-tenant-pay');
+  if (btnConfirmTenantPay) {
+    btnConfirmTenantPay.addEventListener('click', async () => {
+      btnConfirmTenantPay.classList.add('btn--loading');
+      try {
+        const methodSelect = document.getElementById('tenant-pay-method');
+        const method = methodSelect ? methodSelect.value : 'upi';
+        await createPayment({
+          amount: 28500,
+          payment_method: method,
+          notes: 'November 2026 Rent - Flat 4B (UPI / eNACH)'
+        });
+        showToast('Payment Successful', '₹28,500.00 transferred via ' + (method === 'upi' ? 'UPI AutoPay' : 'eNACH') + '. Digital HRA receipt generated.', 'success', 3500);
+        closeModal(document.getElementById('modal-pay-rent'));
+        await refreshDashboardData(user);
+      } catch (err) {
+        showToast('Payment Failed', err.message, 'error', 3500);
+      } finally {
+        btnConfirmTenantPay.classList.remove('btn--loading');
       }
     });
   }

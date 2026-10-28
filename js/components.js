@@ -375,8 +375,8 @@ export function injectFooter() {
         </div>
 
         <div class="footer__bottom">
-          <div>&copy; ${currentYear} RentRoll Inc. All rights reserved. Built for modern property owners.</div>
-          <div>WCAG AA Compliant &bull; Privacy First &bull; Zero Spreadsheets</div>
+          <div>&copy; ${currentYear} RentRoll Technologies India Pvt. Ltd. All rights reserved. Built for modern property owners.</div>
+          <div>NPCI &amp; UPI AutoPay Ready &bull; RBI Data Localization Compliant &bull; Zero Spreadsheets</div>
         </div>
       </div>
     </footer>
