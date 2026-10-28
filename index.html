@@ -1045,11 +1045,68 @@
     </section>
   </main>
 
-  <!-- Modal: Share Customer Feedback / Review -->
+  <!-- Modal: Authentication Required for Feedback / Reviews (Enforced for Landlords & Tenants Only) -->
+  <div class="neo-modal-backdrop" id="modal-feedback-auth" role="dialog" aria-modal="true" aria-labelledby="modal-auth-title" aria-hidden="true">
+    <div class="neo-modal-card">
+      <div class="neo-modal-header">
+        <div class="neo-modal-title" id="modal-auth-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-primary);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span>Verified Reviews Only</span>
+        </div>
+        <button type="button" class="neo-modal-close btn-modal-auth-cancel" aria-label="Close dialog">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+        </button>
+      </div>
+
+      <div class="neo-modal-body">
+        <div class="feedback-auth-callout">
+          <div class="feedback-auth-callout__icon">🛡️</div>
+          <div class="feedback-auth-callout__text">
+            <strong>Community Authenticity Guarantee</strong>
+            <p>To ensure 100% genuine feedback, reviews on RentRoll can only be submitted by registered landlords and active residents.</p>
+          </div>
+        </div>
+
+        <div class="feedback-auth-features">
+          <div class="feedback-auth-feature-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-success"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Verified role badge (Landlord or Resident) attached to your review</span>
+          </div>
+          <div class="feedback-auth-feature-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-success"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Your review updates directly onto this landing page immediately</span>
+          </div>
+          <div class="feedback-auth-feature-item">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-success"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>1-Click demo logins available for testing both Landlord and Tenant flows</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="neo-modal-footer feedback-auth-footer-actions">
+        <a href="login.html?redirect=index.html%3FopenReview%3Dtrue%23feedback" class="btn btn--primary btn--full" id="btn-auth-modal-login">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
+          <span>Log In to Share Review</span>
+        </a>
+        <a href="signup.html?redirect=index.html%3FopenReview%3Dtrue%23feedback" class="btn btn--secondary btn--full" id="btn-auth-modal-signup">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
+          <span>Sign Up as Landlord or Tenant</span>
+        </a>
+        <button type="button" class="btn btn--ghost btn--full btn-modal-auth-cancel">
+          Browse Reviews Without Signing In
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal: Share Customer Feedback / Review (Authenticated Landlords & Tenants Only) -->
   <div class="neo-modal-backdrop" id="modal-feedback" role="dialog" aria-modal="true" aria-labelledby="modal-feedback-title" aria-hidden="true">
     <div class="neo-modal-card">
       <div class="neo-modal-header">
-        <div class="neo-modal-title" id="modal-feedback-title">Share Your Experience</div>
+        <div class="neo-modal-title" id="modal-feedback-title">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-primary);"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+          <span>Share Your Verified Experience</span>
+        </div>
         <button type="button" class="neo-modal-close btn-modal-cancel" aria-label="Close dialog">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
         </button>
@@ -1057,9 +1114,17 @@
 
       <form id="form-share-feedback" novalidate>
         <div class="neo-modal-body">
-          <p class="neo-modal-sub" style="margin-bottom: var(--space-4); color: var(--color-text-muted); font-size: var(--font-size-sm);">
-            Your feedback helps other landlords and residents create transparent, modern rental relationships.
-          </p>
+          <!-- Verified Account Header Banner -->
+          <div class="feedback-verified-user-card" id="feedback-user-banner">
+            <div class="feedback-card__avatar feedback-card__avatar--indigo" id="feedback-user-avatar">U</div>
+            <div style="flex-grow: 1; min-width: 0;">
+              <div style="display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;">
+                <strong id="feedback-user-banner-name" style="font-size: var(--font-size-sm); color: var(--color-text-main);">User</strong>
+                <span class="badge badge--success" style="font-size: 10px; padding: 2px 7px;">Verified Member</span>
+              </div>
+              <div id="feedback-user-banner-desc" style="font-size: var(--font-size-xs); color: var(--color-text-muted);">Posting as Verified Account</div>
+            </div>
+          </div>
 
           <!-- Star Rating Interactive Selector -->
           <div class="form-group">
@@ -1077,17 +1142,17 @@
 
           <div class="form-row form-row--2col">
             <div class="form-group">
-              <label for="feedback-name" class="form-label">Full Name <span class="text-danger">*</span></label>
+              <label for="feedback-name" class="form-label">Full Name <span class="badge badge--neutral" style="font-size: 10px; margin-left: 4px;">Verified</span></label>
               <div class="form-input-wrap">
-                <input type="text" id="feedback-name" name="name" class="form-input" placeholder="e.g. Samantha Miller" required>
+                <input type="text" id="feedback-name" name="name" class="form-input form-input-locked" readonly required>
               </div>
               <div class="form-error" id="error-feedback-name">Please provide your name.</div>
             </div>
 
             <div class="form-group">
-              <label for="feedback-role" class="form-label">Your Role</label>
+              <label for="feedback-role" class="form-label">Your Role <span class="badge badge--neutral" style="font-size: 10px; margin-left: 4px;">Locked</span></label>
               <div class="form-input-wrap">
-                <select id="feedback-role" name="role" class="form-input">
+                <select id="feedback-role" name="role" class="form-input form-input-locked" disabled>
                   <option value="landlord">Landlord / Property Owner</option>
                   <option value="tenant">Tenant / Resident</option>
                 </select>
@@ -1096,9 +1161,9 @@
           </div>
 
           <div class="form-group">
-            <label for="feedback-property" class="form-label">Property Name / Units <span class="text-subtle">(Optional)</span></label>
+            <label for="feedback-property" class="form-label">Property Name / Unit <span class="text-subtle">(Optional)</span></label>
             <div class="form-input-wrap">
-              <input type="text" id="feedback-property" name="propertyName" class="form-input" placeholder="e.g. Oakwood Triplex (3 Doors) or Unit 2B">
+              <input type="text" id="feedback-property" name="propertyName" class="form-input" placeholder="e.g. Pine Ridge Triplex (3 Doors) or Unit 4B">
             </div>
           </div>
 
@@ -1121,7 +1186,7 @@
 
         <div class="neo-modal-footer">
           <button type="button" class="btn btn--ghost btn-modal-cancel">Cancel</button>
-          <button type="submit" class="btn btn--primary" id="btn-submit-feedback">Submit Verified Review</button>
+          <button type="submit" class="btn btn--primary" id="btn-submit-feedback">Publish Verified Review</button>
         </div>
       </form>
     </div>

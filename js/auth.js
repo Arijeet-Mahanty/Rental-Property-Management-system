@@ -46,12 +46,23 @@ export function initLoginForm() {
   const form = document.getElementById('login-form');
   if (!form) return;
 
-  // Route guard: if already logged in with active token, redirect to dashboard
+  // Route guard: if already logged in with active token, redirect to destination
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirectTarget = urlParams.get('redirect');
+
   if (getCurrentUser() && getStoredToken()) {
-    window.location.replace('dashboard.html');
+    window.location.replace(redirectTarget || 'dashboard.html');
     return;
   } else if (!getStoredToken()) {
     clearStoredToken();
+  }
+
+  // Preserve redirect parameter on link to signup
+  if (redirectTarget) {
+    const signupLink = document.querySelector('.auth-footer a[href^="signup.html"]');
+    if (signupLink) {
+      signupLink.href = `signup.html?redirect=${encodeURIComponent(redirectTarget)}`;
+    }
   }
 
   const emailInput = document.getElementById('login-email');
@@ -165,7 +176,9 @@ export function initLoginForm() {
       showToast('Sign in successful!', `Welcome back, ${user.name}.`, 'success', 2500);
 
       setTimeout(() => {
-        window.location.href = 'dashboard.html';
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirect = urlParams.get('redirect');
+        window.location.href = redirect || 'dashboard.html';
       }, 500);
     } catch (err) {
       submitBtn.classList.remove('btn--loading');
@@ -190,12 +203,23 @@ export function initSignupForm() {
   const form = document.getElementById('signup-form');
   if (!form) return;
 
-  // Route guard: if already logged in with active token, redirect to dashboard
+  // Route guard: if already logged in with active token, redirect to destination
+  const urlParams = new URLSearchParams(window.location.search);
+  const redirectTarget = urlParams.get('redirect');
+
   if (getCurrentUser() && getStoredToken()) {
-    window.location.replace('dashboard.html');
+    window.location.replace(redirectTarget || 'dashboard.html');
     return;
   } else if (!getStoredToken()) {
     clearStoredToken();
+  }
+
+  // Preserve redirect parameter on link to login
+  if (redirectTarget) {
+    const loginLink = document.querySelector('.auth-footer a[href^="login.html"]');
+    if (loginLink) {
+      loginLink.href = `login.html?redirect=${encodeURIComponent(redirectTarget)}`;
+    }
   }
 
   const nameInput = document.getElementById('signup-name');
@@ -345,7 +369,9 @@ export function initSignupForm() {
       showToast('Account Created!', `Welcome to RentRoll, ${user.name}.`, 'success', 2500);
 
       setTimeout(() => {
-        window.location.href = 'dashboard.html';
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirect = urlParams.get('redirect');
+        window.location.href = redirect || 'dashboard.html';
       }, 500);
     } catch (err) {
       submitBtn.classList.remove('btn--loading');

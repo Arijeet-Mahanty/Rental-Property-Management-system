@@ -927,6 +927,79 @@
   margin-left: var(--space-3);
 }
 
+/* Feedback Auth Gate & Verified User Banner */
+.feedback-auth-callout {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  background-color: var(--color-bg-inset);
+  border: var(--neo-border-inset);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--neo-shadow-pressed-sm);
+  margin-bottom: var(--space-5);
+  align-items: flex-start;
+}
+
+.feedback-auth-callout__icon {
+  font-size: 1.5rem;
+  line-height: 1;
+}
+
+.feedback-auth-callout__text strong {
+  display: block;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-main);
+  margin-bottom: var(--space-1);
+}
+
+.feedback-auth-callout__text p {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+.feedback-auth-features {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  padding: 0 var(--space-2);
+}
+
+.feedback-auth-feature-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-main);
+}
+
+.feedback-auth-footer-actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.feedback-verified-user-card {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-bg-inset);
+  border: var(--neo-border-inset);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--neo-shadow-pressed-sm);
+  margin-bottom: var(--space-5);
+}
+
+.form-input-locked {
+  background-color: rgba(220, 208, 194, 0.3) !important;
+  cursor: not-allowed;
+  color: var(--color-text-main) !important;
+  font-weight: var(--font-weight-medium);
+}
+
 /* ==========================================================================
    CONTACT US SECTION
    ========================================================================== */

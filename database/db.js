@@ -915,6 +915,7 @@ const db = {
     }
     const newRev = {
       id: `rev_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,
+      user_id: revData.userId || null,
       name: revData.name || 'Anonymous User',
       role: revData.role === 'tenant' ? 'tenant' : 'landlord',
       rating: Number(revData.rating) || 5,

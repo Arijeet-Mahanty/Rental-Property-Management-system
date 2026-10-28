@@ -2,7 +2,7 @@
  * RentRoll - Main Entry Point
  */
 import { injectNavbar, injectFooter, injectBackgroundBlobs, showToast } from './components.js';
-import { submitContactForm, submitFeedbackReview } from './api.js';
+import { submitContactForm, submitFeedbackReview, getCurrentUser, getFeedbackReviews } from './api.js';
 import { initLoginForm, initSignupForm } from './auth.js';
 import { initDashboard } from './dashboard.js';
 import { initHero3D } from './three-models.js';
@@ -80,13 +80,25 @@ function initFeedbackSection() {
   const countLandlords = document.getElementById('count-landlords');
   const countTenants = document.getElementById('count-tenants');
   const modal = document.getElementById('modal-feedback');
+  const authModal = document.getElementById('modal-feedback-auth');
   const openModalBtn = document.getElementById('btn-open-feedback-modal');
   const formFeedback = document.getElementById('form-share-feedback');
   const starPicker = document.getElementById('feedback-star-picker');
   const starHint = document.getElementById('feedback-star-hint');
   const ratingInput = document.getElementById('feedback-rating-val');
 
-  // Update counts
+  const userBanner = document.getElementById('feedback-user-banner');
+  const userAvatar = document.getElementById('feedback-user-avatar');
+  const userBannerName = document.getElementById('feedback-user-banner-name');
+  const userBannerDesc = document.getElementById('feedback-user-banner-desc');
+  const nameInput = document.getElementById('feedback-name');
+  const roleInput = document.getElementById('feedback-role');
+  const propInput = document.getElementById('feedback-property');
+  const headlineInput = document.getElementById('feedback-headline');
+  const commentInput = document.getElementById('feedback-comment');
+  const submitBtn = document.getElementById('btn-submit-feedback');
+
+  // Update counts in filter tabs
   function updateFilterCounts() {
     const allCards = grid.querySelectorAll('.feedback-card');
     let landlordCount = 0;
@@ -144,223 +156,182 @@ function initFeedbackSection() {
     showToast('Feedback Noted', 'Thank you for your vote of confidence!', 'success', 2000);
   });
 
-  // Modal open/close
-  if (openModalBtn && modal) {
-    const openModal = () => {
-      modal.classList.add('is-open');
-      modal.setAttribute('aria-hidden', 'false');
-      const firstInput = modal.querySelector('input');
-      if (firstInput) setTimeout(() => firstInput.focus(), 100);
-    };
+  // Modal open/close helpers
+  const openModal = (target) => {
+    if (!target) return;
+    target.classList.add('is-open');
+    target.setAttribute('aria-hidden', 'false');
+    const firstInput = target.querySelector('input:not([readonly]):not([disabled]), textarea');
+    if (firstInput) setTimeout(() => firstInput.focus(), 120);
+  };
 
-    const closeModal = () => {
-      modal.classList.remove('is-open');
-      modal.setAttribute('aria-hidden', 'true');
-    };
+  const closeModal = (target) => {
+    if (!target) return;
+    target.classList.remove('is-open');
+    target.setAttribute('aria-hidden', 'true');
+  };
 
-    openModalBtn.addEventListener('click', openModal);
+  const closeAllModals = () => {
+    if (modal) closeModal(modal);
+    if (authModal) closeModal(authModal);
+  };
 
-    modal.querySelectorAll('.neo-modal-close, .btn-modal-cancel').forEach(b => {
-      b.addEventListener('click', closeModal);
+  // Close listeners for both modals
+  [modal, authModal].forEach(m => {
+    if (!m) return;
+    m.querySelectorAll('.neo-modal-close, .btn-modal-cancel, .btn-modal-auth-cancel').forEach(b => {
+      b.addEventListener('click', () => closeModal(m));
     });
-
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) closeModal();
+    m.addEventListener('click', (e) => {
+      if (e.target === m) closeModal(m);
     });
+  });
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && modal.classList.contains('is-open')) {
-        closeModal();
-      }
-    });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeAllModals();
+  });
 
-    // Star Rating Picker
-    if (starPicker && ratingInput) {
-      const starBtns = starPicker.querySelectorAll('.feedback-star-btn');
-      const starHints = {
-        1: '1.0 — Needs Improvement',
-        2: '2.0 — Fair',
-        3: '3.0 — Good',
-        4: '4.0 — Very Good',
-        5: '5.0 — Excellent'
-      };
+  // Pre-fill modal with logged-in user's verified credentials
+  function populateUserInModal(user) {
+    if (!user) return;
+    const isLandlord = user.role !== 'tenant';
+    const roleTitle = isLandlord ? 'Landlord' : 'Resident';
+    const initials = (user.name || 'U').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U';
 
-      const setStars = (val) => {
-        ratingInput.value = val;
-        starBtns.forEach(btn => {
-          const r = parseInt(btn.getAttribute('data-rating'), 10);
-          if (r <= val) {
-            btn.classList.add('is-selected');
-          } else {
-            btn.classList.remove('is-selected');
-          }
-        });
-        if (starHint) starHint.textContent = starHints[val] || `${val}.0`;
-      };
-
-      starBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          const val = parseInt(btn.getAttribute('data-rating'), 10);
-          setStars(val);
-        });
-        btn.addEventListener('mouseenter', () => {
-          const val = parseInt(btn.getAttribute('data-rating'), 10);
-          if (starHint) starHint.textContent = starHints[val] || `${val}.0`;
-        });
-      });
-
-      starPicker.addEventListener('mouseleave', () => {
-        const val = parseInt(ratingInput.value, 10) || 5;
-        setStars(val);
-      });
+    if (userBannerName) userBannerName.textContent = user.name;
+    if (userBannerDesc) {
+      userBannerDesc.textContent = `Posting as Verified ${roleTitle} • ${user.email || 'Verified Account'}`;
     }
-
-    // Submit Feedback Form
-    if (formFeedback) {
-      formFeedback.addEventListener('submit', async (e) => {
-        e.preventDefault();
-
-        const nameInput = document.getElementById('feedback-name');
-        const roleInput = document.getElementById('feedback-role');
-        const propInput = document.getElementById('feedback-property');
-        const headlineInput = document.getElementById('feedback-headline');
-        const commentInput = document.getElementById('feedback-comment');
-        const ratingVal = parseInt(ratingInput ? ratingInput.value : '5', 10) || 5;
-
-        const errName = document.getElementById('error-feedback-name');
-        const errHeadline = document.getElementById('error-feedback-headline');
-        const errComment = document.getElementById('error-feedback-comment');
-
-        let isValid = true;
-        if (!nameInput.value.trim()) {
-          errName?.classList.add('is-visible');
-          isValid = false;
-        } else {
-          errName?.classList.remove('is-visible');
-        }
-
-        if (!headlineInput.value.trim()) {
-          errHeadline?.classList.add('is-visible');
-          isValid = false;
-        } else {
-          errHeadline?.classList.remove('is-visible');
-        }
-
-        if (!commentInput.value.trim() || commentInput.value.trim().length < 15) {
-          errComment?.classList.add('is-visible');
-          isValid = false;
-        } else {
-          errComment?.classList.remove('is-visible');
-        }
-
-        if (!isValid) return;
-
-        const submitBtn = document.getElementById('btn-submit-feedback');
-        if (submitBtn) {
-          submitBtn.disabled = true;
-          submitBtn.textContent = 'Publishing Review...';
-        }
-
-        const reviewPayload = {
-          name: nameInput.value.trim(),
-          role: roleInput.value,
-          rating: ratingVal,
-          propertyName: propInput.value.trim() || (roleInput.value === 'landlord' ? 'Private Rental Portfolio' : 'Resident Community'),
-          title: headlineInput.value.trim(),
-          comment: commentInput.value.trim()
-        };
-
-        try {
-          await submitFeedbackReview(reviewPayload);
-        } catch (err) {
-          console.warn('[Feedback] Server submit fallback, saving locally:', err);
-        }
-
-        // Save to localStorage
-        const stored = JSON.parse(localStorage.getItem('rentroll_custom_feedback') || '[]');
-        stored.unshift(reviewPayload);
-        localStorage.setItem('rentroll_custom_feedback', JSON.stringify(stored));
-
-        // Create DOM Card
-        const initials = reviewPayload.name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U';
-        const avatarClass = reviewPayload.role === 'landlord' ? 'feedback-card__avatar--indigo' : 'feedback-card__avatar--terracotta';
-        const roleBadge = reviewPayload.role === 'landlord' ? 'badge--landlord' : 'badge--tenant';
-        const roleLabel = reviewPayload.role === 'landlord' ? 'Verified Landlord' : 'Verified Resident';
-
-        const starStr = '★'.repeat(ratingVal) + '☆'.repeat(5 - ratingVal);
-
-        const card = document.createElement('div');
-        card.className = 'glass-card feedback-card feedback-card--new';
-        card.setAttribute('data-role', reviewPayload.role);
-        card.innerHTML = `
-          <div class="feedback-card__header">
-            <div class="feedback-card__author">
-              <div class="feedback-card__avatar ${avatarClass}">${initials}</div>
-              <div>
-                <div class="feedback-card__name">${escapeHtml(reviewPayload.name)}</div>
-                <div class="feedback-card__meta">${escapeHtml(reviewPayload.propertyName)}</div>
-              </div>
-            </div>
-            <span class="badge ${roleBadge}">${roleLabel}</span>
-          </div>
-
-          <div class="feedback-card__stars">${starStr}</div>
-          <h3 class="feedback-card__title">"${escapeHtml(reviewPayload.title)}"</h3>
-          <p class="feedback-card__quote">${escapeHtml(reviewPayload.comment)}</p>
-
-          <div class="feedback-card__footer">
-            <div class="feedback-verified-badge">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-              <span>Just Now &bull; Verified</span>
-            </div>
-            <button type="button" class="feedback-helpful-btn" title="Mark as helpful">
-              <span class="helpful-icon">👍</span>
-              <span>Helpful (<strong class="helpful-count">1</strong>)</span>
-            </button>
-          </div>
-        `;
-
-        grid.prepend(card);
-        updateFilterCounts();
-
-        // Close modal and reset
-        closeModal();
-        formFeedback.reset();
-        if (starPicker) {
-          starPicker.querySelectorAll('.feedback-star-btn').forEach(b => b.classList.add('is-selected'));
-          if (starHint) starHint.textContent = '5.0 — Excellent';
-          if (ratingInput) ratingInput.value = '5';
-        }
-        if (submitBtn) {
-          submitBtn.disabled = false;
-          submitBtn.textContent = 'Submit Verified Review';
-        }
-
-        showToast('Review Published!', 'Thank you! Your verified review has been published.', 'success', 4000);
-      });
+    if (userAvatar) {
+      userAvatar.textContent = initials;
+      userAvatar.className = 'feedback-card__avatar ' + (isLandlord ? 'feedback-card__avatar--indigo' : 'feedback-card__avatar--terracotta');
+    }
+    if (nameInput) {
+      nameInput.value = user.name;
+      nameInput.readOnly = true;
+    }
+    if (roleInput) {
+      roleInput.value = isLandlord ? 'landlord' : 'tenant';
+      roleInput.disabled = true;
     }
   }
 
-  // Load any previously saved reviews from localStorage
-  const savedReviews = JSON.parse(localStorage.getItem('rentroll_custom_feedback') || '[]');
-  savedReviews.reverse().forEach(rev => {
+  // Update button label if user is already logged in
+  const currentUser = getCurrentUser();
+  if (currentUser && openModalBtn) {
+    const firstName = (currentUser.name || 'Member').split(' ')[0];
+    const roleLabel = currentUser.role === 'tenant' ? 'Resident' : 'Landlord';
+    openModalBtn.innerHTML = `
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+      <span>✍️ Share Your Review (${firstName})</span>
+    `;
+    openModalBtn.title = `Post a verified review as ${currentUser.name} (${roleLabel})`;
+  }
+
+  // Handle click on "Share Your Experience" button: strictly require login or signup!
+  if (openModalBtn) {
+    openModalBtn.addEventListener('click', () => {
+      const user = getCurrentUser();
+      if (!user) {
+        // Enforce Authentication: user must log in or sign up first!
+        openModal(authModal);
+        showToast('Authentication Required', 'Reviews are reserved for verified landlords & tenants. Please log in or sign up.', 'info', 3500);
+      } else {
+        // Authenticated Landlord or Tenant
+        populateUserInModal(user);
+        openModal(modal);
+      }
+    });
+  }
+
+  // Check URL query param ?openReview=true (e.g. after login or dashboard click)
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('openReview') === 'true') {
+    const user = getCurrentUser();
+    if (user) {
+      populateUserInModal(user);
+      openModal(modal);
+      showToast('Verified Access', `Welcome, ${user.name}! Share your feedback below.`, 'success', 3500);
+    } else {
+      openModal(authModal);
+      showToast('Sign In Required', 'Please log in or sign up as a landlord or tenant to submit a review.', 'info', 4000);
+    }
+    // Clean URL query param cleanly without reload
+    const cleanUrl = window.location.pathname + (window.location.hash || '');
+    window.history.replaceState({}, document.title, cleanUrl);
+  }
+
+  // Star Rating Interactive Picker
+  if (starPicker && ratingInput) {
+    const starBtns = starPicker.querySelectorAll('.feedback-star-btn');
+    const starHints = {
+      1: '1.0 — Needs Improvement',
+      2: '2.0 — Fair',
+      3: '3.0 — Good',
+      4: '4.0 — Very Good',
+      5: '5.0 — Excellent'
+    };
+
+    const setStars = (val) => {
+      ratingInput.value = val;
+      starBtns.forEach(btn => {
+        const r = parseInt(btn.getAttribute('data-rating'), 10);
+        if (r <= val) {
+          btn.classList.add('is-selected');
+        } else {
+          btn.classList.remove('is-selected');
+        }
+      });
+      if (starHint) starHint.textContent = starHints[val] || `${val}.0`;
+    };
+
+    starBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const val = parseInt(btn.getAttribute('data-rating'), 10);
+        setStars(val);
+      });
+      btn.addEventListener('mouseenter', () => {
+        const val = parseInt(btn.getAttribute('data-rating'), 10);
+        if (starHint) starHint.textContent = starHints[val] || `${val}.0`;
+      });
+    });
+
+    starPicker.addEventListener('mouseleave', () => {
+      const val = parseInt(ratingInput.value, 10) || 5;
+      setStars(val);
+    });
+  }
+
+  // Render a review card into the DOM grid
+  function renderReviewCard(rev, isNew = false) {
+    if (!rev || !rev.title) return;
+
+    // Check if card with identical title or id already rendered
+    if (rev.id && grid.querySelector(`[data-rev-id="${rev.id}"]`)) return;
+    const existingTitles = Array.from(grid.querySelectorAll('.feedback-card__title'));
+    if (existingTitles.some(t => t.textContent.includes(rev.title))) return;
+
     const initials = (rev.name || 'U').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U';
-    const avatarClass = rev.role === 'landlord' ? 'feedback-card__avatar--indigo' : 'feedback-card__avatar--terracotta';
-    const roleBadge = rev.role === 'landlord' ? 'badge--landlord' : 'badge--tenant';
-    const roleLabel = rev.role === 'landlord' ? 'Verified Landlord' : 'Verified Resident';
-    const ratingNum = Number(rev.rating) || 5;
-    const starStr = '★'.repeat(ratingNum) + '☆'.repeat(Math.max(0, 5 - ratingNum));
+    const isLandlord = rev.role !== 'tenant';
+    const avatarClass = isLandlord ? 'feedback-card__avatar--indigo' : 'feedback-card__avatar--terracotta';
+    const roleBadge = isLandlord ? 'badge--landlord' : 'badge--tenant';
+    const propName = rev.property_name || rev.propertyName || (isLandlord ? 'Rental Portfolio' : 'Resident Community');
+    const roleLabel = isLandlord ? `Landlord • ${propName}` : `Resident • ${propName}`;
+    const ratingVal = Number(rev.rating) || 5;
+    const starStr = '★'.repeat(ratingVal) + '☆'.repeat(Math.max(0, 5 - ratingVal));
 
     const card = document.createElement('div');
-    card.className = 'glass-card feedback-card';
-    card.setAttribute('data-role', rev.role || 'landlord');
+    card.className = `glass-card feedback-card ${isNew ? 'feedback-card--new' : ''}`;
+    card.setAttribute('data-role', isLandlord ? 'landlord' : 'tenant');
+    if (rev.id) card.setAttribute('data-rev-id', rev.id);
+
     card.innerHTML = `
       <div class="feedback-card__header">
         <div class="feedback-card__author">
           <div class="feedback-card__avatar ${avatarClass}">${initials}</div>
           <div>
             <div class="feedback-card__name">${escapeHtml(rev.name)}</div>
-            <div class="feedback-card__meta">${escapeHtml(rev.propertyName || 'Portfolio')}</div>
+            <div class="feedback-card__meta">${escapeHtml(propName)}</div>
           </div>
         </div>
         <span class="badge ${roleBadge}">${roleLabel}</span>
@@ -373,18 +344,128 @@ function initFeedbackSection() {
       <div class="feedback-card__footer">
         <div class="feedback-verified-badge">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-          <span>Verified Member</span>
+          <span>Verified ${isLandlord ? 'Landlord' : 'Resident'} &bull; ${isNew ? 'Just Now' : 'Verified'}</span>
         </div>
-        <button type="button" class="feedback-helpful-btn" title="Mark as helpful">
+        <button type="button" class="feedback-helpful-btn" data-id="${rev.id || 'rev-' + Date.now()}" title="Mark as helpful">
           <span class="helpful-icon">👍</span>
-          <span>Helpful (<strong class="helpful-count">12</strong>)</span>
+          <span>Helpful (<strong class="helpful-count">${rev.helpful_count || 1}</strong>)</span>
         </button>
       </div>
     `;
-    grid.prepend(card);
-  });
 
-  updateFilterCounts();
+    grid.prepend(card);
+  }
+
+  // Load reviews from API and LocalStorage on page load
+  async function loadFeedbackReviews() {
+    try {
+      const serverReviews = await getFeedbackReviews();
+      if (Array.isArray(serverReviews) && serverReviews.length > 0) {
+        [...serverReviews].reverse().forEach(rev => renderReviewCard(rev, false));
+      }
+    } catch (err) {
+      console.warn('[Feedback] Could not fetch server reviews, falling back to local:', err);
+    }
+
+    // Also load any locally saved reviews
+    const stored = JSON.parse(localStorage.getItem('rentroll_custom_feedback') || '[]');
+    stored.forEach(rev => renderReviewCard(rev, false));
+
+    updateFilterCounts();
+  }
+
+  loadFeedbackReviews();
+
+  // Submit Feedback Form (Enforced Authentication Check)
+  if (formFeedback) {
+    formFeedback.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      // STRICT AUTH CHECK: Must be logged in or signed up
+      const user = getCurrentUser();
+      if (!user) {
+        closeModal(modal);
+        openModal(authModal);
+        showToast('Login Required', 'You must log in or sign up as a landlord or tenant to post a review.', 'error', 4000);
+        return;
+      }
+
+      const ratingVal = parseInt(ratingInput ? ratingInput.value : '5', 10) || 5;
+      const errHeadline = document.getElementById('error-feedback-headline');
+      const errComment = document.getElementById('error-feedback-comment');
+
+      let isValid = true;
+      if (!headlineInput.value.trim()) {
+        errHeadline?.classList.add('is-visible');
+        isValid = false;
+      } else {
+        errHeadline?.classList.remove('is-visible');
+      }
+
+      if (!commentInput.value.trim() || commentInput.value.trim().length < 10) {
+        errComment?.classList.add('is-visible');
+        isValid = false;
+      } else {
+        errComment?.classList.remove('is-visible');
+      }
+
+      if (!isValid) return;
+
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Publishing Review...';
+      }
+
+      const isLandlord = user.role !== 'tenant';
+      const reviewPayload = {
+        name: user.name,
+        role: isLandlord ? 'landlord' : 'tenant',
+        rating: ratingVal,
+        propertyName: propInput.value.trim() || (isLandlord ? 'Private Rental Portfolio' : 'Resident Community'),
+        title: headlineInput.value.trim(),
+        comment: commentInput.value.trim(),
+        id: `rev_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`
+      };
+
+      try {
+        await submitFeedbackReview(reviewPayload);
+      } catch (err) {
+        console.warn('[Feedback] Server submit fallback, saving locally:', err);
+      }
+
+      // Save to localStorage
+      const stored = JSON.parse(localStorage.getItem('rentroll_custom_feedback') || '[]');
+      stored.unshift(reviewPayload);
+      localStorage.setItem('rentroll_custom_feedback', JSON.stringify(stored));
+
+      // Prepend to DOM grid
+      renderReviewCard(reviewPayload, true);
+      updateFilterCounts();
+
+      // Reset modal inputs & star rating
+      closeModal(modal);
+      formFeedback.reset();
+      populateUserInModal(user);
+
+      if (starPicker) {
+        starPicker.querySelectorAll('.feedback-star-btn').forEach(b => b.classList.add('is-selected'));
+        if (starHint) starHint.textContent = '5.0 — Excellent';
+        if (ratingInput) ratingInput.value = '5';
+      }
+      if (submitBtn) {
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'Publish Verified Review';
+      }
+
+      showToast('Review Published!', 'Thank you! Your verified review is now live on the landing page.', 'success', 4500);
+
+      // Scroll smoothly to the feedback section so user sees their published review
+      const section = document.getElementById('feedback');
+      if (section) {
+        section.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  }
 }
 
 /**

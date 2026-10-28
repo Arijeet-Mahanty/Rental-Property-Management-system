@@ -568,6 +568,45 @@
   ],
   "feedback_reviews": [
     {
+      "id": "rev_1793170073538_9fs34",
+      "user_id": "usr_tenant_demo",
+      "name": "Elena Rostova",
+      "role": "tenant",
+      "rating": 5,
+      "property_name": "Kharab Ghar",
+      "title": "Good Service",
+      "comment": "Paisa bahut leta hai baki sab thik hai",
+      "helpful_count": 0,
+      "verified": true,
+      "created_at": "2026-10-28T06:47:53.538Z"
+    },
+    {
+      "id": "rev_1793169858388_wq5w7",
+      "user_id": "usr_tenant_demo",
+      "name": "Elena Rostova",
+      "role": "tenant",
+      "rating": 5,
+      "property_name": "Highland Park, Unit 3B",
+      "title": "Instant maintenance fix and clear receipts",
+      "comment": "Submitted a leaking faucet request with a photo. The landlord dispatched a plumber within 2 hours and I received live tracking updates on my phone.",
+      "helpful_count": 0,
+      "verified": true,
+      "created_at": "2026-10-28T06:44:18.388Z"
+    },
+    {
+      "id": "rev_1793169858369_vkqxu",
+      "user_id": "usr_landlord_demo",
+      "name": "Marcus Vance",
+      "role": "landlord",
+      "rating": 5,
+      "property_name": "Sunset Heights (12 Units)",
+      "title": "Zero vacancy and instant rent deposits",
+      "comment": "Managing 12 units by myself used to consume all my weekends. RentRoll brought sanity back with automated rent collection and seamless lease renewals.",
+      "helpful_count": 0,
+      "verified": true,
+      "created_at": "2026-10-28T06:44:18.369Z"
+    },
+    {
       "id": "rev_1793168071182_5dtvv",
       "name": "Chloe Martin",
       "role": "landlord",

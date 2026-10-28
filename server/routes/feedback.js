@@ -23,12 +23,47 @@ router.get('/', async (req, res) => {
   }
 });
 
-// POST /api/feedback - Submit a new review
+// POST /api/feedback - Submit a new review (Authenticated Landlords & Tenants Only)
 router.post('/', async (req, res) => {
   try {
-    const { name, role, rating, propertyName, title, comment } = req.body;
+    // 1. Verify user authentication via Bearer token or HttpOnly cookie
+    const jwt = require('jsonwebtoken');
+    const JWT_SECRET = process.env.JWT_SECRET || 'rentroll_phase2_jwt_secret_secure_key_2026';
+    let token = null;
 
-    if (!name || typeof name !== 'string' || !name.trim()) {
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+      const parts = req.headers.authorization.split(' ');
+      if (parts.length === 2 && parts[1] && parts[1] !== 'null' && parts[1] !== 'undefined') {
+        token = parts[1].trim();
+      }
+    }
+
+    if (!token && req.cookies && req.cookies.token && req.cookies.token !== 'null' && req.cookies.token !== 'undefined') {
+      token = req.cookies.token.trim();
+    }
+
+    let authUser = null;
+    if (token) {
+      try {
+        authUser = jwt.verify(token, JWT_SECRET);
+      } catch (tokenErr) {
+        // Token invalid or expired
+      }
+    }
+
+    // Require authenticated session
+    if (!authUser) {
+      return res.status(401).json({
+        success: false,
+        message: 'Authentication required. Only logged-in landlords and tenants can submit reviews.'
+      });
+    }
+
+    const { rating, propertyName, title, comment } = req.body;
+    const authorName = (authUser.name || req.body.name || '').trim();
+    const authorRole = (authUser.role === 'tenant' ? 'tenant' : 'landlord');
+
+    if (!authorName) {
       return res.status(400).json({
         success: false,
         message: 'Name is required to submit a review.'
@@ -50,8 +85,9 @@ router.post('/', async (req, res) => {
     }
 
     const review = await db.createFeedbackReview({
-      name: name.trim(),
-      role: role === 'tenant' ? 'tenant' : 'landlord',
+      userId: authUser.id,
+      name: authorName,
+      role: authorRole,
       rating: Number(rating) || 5,
       propertyName: propertyName ? String(propertyName).trim() : '',
       title: title.trim(),
