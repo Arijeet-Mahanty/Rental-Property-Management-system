@@ -34,12 +34,32 @@
         <p class="auth-header__sub">Create your account in less than a minute</p>
       </div>
 
+      <!-- Quick Demo Testing Helper (Dropdown Menu) -->
+      <div class="auth-demo-bar">
+        <label for="signup-demo-account-select" class="auth-demo-bar__label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="margin-right: 4px; vertical-align: middle;">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <polyline points="16 11 18 13 22 9"></polyline>
+          </svg>
+          Quick Demo 1-Click Fill:
+        </label>
+        <div class="auth-demo-bar__select-wrap">
+          <select id="signup-demo-account-select" class="auth-demo-select" aria-label="Select Demo Account to Pre-fill">
+            <option value="" disabled selected>Select demo profile to autofill...</option>
+            <option value="admin">Platform Admin (Arjun Singhania)</option>
+            <option value="landlord">Landlord (Rajesh Sharma)</option>
+            <option value="tenant">Tenant (Priya Iyer)</option>
+          </select>
+        </div>
+      </div>
+
       <!-- General Form Alert Box -->
       <div id="signup-general-alert" class="form-error" role="alert" aria-live="polite" style="margin-bottom: var(--space-4);"></div>
 
       <!-- Sign Up Form -->
       <form id="signup-form" novalidate>
-        <!-- Role Selector (Two Glass Radio Cards) -->
+        <!-- Role Selector (Three Glass Radio Cards) -->
         <fieldset class="form-group" style="border: none; padding: 0; margin-bottom: var(--space-5);">
           <legend class="form-label">I am signing up as a:</legend>
           <div class="role-selector" role="radiogroup" aria-label="Select Account Role">
@@ -54,7 +74,7 @@
                   <div class="role-card__indicator"></div>
                 </div>
                 <div class="role-card__title">Landlord / Owner</div>
-                <div class="role-card__desc">I own or manage 1–50 rental properties and units.</div>
+                <div class="role-card__desc">I manage rental properties and units.</div>
               </div>
             </label>
 
@@ -69,7 +89,22 @@
                   <div class="role-card__indicator"></div>
                 </div>
                 <div class="role-card__title">Tenant / Resident</div>
-                <div class="role-card__desc">I rent a unit and want to pay rent and request repairs.</div>
+                <div class="role-card__desc">I rent a unit and want to pay rent.</div>
+              </div>
+            </label>
+
+            <!-- Admin Role Card -->
+            <label class="role-card-label" for="role-admin">
+              <input type="radio" id="role-admin" name="role" value="admin">
+              <div class="role-card">
+                <div class="role-card__header">
+                  <div class="role-card__icon" style="color: #7c3aed;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l8 4.5v5.5c0 5-3.5 9.7-8 11-4.5-1.3-8-6-8-11V6.5L12 2z"></path><path d="M12 11a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"></path></svg>
+                  </div>
+                  <div class="role-card__indicator"></div>
+                </div>
+                <div class="role-card__title">Platform Admin</div>
+                <div class="role-card__desc">System administrator operations.</div>
               </div>
             </label>
           </div>

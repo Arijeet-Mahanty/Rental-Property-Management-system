@@ -170,9 +170,10 @@ Open your browser at: **`http://localhost:8000`**
 
 ### Option B: Quick Demo Login Credentials
 
-You can test both roles with zero typing using the 1-click demo buttons on `login.html`:
-- **Landlord Account**: `landlord@rentroll.com` / `Password123!` (Rajesh Sharma)
-- **Tenant Account**: `tenant@rentroll.com` / `Password123!` (Priya Iyer)
+You can test all roles with zero typing using the 1-click demo dropdown on `login.html` and `signup.html`:
+- **Admin Account**: `admin@rentroll.com` / `Password123!` (Arjun Singhania — Platform Administrator)
+- **Landlord Account**: `landlord@rentroll.com` / `Password123!` (Rajesh Sharma — Multi-Property Owner)
+- **Tenant Account**: `tenant@rentroll.com` / `Password123!` (Priya Iyer — Resident Resident)
 
 ### Option C: Preserved Node.js Fullstack Server
 
@@ -210,6 +211,8 @@ Available at `http://localhost:3000`.
 | `POST` | `/api/contact` | Public | Submit contact inquiry or demo request |
 | `GET` | `/api/feedback` | Public | Retrieve verified customer feedback reviews |
 | `POST` | `/api/feedback` | Authenticated | Submit customer review (Landlords & Tenants) |
+| `GET` | `/api/admin/users` | Admin | List all registered platform users, roles, phone, and unit counts |
+| `GET` | `/api/admin/inquiries` | Admin | Retrieve landing page contact inquiries and customer reviews |
 
 ---
 
@@ -230,9 +233,10 @@ Available at `http://localhost:3000`.
 
 ## 9. Changelog
 
-### Phase 3 — Production Django Backend Launch & Indian Market Data Persistence
+### Phase 3 — Production Django Backend Launch & Platform Admin Command Center
+- **Platform Admin Profile & Dashboard Integration**: Added third first-class user profile `admin` (Arjun Singhania, `admin@rentroll.com` / `Password123!`), featuring an Executive Command Center with global financial metrics (Gross Monthly Rent Roll ₹11,04,500 across 18 doors, total users breakdown, live health beacon), a searchable and filterable Users Directory tab, and an Inquiries & Reviews audit center, retaining the identical French Cream Neomorphic styling.
 - **Django & Django REST Framework Core**: Implemented full production backend with custom relational models for Users, Properties, Units, Leases, Payments, Maintenance Tickets, Feedback, and Contact Inquiries.
-- **Indian Market Realistic Seeding**: Configured automated seed command (`python manage.py seed_indian_data`) populating 100% Indian personas (Rajesh Sharma, Priya Iyer, Aarav Mehta, Ananya Deshmukh, Sunita Kulkarni), Indian metro locations (Bengaluru, Mumbai, Gurugram), INR currency, and local payment rails (UPI, eNACH, IMPS).
+- **Indian Market Realistic Seeding**: Configured automated seed command (`python manage.py seed_indian_data`) populating 100% Indian personas (Arjun Singhania, Rajesh Sharma, Priya Iyer, Aarav Mehta, Ananya Deshmukh, Sunita Kulkarni), Indian metro locations (Bengaluru, Mumbai, Gurugram), INR currency, and local payment rails (UPI, eNACH, IMPS).
 - **End-to-End Data Persistence**: Connected frontend forms and modals (Add Property, Add Unit, New Lease, Record Payment, Submit Repair Ticket, Contact, and Reviews) to persist directly to Django database (`db.sqlite3` / PostgreSQL).
 - **Dual-Serving Capability**: Django handles both `/api/*` REST endpoints and serves static frontend web pages seamlessly with full CORS and HttpOnly cookie JWT support.
 - **Documentation Cleanup**: Updated project roadmap and removed historical start dates across changelog phases.

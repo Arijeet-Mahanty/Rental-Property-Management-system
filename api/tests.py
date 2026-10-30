@@ -30,6 +30,15 @@ class RentRollBackendPhase3Tests(TestCase):
             phone='+91 98450 87654'
         )
 
+        self.admin = User.objects.create(
+            id='usr_admin_demo',
+            name='Arjun Singhania',
+            email='admin@rentroll.com',
+            password_hash=self.password_hash,
+            role='admin',
+            phone='+91 98100 00001'
+        )
+
         self.property = Property.objects.create(
             id='prop_1',
             landlord=self.landlord,
@@ -67,6 +76,7 @@ class RentRollBackendPhase3Tests(TestCase):
 
         self.landlord_token = generate_jwt_token(self.landlord)
         self.tenant_token = generate_jwt_token(self.tenant)
+        self.admin_token = generate_jwt_token(self.admin)
 
     # 1. Health Check
     def test_health_check(self):
@@ -223,4 +233,92 @@ class RentRollBackendPhase3Tests(TestCase):
         for asset in ['/css/variables.css', '/js/api.js', '/assets/logo.svg']:
             res = self.client.get(asset)
             self.assertEqual(res.status_code, 200)
+
+    # 11. Platform Admin Profile & Endpoints
+    def test_admin_login_success(self):
+        res = self.client.post('/api/auth/login', {
+            'email': 'admin@rentroll.com',
+            'password': 'Password123!'
+        }, content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        user_info = data.get('user', {})
+        self.assertEqual(user_info.get('role'), 'admin')
+        self.assertEqual(user_info.get('name'), 'Arjun Singhania')
+
+    def test_admin_dashboard_stats(self):
+        res = self.client.get('/api/dashboard/stats', HTTP_AUTHORIZATION=f'Bearer {self.admin_token}')
+        self.assertEqual(res.status_code, 200)
+        data = res.json().get('data', {})
+        self.assertEqual(data.get('role'), 'admin')
+        self.assertGreaterEqual(data.get('totalUsers', 0), 3)
+        self.assertEqual(data.get('totalProperties'), 1)
+        self.assertEqual(data.get('totalUnits'), 1)
+        self.assertEqual(data.get('monthlyRentRoll'), 28500.0)
+        self.assertEqual(data.get('activeLeasesCount'), 1)
+
+    def test_admin_users_directory_endpoint(self):
+        res = self.client.get('/api/admin/users', HTTP_AUTHORIZATION=f'Bearer {self.admin_token}')
+        self.assertEqual(res.status_code, 200)
+        users = res.json().get('data', [])
+        self.assertGreaterEqual(len(users), 3)
+        roles = [u.get('role') for u in users]
+        self.assertIn('admin', roles)
+        self.assertIn('landlord', roles)
+        self.assertIn('tenant', roles)
+
+    def test_admin_inquiries_endpoint(self):
+        # Create a contact message and feedback review
+        ContactMessage.objects.create(
+            id='msg_test_1',
+            name='Karan Singhal',
+            email='karan.s@realtyinvest.in',
+            subject='Portfolio Inquiry',
+            message='Test inquiry message'
+        )
+        res = self.client.get('/api/admin/inquiries', HTTP_AUTHORIZATION=f'Bearer {self.admin_token}')
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        self.assertGreaterEqual(len(data.get('inquiries', [])), 1)
+
+    def test_admin_can_delete_property(self):
+        prop_to_del = Property.objects.create(
+            id='prop_del_test',
+            landlord=self.landlord,
+            name='Property To Delete',
+            address='123 Test St',
+            city='Bengaluru',
+            state='KA',
+            zip_code='560001'
+        )
+        res = self.client.delete(f'/api/properties/{prop_to_del.id}', HTTP_AUTHORIZATION=f'Bearer {self.admin_token}')
+        self.assertEqual(res.status_code, 200)
+        self.assertFalse(Property.objects.filter(id='prop_del_test').exists())
+
+    def test_admin_signup_with_admin_role(self):
+        res = self.client.post('/api/auth/signup', {
+            'name': 'New Super Admin',
+            'email': 'superadmin@rentroll.com',
+            'password': 'SecurePassword123!',
+            'role': 'admin'
+        }, content_type='application/json')
+        self.assertEqual(res.status_code, 201)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        user_info = data.get('user', {})
+        self.assertEqual(user_info.get('role'), 'admin')
+        user = User.objects.get(email='superadmin@rentroll.com')
+        self.assertEqual(user.role, 'admin')
+
+    def test_admin_login_case_insensitive(self):
+        res = self.client.post('/api/auth/login', {
+            'email': 'ADMIN@RENTROLL.COM',
+            'password': 'Password123!'
+        }, content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        self.assertEqual(data.get('user', {}).get('role'), 'admin')
 

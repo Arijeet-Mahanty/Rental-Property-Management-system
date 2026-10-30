@@ -34,6 +34,7 @@ class User(models.Model):
     ROLE_CHOICES = [
         ('landlord', 'Landlord'),
         ('tenant', 'Tenant'),
+        ('admin', 'Admin'),
     ]
 
     id = models.CharField(max_length=64, primary_key=True, default=gen_user_id)

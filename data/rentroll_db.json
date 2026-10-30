@@ -1,6 +1,15 @@
 {
   "users": [
     {
+      "id": "usr_admin_demo",
+      "name": "Arjun Singhania",
+      "email": "admin@rentroll.com",
+      "password_hash": "$2b$10$YmPhB2QkFhsj4Vrkt2Yc1O/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC",
+      "role": "admin",
+      "phone": "+91 98100 00001",
+      "created_at": "2026-01-01T00:00:00.000Z"
+    },
+    {
       "id": "usr_landlord_demo",
       "name": "Rajesh Sharma",
       "email": "landlord@rentroll.com",

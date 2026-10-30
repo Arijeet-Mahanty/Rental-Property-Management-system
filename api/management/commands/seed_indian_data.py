@@ -24,7 +24,16 @@ class Command(BaseCommand):
 
         password_hash = hash_password('Password123!')
 
-        # 1. Indian Users
+        # 1. Indian Users (Admin, Landlords & Tenants)
+        admin_arjun = User.objects.create(
+            id='usr_admin_demo',
+            name='Arjun Singhania',
+            email='admin@rentroll.com',
+            password_hash=password_hash,
+            role='admin',
+            phone='+91 98100 00001'
+        )
+
         landlord_rajesh = User.objects.create(
             id='usr_landlord_demo',
             name='Rajesh Sharma',
@@ -79,7 +88,7 @@ class Command(BaseCommand):
             phone='+91 98220 99887'
         )
 
-        self.stdout.write(self.style.SUCCESS('[OK] Seeded 6 Indian users (landlords & tenants)'))
+        self.stdout.write(self.style.SUCCESS('[OK] Seeded 7 Indian users (platform admin, landlords & tenants)'))
 
         # 2. Indian Properties
         prop_gulmohar = Property.objects.create(
@@ -336,4 +345,29 @@ class Command(BaseCommand):
         )
 
         self.stdout.write(self.style.SUCCESS('[OK] Seeded verified Indian customer reviews'))
+
+        # 8. Contact Inquiries from Landing Page
+        ContactMessage.objects.create(
+            id='msg_in_1',
+            name='Karan Singhal',
+            email='karan.s@realtyinvest.in',
+            phone='+91 98200 44556',
+            subject='Enterprise Portfolio Onboarding (35 Units in Gachibowli, Hyderabad)',
+            portfolio_size='25-50 doors',
+            message='Interested in automated UPI rent collection and tenant HRA receipt generation for 2 residential apartment complexes in Hyderabad.',
+            status='new'
+        )
+
+        ContactMessage.objects.create(
+            id='msg_in_2',
+            name='Meera Nambiar',
+            email='meera.nambiar@heritageprops.com',
+            phone='+91 98401 55667',
+            subject='Society Maintenance & Parking Management',
+            portfolio_size='10-25 doors',
+            message='Looking to streamline monthly maintenance and digital lease agreements for our gated villas in Chennai.',
+            status='contacted'
+        )
+
+        self.stdout.write(self.style.SUCCESS('[OK] Seeded landing page contact inquiries'))
         self.stdout.write(self.style.SUCCESS('[SUCCESS] All Indian rental market data successfully seeded into Django database!'))

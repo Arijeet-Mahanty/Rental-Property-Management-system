@@ -76,9 +76,47 @@ export function initLoginForm() {
 
   setupPasswordToggle(togglePassBtn, passwordInput);
 
-  // Setup quick demo fill buttons
+  // Setup quick demo fill dropdown menu
+  const demoAccountSelect = document.getElementById('demo-account-select');
+  if (demoAccountSelect) {
+    demoAccountSelect.addEventListener('change', (e) => {
+      const selected = e.target.value;
+      if (selected === 'admin') {
+        emailInput.value = 'admin@rentroll.com';
+        passwordInput.value = 'Password123!';
+        clearFieldError(emailInput, emailError);
+        clearFieldError(passwordInput, passwordError);
+        showToast('Credentials Populated', 'Filled Platform Admin demo account (Arjun Singhania).', 'info', 2500);
+      } else if (selected === 'landlord') {
+        emailInput.value = 'landlord@rentroll.com';
+        passwordInput.value = 'Password123!';
+        clearFieldError(emailInput, emailError);
+        clearFieldError(passwordInput, passwordError);
+        showToast('Credentials Populated', 'Filled Landlord demo account (Rajesh Sharma).', 'info', 2500);
+      } else if (selected === 'tenant') {
+        emailInput.value = 'tenant@rentroll.com';
+        passwordInput.value = 'Password123!';
+        clearFieldError(emailInput, emailError);
+        clearFieldError(passwordInput, passwordError);
+        showToast('Credentials Populated', 'Filled Tenant demo account (Priya Iyer).', 'info', 2500);
+      }
+    });
+  }
+
+  // Backward-compatibility fallback for fill buttons if present
+  const demoAdminBtn = document.getElementById('fill-demo-admin');
   const demoLandlordBtn = document.getElementById('fill-demo-landlord');
   const demoTenantBtn = document.getElementById('fill-demo-tenant');
+
+  if (demoAdminBtn) {
+    demoAdminBtn.addEventListener('click', () => {
+      emailInput.value = 'admin@rentroll.com';
+      passwordInput.value = 'Password123!';
+      clearFieldError(emailInput, emailError);
+      clearFieldError(passwordInput, passwordError);
+      showToast('Credentials Populated', 'Filled Platform Admin demo account (Arjun Singhania).', 'info', 2500);
+    });
+  }
 
   if (demoLandlordBtn) {
     demoLandlordBtn.addEventListener('click', () => {
@@ -253,6 +291,60 @@ export function initSignupForm() {
       if (!matchErr) clearFieldError(confirmInput, confirmError);
     }
   });
+
+  // Setup quick demo fill dropdown menu in signup
+  const signupDemoSelect = document.getElementById('signup-demo-account-select');
+  if (signupDemoSelect) {
+    signupDemoSelect.addEventListener('change', (e) => {
+      const selected = e.target.value;
+      if (selected === 'admin') {
+        nameInput.value = 'Arjun Singhania';
+        emailInput.value = 'admin@rentroll.com';
+        passwordInput.value = 'Password123!';
+        confirmInput.value = 'Password123!';
+        const roleAdmin = document.getElementById('role-admin');
+        if (roleAdmin) roleAdmin.checked = true;
+        termsCheckbox.checked = true;
+        clearFieldError(nameInput, nameError);
+        clearFieldError(emailInput, emailError);
+        clearFieldError(passwordInput, passwordError);
+        clearFieldError(confirmInput, confirmError);
+        clearFieldError(termsCheckbox, termsError);
+        updateStrengthMeterUI(strengthMeter, passwordInput.value);
+        showToast('Form Populated', 'Pre-filled Admin registration profile (Arjun Singhania).', 'info', 2500);
+      } else if (selected === 'landlord') {
+        nameInput.value = 'Rajesh Sharma';
+        emailInput.value = 'landlord@rentroll.com';
+        passwordInput.value = 'Password123!';
+        confirmInput.value = 'Password123!';
+        const roleLandlord = document.getElementById('role-landlord');
+        if (roleLandlord) roleLandlord.checked = true;
+        termsCheckbox.checked = true;
+        clearFieldError(nameInput, nameError);
+        clearFieldError(emailInput, emailError);
+        clearFieldError(passwordInput, passwordError);
+        clearFieldError(confirmInput, confirmError);
+        clearFieldError(termsCheckbox, termsError);
+        updateStrengthMeterUI(strengthMeter, passwordInput.value);
+        showToast('Form Populated', 'Pre-filled Landlord registration profile (Rajesh Sharma).', 'info', 2500);
+      } else if (selected === 'tenant') {
+        nameInput.value = 'Priya Iyer';
+        emailInput.value = 'tenant@rentroll.com';
+        passwordInput.value = 'Password123!';
+        confirmInput.value = 'Password123!';
+        const roleTenant = document.getElementById('role-tenant');
+        if (roleTenant) roleTenant.checked = true;
+        termsCheckbox.checked = true;
+        clearFieldError(nameInput, nameError);
+        clearFieldError(emailInput, emailError);
+        clearFieldError(passwordInput, passwordError);
+        clearFieldError(confirmInput, confirmError);
+        clearFieldError(termsCheckbox, termsError);
+        updateStrengthMeterUI(strengthMeter, passwordInput.value);
+        showToast('Form Populated', 'Pre-filled Tenant registration profile (Priya Iyer).', 'info', 2500);
+      }
+    });
+  }
 
   // Blur validations
   nameInput.addEventListener('blur', () => {

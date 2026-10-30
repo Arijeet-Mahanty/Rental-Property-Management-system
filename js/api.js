@@ -417,6 +417,22 @@ export async function getFeedbackReviews() {
   return res.reviews || [];
 }
 
+/**
+ * Fetches platform-wide registered users (Admin Command Center)
+ */
+export async function getAdminUsers() {
+  const res = await request('/admin/users', { method: 'GET' });
+  return res.data || [];
+}
+
+/**
+ * Fetches contact inquiries and reviews (Admin Command Center)
+ */
+export async function getAdminInquiries() {
+  const res = await request('/admin/inquiries', { method: 'GET' });
+  return res || { inquiries: [], reviews: [] };
+}
+
 // ----------------------------------------------------------------------------
 // CLIENT-SIDE OFFLINE FALLBACK ENGINE
 // ----------------------------------------------------------------------------
@@ -426,51 +442,96 @@ function delay(ms = ARTIFICIAL_DELAY_MS) {
 }
 
 function initOfflineStorage() {
-  if (!localStorage.getItem(STORAGE_KEY_USERS)) {
-    const seed = [
-      {
-        id: 'usr_landlord_demo',
-        name: 'Rajesh Sharma',
-        email: 'landlord@rentroll.com',
-        password: 'Password123!',
-        role: 'landlord',
-        phone: '+91 98450 12345'
-      },
-      {
-        id: 'usr_tenant_demo',
-        name: 'Priya Iyer',
-        email: 'tenant@rentroll.com',
-        password: 'Password123!',
-        role: 'tenant',
-        phone: '+91 98765 43210'
-      },
-      {
-        id: 'usr_tenant_2',
-        name: 'Aarav Mehta',
-        email: 'aarav.mehta@example.com',
-        password: 'Password123!',
-        role: 'tenant',
-        phone: '+91 98200 54321'
-      },
-      {
-        id: 'usr_tenant_3',
-        name: 'Ananya Deshmukh',
-        email: 'ananya.d@example.com',
-        password: 'Password123!',
-        role: 'tenant',
-        phone: '+91 97654 32109'
-      }
-    ];
-    localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(seed));
+  const adminAccount = {
+    id: 'usr_admin_demo',
+    name: 'Arjun Singhania',
+    email: 'admin@rentroll.com',
+    password: 'Password123!',
+    role: 'admin',
+    phone: '+91 98100 00001'
+  };
+
+  const landlordAccount = {
+    id: 'usr_landlord_demo',
+    name: 'Rajesh Sharma',
+    email: 'landlord@rentroll.com',
+    password: 'Password123!',
+    role: 'landlord',
+    phone: '+91 98201 23456'
+  };
+
+  const tenantAccount = {
+    id: 'usr_tenant_demo',
+    name: 'Priya Iyer',
+    email: 'tenant@rentroll.com',
+    password: 'Password123!',
+    role: 'tenant',
+    phone: '+91 98450 87654'
+  };
+
+  let users = [];
+  try {
+    users = JSON.parse(localStorage.getItem(STORAGE_KEY_USERS) || '[]');
+  } catch {
+    users = [];
   }
+
+  // Ensure admin demo account is always present
+  const adminIdx = users.findIndex(u => u.email && u.email.toLowerCase() === 'admin@rentroll.com');
+  if (adminIdx === -1) {
+    users.unshift(adminAccount);
+  } else {
+    users[adminIdx] = { ...users[adminIdx], ...adminAccount };
+  }
+
+  // Ensure landlord and tenant demo accounts are present
+  if (!users.some(u => u.email && u.email.toLowerCase() === 'landlord@rentroll.com')) {
+    users.push(landlordAccount);
+  }
+  if (!users.some(u => u.email && u.email.toLowerCase() === 'tenant@rentroll.com')) {
+    users.push(tenantAccount);
+  }
+
+  localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
 }
 initOfflineStorage();
 
 async function offlineLogin(email, password, rememberMe) {
   await delay();
+  initOfflineStorage();
   const norm = (email || '').trim().toLowerCase();
   const users = JSON.parse(localStorage.getItem(STORAGE_KEY_USERS) || '[]');
-  const user = users.find(u => u.email.toLowerCase() === norm);
+  let user = users.find(u => u.email && u.email.toLowerCase() === norm);
+
+  // Guarantee demo accounts match Password123!
+  if (!user && norm === 'admin@rentroll.com' && password === 'Password123!') {
+    user = {
+      id: 'usr_admin_demo',
+      name: 'Arjun Singhania',
+      email: 'admin@rentroll.com',
+      password: 'Password123!',
+      role: 'admin',
+      phone: '+91 98100 00001'
+    };
+  } else if (!user && norm === 'landlord@rentroll.com' && password === 'Password123!') {
+    user = {
+      id: 'usr_landlord_demo',
+      name: 'Rajesh Sharma',
+      email: 'landlord@rentroll.com',
+      password: 'Password123!',
+      role: 'landlord',
+      phone: '+91 98201 23456'
+    };
+  } else if (!user && norm === 'tenant@rentroll.com' && password === 'Password123!') {
+    user = {
+      id: 'usr_tenant_demo',
+      name: 'Priya Iyer',
+      email: 'tenant@rentroll.com',
+      password: 'Password123!',
+      role: 'tenant',
+      phone: '+91 98450 87654'
+    };
+  }
 
   if (!user || user.password !== password) {
     throw new Error('Invalid email or password. Please verify your credentials.');
@@ -562,7 +623,28 @@ async function handleOfflineRequest(endpoint, options = {}) {
   }
 
   if (endpoint.startsWith('/dashboard/stats')) {
-    if (user.role === 'landlord') {
+    if (user.role === 'admin') {
+      return {
+        data: {
+          role: 'admin',
+          totalUsers: 7,
+          totalLandlords: 2,
+          totalTenants: 4,
+          totalProperties: 4,
+          totalUnits: 18,
+          occupiedUnits: 17,
+          vacantUnits: 1,
+          occupancyRate: 94,
+          monthlyRentRoll: 1104500,
+          paidRentTotal: 185500,
+          pendingRentTotal: 28500,
+          activeLeasesCount: 3,
+          openMaintenanceCount: 2,
+          inquiriesCount: 2,
+          reviewsCount: 3
+        }
+      };
+    } else if (user.role === 'landlord') {
       return {
         data: {
           role: 'landlord',
@@ -693,6 +775,36 @@ async function handleOfflineRequest(endpoint, options = {}) {
         reviews: []
       };
     }
+  }
+
+  if (endpoint.startsWith('/admin/users')) {
+    return {
+      success: true,
+      data: [
+        { id: 'usr_admin_demo', name: 'Arjun Singhania', email: 'admin@rentroll.com', role: 'admin', phone: '+91 98100 00001', properties_count: 0, leases_count: 0, created_at: '2026-01-01T00:00:00.000Z' },
+        { id: 'usr_landlord_demo', name: 'Rajesh Sharma', email: 'landlord@rentroll.com', role: 'landlord', phone: '+91 98201 23456', properties_count: 3, leases_count: 2, created_at: '2026-01-05T00:00:00.000Z' },
+        { id: 'usr_landlord_2', name: 'Sunita Kulkarni', email: 'sunita.k@example.in', role: 'landlord', phone: '+91 98220 99887', properties_count: 1, leases_count: 1, created_at: '2026-01-10T00:00:00.000Z' },
+        { id: 'usr_tenant_demo', name: 'Priya Iyer', email: 'tenant@rentroll.com', role: 'tenant', phone: '+91 98450 87654', properties_count: 0, leases_count: 1, created_at: '2026-01-15T00:00:00.000Z' },
+        { id: 'usr_tenant_2', name: 'Aarav Mehta', email: 'aarav.mehta@example.in', role: 'tenant', phone: '+91 99102 34567', properties_count: 0, leases_count: 1, created_at: '2026-01-18T00:00:00.000Z' },
+        { id: 'usr_tenant_3', name: 'Ananya Deshmukh', email: 'ananya.d@example.in', role: 'tenant', phone: '+91 97654 12389', properties_count: 0, leases_count: 1, created_at: '2026-01-20T00:00:00.000Z' },
+        { id: 'usr_tenant_4', name: 'Vikram Malhotra', email: 'vikram.m@example.in', role: 'tenant', phone: '+91 98111 22334', properties_count: 0, leases_count: 0, created_at: '2026-01-22T00:00:00.000Z' }
+      ]
+    };
+  }
+
+  if (endpoint.startsWith('/admin/inquiries')) {
+    return {
+      success: true,
+      inquiries: [
+        { id: 'msg_in_1', name: 'Karan Singhal', email: 'karan.s@realtyinvest.in', phone: '+91 98200 44556', subject: 'Enterprise Portfolio Onboarding (35 Units in Gachibowli, Hyderabad)', portfolio_size: '25-50 doors', message: 'Interested in automated UPI rent collection and tenant HRA receipt generation for 2 residential apartment complexes in Hyderabad.', status: 'new', created_at: '2026-10-28T10:15:00.000Z' },
+        { id: 'msg_in_2', name: 'Meera Nambiar', email: 'meera.nambiar@heritageprops.com', phone: '+91 98401 55667', subject: 'Society Maintenance & Parking Management', portfolio_size: '10-25 doors', message: 'Looking to streamline monthly maintenance and digital lease agreements for our gated villas in Chennai.', status: 'contacted', created_at: '2026-10-29T14:30:00.000Z' }
+      ],
+      reviews: [
+        { id: 'rev_in_1', name: 'Rajesh Sharma', role: 'landlord', rating: 5, property_name: 'Gulmohar Residency (18 Flats)', title: 'UPI autopay eliminated chasing rent completely', comment: 'Managing 18 flats across Koramangala and Indiranagar used to consume the first week of every month. With RentRoll UPI & eNACH autopay, 100% of my rent hits my HDFC account on the 1st. My CA loved the HRA & GST reports.', verified: true, created_at: '2026-10-20T11:00:00.000Z' },
+        { id: 'rev_in_2', name: 'Priya Iyer', role: 'tenant', rating: 5, property_name: 'Flat 4B, Koramangala', title: 'Instant HRA rent receipts with Landlord PAN', comment: 'No more awkward follow-ups for rent receipts at tax submission time. I pay via Google Pay UPI in 30 seconds and instantly download digitally signed HRA receipts for my company declaration.', verified: true, created_at: '2026-10-22T15:20:00.000Z' },
+        { id: 'rev_in_3', name: 'Sunita Kulkarni', role: 'landlord', rating: 5, property_name: 'Koregaon Park Duplexes (6 Flats)', title: 'Photo repair triage saved thousands on contractor visits', comment: 'When a tenant reported a geyser issue on Sunday evening, they submitted a video ticket with sound. We identified the MCB trip remotely without paying emergency electrician charges.', verified: true, created_at: '2026-10-24T09:45:00.000Z' }
+      ]
+    };
   }
 
   return { success: true, data: {} };

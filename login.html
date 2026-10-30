@@ -34,16 +34,23 @@
         <p class="auth-header__sub">Sign in to your RentRoll account</p>
       </div>
 
-      <!-- Quick Demo Testing Helper -->
+      <!-- Quick Demo Testing Helper (Dropdown Menu) -->
       <div class="auth-demo-bar">
-        <span class="auth-demo-bar__label">Quick Demo 1-Click Fill:</span>
-        <div class="auth-demo-bar__actions">
-          <button type="button" id="fill-demo-landlord" class="btn btn--ghost btn--sm">
-            Landlord (Rajesh Sharma)
-          </button>
-          <button type="button" id="fill-demo-tenant" class="btn btn--ghost btn--sm">
-            Tenant (Priya Iyer)
-          </button>
+        <label for="demo-account-select" class="auth-demo-bar__label">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true" style="margin-right: 4px; vertical-align: middle;">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <polyline points="16 11 18 13 22 9"></polyline>
+          </svg>
+          Quick Demo 1-Click Fill:
+        </label>
+        <div class="auth-demo-bar__select-wrap">
+          <select id="demo-account-select" class="auth-demo-select" aria-label="Select Demo Account">
+            <option value="" disabled selected>Select demo profile to autofill...</option>
+            <option value="admin">Platform Admin (Arjun Singhania)</option>
+            <option value="landlord">Landlord (Rajesh Sharma)</option>
+            <option value="tenant">Tenant (Priya Iyer)</option>
+          </select>
         </div>
       </div>
 

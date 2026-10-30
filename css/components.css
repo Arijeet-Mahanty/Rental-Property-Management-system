@@ -386,12 +386,12 @@
 
 .role-selector {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: var(--space-4);
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
   margin-bottom: var(--space-5);
 }
 
-@media (max-width: 480px) {
+@media (max-width: 600px) {
   .role-selector {
     grid-template-columns: 1fr;
   }
@@ -838,6 +838,12 @@
   background-color: #fef3c7;
   color: #92400e;
   border: 1px solid rgba(180, 83, 9, 0.25);
+}
+
+.badge--admin {
+  background-color: #ede9fe;
+  color: #5b21b6;
+  border: 1px solid rgba(109, 40, 217, 0.35);
 }
 
 .badge--pill-pill {

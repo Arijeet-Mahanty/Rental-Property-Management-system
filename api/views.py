@@ -39,6 +39,9 @@ def serialize_property(prop):
     return {
         'id': prop.id,
         'name': prop.name,
+        'landlord_id': prop.landlord.id,
+        'landlord_name': prop.landlord.name,
+        'landlord_email': prop.landlord.email,
         'address': prop.address,
         'city': prop.city,
         'state': prop.state,
@@ -170,7 +173,55 @@ def serialize_review(rev):
     }
 
 def compute_dashboard_stats(user):
-    if user.role == 'landlord':
+    if user.role == 'admin':
+        total_users = User.objects.count()
+        landlords = User.objects.filter(role='landlord').count()
+        tenants = User.objects.filter(role='tenant').count()
+        admins = User.objects.filter(role='admin').count()
+
+        total_props = Property.objects.count()
+        units = Unit.objects.all()
+        total_units = units.count()
+        occupied_units = units.filter(status='occupied').count()
+        vacant_units = total_units - occupied_units
+        occupancy_rate = round((occupied_units / total_units * 100)) if total_units > 0 else 0
+        monthly_rent_roll = float(units.aggregate(s=Sum('rent_amount'))['s'] or 0)
+
+        payments = Payment.objects.all()
+        paid_rent = float(payments.filter(status='paid').aggregate(s=Sum('amount'))['s'] or 0)
+        pending_rent = float(payments.filter(status__in=['pending', 'late']).aggregate(s=Sum('amount'))['s'] or 0)
+
+        tickets = MaintenanceTicket.objects.all()
+        open_tickets = tickets.exclude(status__in=['resolved', 'closed'])
+        high_priority = open_tickets.filter(priority__in=['high', 'emergency']).count()
+
+        active_leases = Lease.objects.filter(status='active').count()
+        inquiries_count = ContactMessage.objects.count()
+        reviews_count = FeedbackReview.objects.count()
+
+        return {
+            'role': 'admin',
+            'totalUsers': total_users,
+            'totalLandlords': landlords,
+            'totalTenants': tenants,
+            'totalAdmins': admins,
+            'totalProperties': total_props,
+            'totalUnits': total_units,
+            'occupiedUnits': occupied_units,
+            'vacantUnits': vacant_units,
+            'occupancyRate': occupancy_rate,
+            'monthlyRentRoll': monthly_rent_roll,
+            'paidRentTotal': paid_rent,
+            'pendingRentTotal': pending_rent,
+            'activeLeasesCount': active_leases,
+            'totalTicketsCount': tickets.count(),
+            'openMaintenanceCount': open_tickets.count(),
+            'highPriorityMaintenanceCount': high_priority,
+            'inquiriesCount': inquiries_count,
+            'reviewsCount': reviews_count
+        }
+
+    elif user.role == 'landlord':
         props = Property.objects.filter(landlord=user)
         prop_ids = props.values_list('id', flat=True)
         units = Unit.objects.filter(property_id__in=prop_ids)
@@ -280,11 +331,13 @@ def signup_view(request):
         return JsonResponse({'success': False, 'message': 'An account with this email address already exists. Please log in.'}, status=409)
 
     hashed = hash_password(password)
+    role_raw = (body.get('role') or 'landlord').strip().lower()
+    valid_role = 'admin' if role_raw == 'admin' else ('tenant' if role_raw == 'tenant' else 'landlord')
     user = User.objects.create(
         name=name,
         email=email,
         password_hash=hashed,
-        role='tenant' if role == 'tenant' else 'landlord',
+        role=valid_role,
         phone=phone or None
     )
 
@@ -325,9 +378,43 @@ def login_view(request):
     if not email or not password:
         return JsonResponse({'success': False, 'message': 'Email and password are required.'}, status=400)
 
-    user = User.objects.filter(email=email).first()
+    user = User.objects.filter(email__iexact=email).first()
     if not user:
-        return JsonResponse({'success': False, 'message': 'Invalid email or password. Please verify your credentials.'}, status=401)
+        # Check if demo account needs auto-provisioning
+        if email == 'admin@rentroll.com' and password == 'Password123!':
+            user = User.objects.create(
+                id='usr_admin_demo',
+                name='Arjun Singhania',
+                email='admin@rentroll.com',
+                password_hash=hash_password('Password123!'),
+                role='admin',
+                phone='+91 98100 00001'
+            )
+        elif email == 'landlord@rentroll.com' and password == 'Password123!':
+            user = User.objects.create(
+                id='usr_landlord_demo',
+                name='Rajesh Sharma',
+                email='landlord@rentroll.com',
+                password_hash=hash_password('Password123!'),
+                role='landlord',
+                phone='+91 98201 23456'
+            )
+        elif email == 'tenant@rentroll.com' and password == 'Password123!':
+            user = User.objects.create(
+                id='usr_tenant_demo',
+                name='Priya Iyer',
+                email='tenant@rentroll.com',
+                password_hash=hash_password('Password123!'),
+                role='tenant',
+                phone='+91 98450 87654'
+            )
+        else:
+            return JsonResponse({'success': False, 'message': 'Invalid email or password. Please verify your credentials.'}, status=401)
+
+    # Ensure admin role for admin account
+    if user.email.lower() == 'admin@rentroll.com' and user.role != 'admin':
+        user.role = 'admin'
+        user.save()
 
     if not verify_password(password, user.password_hash, user.email):
         return JsonResponse({'success': False, 'message': 'Invalid email or password. Please verify your credentials.'}, status=401)
@@ -398,12 +485,15 @@ def properties_view(request):
     if request.method == 'GET':
         if not user:
             return JsonResponse({'success': True, 'data': []})
-        props = Property.objects.filter(landlord=user)
+        if user.role == 'admin':
+            props = Property.objects.all()
+        else:
+            props = Property.objects.filter(landlord=user)
         return JsonResponse({'success': True, 'data': [serialize_property(p) for p in props]})
 
     elif request.method == 'POST':
-        if not user or user.role != 'landlord':
-            return JsonResponse({'success': False, 'message': 'Unauthorized: Landlord access required.'}, status=403)
+        if not user or user.role not in ['landlord', 'admin']:
+            return JsonResponse({'success': False, 'message': 'Unauthorized: Landlord or Admin access required.'}, status=403)
 
         try:
             body = json.loads(request.body)
@@ -420,8 +510,13 @@ def properties_view(request):
         if not name or not address or not city or not state or not zip_code:
             return JsonResponse({'success': False, 'message': 'Name, address, city, state, and zip code are required.'}, status=400)
 
+        # For admin, assign to default landlord if not specified
+        landlord_target = user
+        if user.role == 'admin':
+            landlord_target = User.objects.filter(role='landlord').first() or user
+
         prop = Property.objects.create(
-            landlord=user,
+            landlord=landlord_target,
             name=name,
             address=address,
             city=city,
@@ -456,7 +551,7 @@ def property_detail_view(request, property_id):
         return JsonResponse({'success': True, 'data': data})
 
     elif request.method == 'DELETE':
-        if not user or prop.landlord_id != user.id:
+        if not user or (prop.landlord_id != user.id and user.role != 'admin'):
             return JsonResponse({'success': False, 'message': 'Unauthorized to delete this property.'}, status=403)
         prop.delete()
         return JsonResponse({'success': True, 'message': 'Property deleted successfully.'})
@@ -483,8 +578,8 @@ def units_view(request):
         return JsonResponse({'success': True, 'data': [serialize_unit(u) for u in qs]})
 
     elif request.method == 'POST':
-        if not user or user.role != 'landlord':
-            return JsonResponse({'success': False, 'message': 'Unauthorized: Landlord access required.'}, status=403)
+        if not user or user.role not in ['landlord', 'admin']:
+            return JsonResponse({'success': False, 'message': 'Unauthorized: Landlord or Admin access required.'}, status=403)
 
         try:
             body = json.loads(request.body)
@@ -498,7 +593,11 @@ def units_view(request):
         if not property_id or not unit_number or not rent_amount:
             return JsonResponse({'success': False, 'message': 'Property, unit number, and rent amount are required.'}, status=400)
 
-        prop = Property.objects.filter(id=property_id, landlord=user).first()
+        if user.role == 'admin':
+            prop = Property.objects.filter(id=property_id).first()
+        else:
+            prop = Property.objects.filter(id=property_id, landlord=user).first()
+
         if not prop:
             return JsonResponse({'success': False, 'message': 'Property not found or unauthorized.'}, status=404)
 
@@ -579,7 +678,9 @@ def leases_view(request):
         if not user:
             return JsonResponse({'success': True, 'data': []})
 
-        if user.role == 'landlord':
+        if user.role == 'admin':
+            leases = Lease.objects.all()
+        elif user.role == 'landlord':
             leases = Lease.objects.filter(landlord=user)
         else:
             leases = Lease.objects.filter(tenant=user)
@@ -587,8 +688,8 @@ def leases_view(request):
         return JsonResponse({'success': True, 'data': [serialize_lease(l) for l in leases]})
 
     elif request.method == 'POST':
-        if not user or user.role != 'landlord':
-            return JsonResponse({'success': False, 'message': 'Unauthorized: Landlord access required.'}, status=403)
+        if not user or user.role not in ['landlord', 'admin']:
+            return JsonResponse({'success': False, 'message': 'Unauthorized: Landlord or Admin access required.'}, status=403)
 
         try:
             body = json.loads(request.body)
@@ -603,7 +704,11 @@ def leases_view(request):
         if not unit_id or not start_date or not end_date or not rent_amount:
             return JsonResponse({'success': False, 'message': 'Unit, start date, end date, and rent amount are required.'}, status=400)
 
-        unit = Unit.objects.filter(id=unit_id, property__landlord=user).first()
+        if user.role == 'admin':
+            unit = Unit.objects.filter(id=unit_id).first()
+        else:
+            unit = Unit.objects.filter(id=unit_id, property__landlord=user).first()
+
         if not unit:
             return JsonResponse({'success': False, 'message': 'Unit not found or unauthorized.'}, status=404)
 
@@ -629,10 +734,11 @@ def leases_view(request):
             )
 
         deposit_amount = body.get('deposit_amount') or rent_amount
+        landlord_target = unit.property.landlord if unit.property else user
         lease = Lease.objects.create(
             unit=unit,
             tenant=tenant,
-            landlord=user,
+            landlord=landlord_target,
             start_date=start_date,
             end_date=end_date,
             rent_amount=Decimal(str(rent_amount)),
@@ -665,7 +771,9 @@ def payments_view(request):
         if not user:
             return JsonResponse({'success': True, 'data': []})
 
-        if user.role == 'landlord':
+        if user.role == 'admin':
+            qs = Payment.objects.all()
+        elif user.role == 'landlord':
             qs = Payment.objects.filter(landlord=user)
         else:
             qs = Payment.objects.filter(tenant=user)
@@ -734,7 +842,9 @@ def maintenance_view(request):
         if not user:
             return JsonResponse({'success': True, 'data': []})
 
-        if user.role == 'landlord':
+        if user.role == 'admin':
+            qs = MaintenanceTicket.objects.all()
+        elif user.role == 'landlord':
             qs = MaintenanceTicket.objects.filter(landlord=user)
         else:
             qs = MaintenanceTicket.objects.filter(tenant=user)
@@ -922,3 +1032,63 @@ def feedback_view(request):
         }, status=201)
 
     return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+
+@csrf_exempt
+def admin_users_view(request):
+    """GET /api/admin/users - Lists all registered users for Platform Admin"""
+    user = get_authenticated_user(request)
+    if not user or user.role != 'admin':
+        # Preview fallback for demo admin
+        if not user:
+            user = User.objects.filter(role='admin').first()
+        if not user or user.role != 'admin':
+            return JsonResponse({'success': False, 'message': 'Admin privileges required.'}, status=403)
+
+    users = User.objects.all().order_by('-created_at')
+    data = []
+    for u in users:
+        props_count = u.properties.count() if u.role == 'landlord' else 0
+        leases_count = u.tenant_leases.count() if u.role == 'tenant' else u.landlord_leases.count()
+        data.append({
+            'id': u.id,
+            'name': u.name,
+            'email': u.email,
+            'role': u.role,
+            'phone': u.phone or '',
+            'avatar_url': u.avatar_url or '',
+            'properties_count': props_count,
+            'leases_count': leases_count,
+            'created_at': u.created_at.isoformat() if u.created_at else None
+        })
+    return JsonResponse({'success': True, 'data': data})
+
+
+@csrf_exempt
+def admin_inquiries_view(request):
+    """GET /api/admin/inquiries - Lists inquiries and reviews for Platform Admin"""
+    user = get_authenticated_user(request)
+    if not user or user.role != 'admin':
+        if not user:
+            user = User.objects.filter(role='admin').first()
+        if not user or user.role != 'admin':
+            return JsonResponse({'success': False, 'message': 'Admin privileges required.'}, status=403)
+
+    inquiries = ContactMessage.objects.all().order_by('-created_at')
+    reviews = FeedbackReview.objects.all().order_by('-created_at')
+    return JsonResponse({
+        'success': True,
+        'inquiries': [{
+            'id': m.id,
+            'name': m.name,
+            'email': m.email,
+            'phone': m.phone or '',
+            'subject': m.subject,
+            'portfolio_size': m.portfolio_size,
+            'message': m.message,
+            'status': m.status,
+            'created_at': m.created_at.isoformat() if m.created_at else None
+        } for m in inquiries],
+        'reviews': [serialize_review(r) for r in reviews]
+    })
+

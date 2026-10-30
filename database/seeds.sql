@@ -8,6 +8,7 @@
 -- 1. SEED USERS (Indian personas only)
 INSERT INTO users (id, name, email, password_hash, role, phone, created_at)
 VALUES 
+('usr_admin_demo', 'Arjun Singhania', 'admin@rentroll.com', '$2b$10$YmPhB2QkFhsj4Vrkt2Yc1O/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC', 'admin', '+91 98100 00001', '2026-01-01 00:00:00+00'),
 ('usr_landlord_demo', 'Rajesh Sharma', 'landlord@rentroll.com', '$2b$10$YmPhB2QkFhsj4Vrkt2Yc1O/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC', 'landlord', '+91 98201 23456', '2026-01-15 09:00:00+00'),
 ('usr_tenant_demo', 'Priya Iyer', 'tenant@rentroll.com', '$2b$10$YmPhB2QkFhsj4Vrkt2Yc1O/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC', 'tenant', '+91 98450 87654', '2026-02-01 10:00:00+00'),
 ('usr_tenant_2', 'Aarav Mehta', 'aarav.mehta@example.in', '$2b$10$YmPhB2QkFhsj4Vrkt2Yc1O/d/IcsWLSnh5KJSB2pOsY3tUXAvI1RC', 'tenant', '+91 99102 34567', '2026-02-10 11:30:00+00'),
