@@ -1,19 +1,22 @@
 /**
- * RentRoll - REST API Client Service (Phase 2 Fullstack Integration)
+ * RentRoll - REST API Client Service (Phase 3 Django Fullstack Integration)
  * 
- * Communicates with the Express REST API backend (/api/*) using credentials (HttpOnly JWT cookies)
- * and Bearer Authorization headers. Automatically provides local client fallback if the server
- * is momentarily unreachable or running in a standalone file:// preview context.
+ * Communicates with the Django REST Framework backend (/api/*) using credentials (HttpOnly JWT cookies)
+ * and Bearer Authorization headers. Automatically connects to Django backend on port 8000 while
+ * providing local client fallback if the server is unreachable.
  */
 
 function getApiBase() {
   if (typeof window === 'undefined') return '/api';
   const { protocol, port, hostname } = window.location;
   if (protocol === 'file:') {
-    return 'http://localhost:3000/api';
+    return 'http://127.0.0.1:8000/api';
   }
-  if (port && port !== '3000') {
-    return `http://${hostname || 'localhost'}:3000/api`;
+  if (port === '8000') {
+    return '/api';
+  }
+  if (port && port !== '8000') {
+    return `http://${hostname || '127.0.0.1'}:8000/api`;
   }
   return '/api';
 }

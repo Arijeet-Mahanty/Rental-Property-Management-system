@@ -4,11 +4,13 @@
   "description": "> A high-performance, glassmorphic property management web application designed specifically for independent landlords managing 1 to 50 units and their tenants.",
   "main": "server/server.js",
   "scripts": {
-    "start": "node server/server.js",
-    "dev": "node --watch server/server.js",
-    "db:migrate": "node database/migrate.js",
-    "db:seed": "node database/seed.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "python manage.py runserver 8000",
+    "dev": "python manage.py runserver 8000",
+    "start:django": "python manage.py runserver 8000",
+    "start:node": "node server/server.js",
+    "db:migrate": "python manage.py migrate",
+    "db:seed": "python manage.py seed_indian_data",
+    "test": "python manage.py check"
   },
   "keywords": [],
   "author": "",
