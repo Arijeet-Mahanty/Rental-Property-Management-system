@@ -37,6 +37,8 @@ def serve_directory_asset(request, folder, subpath):
         content_type = 'text/css'
     elif str(filepath).endswith('.svg'):
         content_type = 'image/svg+xml'
+    elif str(filepath).endswith('.mp4'):
+        content_type = 'video/mp4'
 
     return FileResponse(open(filepath, 'rb'), content_type=content_type)
 
@@ -47,8 +49,8 @@ urlpatterns = [
     # REST API endpoints
     path('api/', include('api.urls')),
 
-    # Direct Static Asset Serving for CSS, JS, Assets, Data
-    re_path(r'^(?P<folder>css|js|assets|data)/(?P<subpath>.+)$', serve_directory_asset, name='serve_assets'),
+    # Direct Static Asset Serving for CSS, JS, Assets, Data, Videos
+    re_path(r'^(?P<folder>css|js|assets|data|videos)/(?P<subpath>.+)$', serve_directory_asset, name='serve_assets'),
 
     # Frontend HTML Pages
     path('', lambda req: serve_frontend_page(req, 'index.html'), name='root_index'),

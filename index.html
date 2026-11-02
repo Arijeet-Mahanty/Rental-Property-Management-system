@@ -17,9 +17,6 @@
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
   <link rel="stylesheet" href="css/pages.css">
-
-  <!-- Three.js (Local WebGL 3D Engine) -->
-  <script src="js/three.min.js"></script>
 </head>
 <body id="top">
   <a href="#main-content" class="skip-to-content">Skip to main content</a>
@@ -30,6 +27,14 @@
   <main id="main-content" class="main-content">
     <!-- Hero Section -->
     <section class="hero" aria-labelledby="hero-title">
+      <!-- Background Ambient Video -->
+      <div class="hero-video-bg-container" aria-hidden="true">
+        <video class="hero-video-bg" autoplay muted loop playsinline preload="auto">
+          <source src="videos/Hero_video.mp4" type="video/mp4">
+        </video>
+        <div class="hero-video-overlay"></div>
+      </div>
+
       <div class="container hero__grid">
         <div class="hero__content">
           <!-- <div class="hero__badge"> -->
@@ -67,40 +72,6 @@
             <div class="hero__stat-item">
               <span class="hero__stat-val">Zero</span>
               <span class="hero__stat-label">Spreadsheet Headaches</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Interactive 3D Model Hero Visual -->
-        <div class="hero__preview">
-          <!-- Hero 3D Frameless Container -->
-          <div class="hero-3d-frameless-wrap" id="hero-3d-card">
-            <!-- 3D Model WebGL Canvas directly on page -->
-            <div id="hero-3d-canvas-container" class="hero-3d-canvas-frameless" title="Click and drag to rotate the 3D property model"></div>
-
-            <!-- Controls kept cleanly around the model -->
-            <div class="hero-3d-controls-bar">
-              <div class="hero-3d-lighting-controls" role="group" aria-label="Lighting Mode">
-                <button type="button" class="hero-3d-mode-btn is-active" id="hero-3d-btn-day" title="Day Lighting Mode">
-                  <span>☀️ Day</span>
-                </button>
-                <button type="button" class="hero-3d-mode-btn" id="hero-3d-btn-sunset" title="Golden Sunset Lighting Mode">
-                  <span>🌅 Sunset</span>
-                </button>
-                <button type="button" class="hero-3d-mode-btn" id="hero-3d-btn-night" title="Cozy Night Lighting Mode">
-                  <span>🌙 Night</span>
-                </button>
-              </div>
-
-              <div class="hero-3d-actions">
-                <button type="button" class="hero-3d-tool-btn is-active" id="hero-3d-btn-autorotate" title="Toggle Auto-Rotation">
-                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"></path></svg>
-                  <span>Auto-Spin</span>
-                </button>
-                <button type="button" class="hero-3d-tool-btn" id="hero-3d-btn-reset" title="Reset Camera View">
-                  <span>Reset</span>
-                </button>
-              </div>
             </div>
           </div>
         </div>
@@ -174,7 +145,6 @@
       </div>
     </section>
 
-    <!-- Interactive 3D Property Showcase & Visual Portfolio -->
     <!-- Architecture & Portfolio Showcase -->
     <section class="portfolio-showcase-section" id="portfolio-architecture" aria-labelledby="portfolio-arch-title">
       <div class="container">

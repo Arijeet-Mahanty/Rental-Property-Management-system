@@ -5,7 +5,6 @@ import { injectNavbar, injectFooter, injectBackgroundBlobs, showToast } from './
 import { submitContactForm, submitFeedbackReview, getCurrentUser, getFeedbackReviews } from './api.js';
 import { initLoginForm, initSignupForm } from './auth.js';
 import { initDashboard } from './dashboard.js';
-import { initHero3D } from './three-models.js';
 
 function escapeHtml(str) {
   if (!str) return '';
@@ -25,12 +24,10 @@ document.addEventListener('DOMContentLoaded', () => {
   injectNavbar();
   injectFooter();
 
-  // 3. Initialize 3D Low-Poly WebGL Model on Landing Page (Frameless Hero)
-  if (document.getElementById('hero-3d-canvas-container')) {
-    initHero3D();
-  }
+  // 3. Initialize Landing Page Hero Background Video
+  initHeroVideo();
 
-  // 5. Landing Page Interactive Customer Feedback & Contact Us sections
+  // 4. Landing Page Interactive Customer Feedback & Contact Us sections
   initFeedbackSection();
   initContactForm();
 
@@ -67,6 +64,29 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 });
+
+/**
+ * Initializes Landing Page Hero Background Video Autoplay Safely
+ */
+function initHeroVideo() {
+  const video = document.querySelector('.hero-video-bg');
+  if (!video) return;
+
+  const playPromise = video.play();
+  if (playPromise !== undefined) {
+    playPromise.catch(() => {
+      const playOnInteraction = () => {
+        video.play().catch(() => {});
+        window.removeEventListener('click', playOnInteraction);
+        window.removeEventListener('touchstart', playOnInteraction);
+        window.removeEventListener('scroll', playOnInteraction);
+      };
+      window.addEventListener('click', playOnInteraction, { once: true, passive: true });
+      window.addEventListener('touchstart', playOnInteraction, { once: true, passive: true });
+      window.addEventListener('scroll', playOnInteraction, { once: true, passive: true });
+    });
+  }
+}
 
 /**
  * Initializes Customer Feedback & Verified Reviews section
