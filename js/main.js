@@ -367,9 +367,7 @@ function initFeedbackSection() {
     const initials = (rev.name || 'U').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'U';
     const isLandlord = rev.role !== 'tenant';
     const avatarClass = isLandlord ? 'feedback-card__avatar--indigo' : 'feedback-card__avatar--terracotta';
-    const roleBadge = isLandlord ? 'badge--landlord' : 'badge--tenant';
     const propName = rev.property_name || rev.propertyName || (isLandlord ? 'Rental Portfolio' : 'Resident Community');
-    const roleLabel = isLandlord ? `Landlord • ${propName}` : `Resident • ${propName}`;
     const ratingVal = Number(rev.rating) || 5;
     const starStr = '★'.repeat(ratingVal) + '☆'.repeat(Math.max(0, 5 - ratingVal));
 
@@ -387,7 +385,6 @@ function initFeedbackSection() {
             <div class="feedback-card__meta">${escapeHtml(propName)}</div>
           </div>
         </div>
-        <span class="badge ${roleBadge}">${roleLabel}</span>
       </div>
 
       <div class="feedback-card__stars">${starStr}</div>
