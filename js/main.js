@@ -118,17 +118,42 @@ function initFeedbackSection() {
   const commentInput = document.getElementById('feedback-comment');
   const submitBtn = document.getElementById('btn-submit-feedback');
 
-  // Update counts in filter tabs
+  // Set up Infinite Seamless Marquee Cloning & Speed Adjustment
+  function setupInfiniteMarquee() {
+    // 1. Remove all existing clone elements first to avoid exponential cloning
+    grid.querySelectorAll('.feedback-card--clone').forEach(c => c.remove());
+
+    // 2. Query visible original cards
+    const visibleCards = Array.from(grid.querySelectorAll('.feedback-card:not(.feedback-card--clone):not(.is-hidden)'));
+    if (visibleCards.length === 0) return;
+
+    // 3. Clone each visible card with .feedback-card--clone and aria-hidden="true"
+    visibleCards.forEach(card => {
+      const clone = card.cloneNode(true);
+      clone.classList.add('feedback-card--clone');
+      clone.setAttribute('aria-hidden', 'true');
+      grid.appendChild(clone);
+    });
+
+    // 4. Calculate animation duration so scroll speed is always silky-smooth (~52px/sec)
+    const cardWidth = 380 + 24; // card width + gap
+    const totalVisibleWidth = visibleCards.length * cardWidth;
+    const duration = Math.max(20, Math.round(totalVisibleWidth / 52));
+    grid.style.animationDuration = `${duration}s`;
+    grid.style.animationPlayState = 'running';
+  }
+
+  // Update counts in filter tabs (counts only unique original cards)
   function updateFilterCounts() {
-    const allCards = grid.querySelectorAll('.feedback-card');
+    const originalCards = grid.querySelectorAll('.feedback-card:not(.feedback-card--clone)');
     let landlordCount = 0;
     let tenantCount = 0;
-    allCards.forEach(card => {
+    originalCards.forEach(card => {
       const role = card.getAttribute('data-role');
       if (role === 'landlord') landlordCount++;
       if (role === 'tenant') tenantCount++;
     });
-    if (countAll) countAll.textContent = allCards.length;
+    if (countAll) countAll.textContent = originalCards.length;
     if (countLandlords) countLandlords.textContent = landlordCount;
     if (countTenants) countTenants.textContent = tenantCount;
   }
@@ -144,9 +169,9 @@ function initFeedbackSection() {
       btn.setAttribute('aria-selected', 'true');
 
       const filter = btn.getAttribute('data-filter');
-      const cards = grid.querySelectorAll('.feedback-card');
+      const originalCards = grid.querySelectorAll('.feedback-card:not(.feedback-card--clone)');
 
-      cards.forEach(card => {
+      originalCards.forEach(card => {
         const role = card.getAttribute('data-role');
         if (filter === 'all' || role === filter) {
           card.classList.remove('is-hidden');
@@ -154,10 +179,13 @@ function initFeedbackSection() {
           card.classList.add('is-hidden');
         }
       });
+
+      // Refresh infinite marquee with the newly visible subset
+      setupInfiniteMarquee();
     });
   });
 
-  // Helpful vote buttons
+  // Helpful vote buttons (syncs count across both original and clone card)
   grid.addEventListener('click', (e) => {
     const helpfulBtn = e.target.closest('.feedback-helpful-btn');
     if (!helpfulBtn) return;
@@ -167,12 +195,17 @@ function initFeedbackSection() {
       return;
     }
 
-    const countSpan = helpfulBtn.querySelector('.helpful-count');
-    if (countSpan) {
-      const current = parseInt(countSpan.textContent, 10) || 0;
-      countSpan.textContent = current + 1;
-    }
-    helpfulBtn.classList.add('is-helpful');
+    const revId = helpfulBtn.getAttribute('data-id');
+    const allMatching = revId ? grid.querySelectorAll(`.feedback-helpful-btn[data-id="${revId}"]`) : [helpfulBtn];
+    allMatching.forEach(btn => {
+      const countSpan = btn.querySelector('.helpful-count');
+      if (countSpan) {
+        const current = parseInt(countSpan.textContent, 10) || 0;
+        countSpan.textContent = current + 1;
+      }
+      btn.classList.add('is-helpful');
+    });
+
     showToast('Feedback Noted', 'Thank you for your vote of confidence!', 'success', 2000);
   });
 
@@ -374,6 +407,8 @@ function initFeedbackSection() {
     `;
 
     grid.prepend(card);
+    setupInfiniteMarquee();
+    updateFilterCounts();
   }
 
   // Load reviews from API and LocalStorage on page load
@@ -392,9 +427,11 @@ function initFeedbackSection() {
     stored.forEach(rev => renderReviewCard(rev, false));
 
     updateFilterCounts();
+    setupInfiniteMarquee();
   }
 
   loadFeedbackReviews();
+  setupInfiniteMarquee();
 
   // Submit Feedback Form (Enforced Authentication Check)
   if (formFeedback) {

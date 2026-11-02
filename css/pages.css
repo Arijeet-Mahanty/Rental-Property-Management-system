@@ -781,20 +781,104 @@
   color: #ffffff;
 }
 
-.feedback-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+/* Feedback Infinite Marquee Container - Smooth & Seamless */
+.feedback-marquee-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  padding: var(--space-4) 0;
+  /* Smooth edge fade out gradients on left & right */
+  mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 4%,
+    black 96%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(
+    to right,
+    transparent 0%,
+    black 4%,
+    black 96%,
+    transparent 100%
+  );
+}
+
+/* Continuous Marquee Track */
+.feedback-grid.feedback-marquee-track {
+  display: flex !important;
+  grid-template-columns: none !important;
+  width: max-content;
   gap: var(--space-6);
+  padding: var(--space-3) 0 var(--space-4);
+  margin: 0;
+  will-change: transform;
+  animation: feedbackMarqueeScroll 45s linear infinite;
+  user-select: none;
+}
+
+/* Pause smoothly when user hovers or interacts */
+.feedback-marquee-wrapper:hover .feedback-marquee-track,
+.feedback-marquee-track:hover,
+.feedback-marquee-track.is-paused {
+  animation-play-state: paused;
+}
+
+@keyframes feedbackMarqueeScroll {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* Card sizing inside marquee track */
+.feedback-grid.feedback-marquee-track .feedback-card {
+  flex: 0 0 380px;
+  width: 380px;
+  min-width: 380px;
+  max-width: 380px;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .feedback-grid.feedback-marquee-track .feedback-card {
+    flex: 0 0 330px;
+    width: 330px;
+    min-width: 330px;
+    max-width: 330px;
+  }
+}
+
+@media (max-width: 600px) {
+  .feedback-grid.feedback-marquee-track .feedback-card {
+    flex: 0 0 300px;
+    width: 300px;
+    min-width: 300px;
+    max-width: 300px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feedback-grid.feedback-marquee-track {
+    animation: none;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  .feedback-grid.feedback-marquee-track::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 @media (max-width: 1080px) {
-  .feedback-grid {
+  .feedback-grid:not(.feedback-track) {
     grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (max-width: 680px) {
-  .feedback-grid {
+  .feedback-grid:not(.feedback-track) {
     grid-template-columns: 1fr;
   }
 }
