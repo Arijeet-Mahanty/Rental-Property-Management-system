@@ -1469,6 +1469,12 @@ function openModal(modalId) {
         : cachedUnits;
       selectUnit.innerHTML = vacantOrAll.map(u => `<option value="${u.id}">${u.unit_number} — ${u.property_name || 'Property'} (${formatCurrency(u.rent_amount)}/mo)</option>`).join('');
     }
+  } else if (modalId === 'modal-record-payment') {
+    const selectLease = document.getElementById('pay-lease-select');
+    if (selectLease && cachedLeases.length) {
+      selectLease.innerHTML = '<option value="">Auto-match active tenant lease...</option>' +
+        cachedLeases.map(l => `<option value="${l.id}">${l.unit_number} — ${l.tenant_name} (${formatCurrency(l.rent_amount)})</option>`).join('');
+    }
   }
 
   modal.classList.add('is-open');
@@ -1603,8 +1609,11 @@ function setupModals(user) {
       e.preventDefault();
       const submitBtn = formPayment.querySelector('button[type="submit"]');
       submitBtn.classList.add('btn--loading');
+      const leaseSelect = formPayment.querySelector('#pay-lease-select');
+      const leaseId = leaseSelect ? leaseSelect.value : null;
       try {
         await createPayment({
+          lease_id: leaseId || undefined,
           amount: formPayment.querySelector('#pay-amount').value,
           payment_method: formPayment.querySelector('#pay-method').value,
           notes: formPayment.querySelector('#pay-notes').value

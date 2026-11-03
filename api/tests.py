@@ -1,6 +1,7 @@
 import json
 from django.test import TestCase, Client
 from django.urls import reverse
+from django.core.management import call_command
 from api.models import (
     User, Property, Unit, Lease, Payment, MaintenanceTicket, ContactMessage, FeedbackReview
 )
@@ -321,4 +322,185 @@ class RentRollBackendPhase3Tests(TestCase):
         data = res.json()
         self.assertTrue(data.get('success'))
         self.assertEqual(data.get('user', {}).get('role'), 'admin')
+
+    def test_clean_frontend_url_routes(self):
+        for route in ['/', '/index.html', '/dashboard', '/dashboard/', '/login', '/login/', '/signup', '/signup/', '/favicon.ico']:
+            res = self.client.get(route)
+            self.assertEqual(res.status_code, 200, f"Route {route} failed with status {res.status_code}")
+
+    def test_feedback_and_stats_data_keys(self):
+        # Stats returns data and stats
+        res_stats = self.client.get('/api/dashboard/stats', HTTP_AUTHORIZATION=f'Bearer {self.landlord_token}')
+        self.assertEqual(res_stats.status_code, 200)
+        stats_data = res_stats.json()
+        self.assertIn('data', stats_data)
+        self.assertIn('stats', stats_data)
+
+        # Feedback returns reviews and data
+        res_fb = self.client.get('/api/feedback')
+        self.assertEqual(res_fb.status_code, 200)
+        fb_data = res_fb.json()
+        self.assertIn('reviews', fb_data)
+        self.assertIn('data', fb_data)
+
+    def test_query_param_token_auth(self):
+        res = self.client.get(f'/api/auth/me?token={self.tenant_token}')
+        self.assertEqual(res.status_code, 200)
+        self.assertEqual(res.json().get('user', {}).get('name'), 'Priya Iyer')
+
+
+class IndianDemoDataPersistenceTests(TestCase):
+    """
+    Test suite verifying database persistence across all entities
+    using the realistic Indian market demo personas, properties, and payment rails.
+    """
+    def setUp(self):
+        self.client = Client()
+        # Seed the realistic Indian demo database
+        call_command('seed_indian_data', verbosity=0)
+
+        # Retrieve seeded demo profiles
+        self.admin = User.objects.get(email='admin@rentroll.com')
+        self.landlord_rajesh = User.objects.get(email='landlord@rentroll.com')
+        self.tenant_priya = User.objects.get(email='tenant@rentroll.com')
+        self.tenant_aarav = User.objects.get(email='aarav.mehta@example.in')
+
+        self.admin_token = generate_jwt_token(self.admin)
+        self.rajesh_token = generate_jwt_token(self.landlord_rajesh)
+        self.priya_token = generate_jwt_token(self.tenant_priya)
+
+    def test_seed_command_persists_full_indian_portfolio(self):
+        # 1. Indian Users
+        self.assertEqual(User.objects.count(), 7)
+        self.assertTrue(User.objects.filter(name='Arjun Singhania', role='admin').exists())
+        self.assertTrue(User.objects.filter(name='Rajesh Sharma', role='landlord').exists())
+        self.assertTrue(User.objects.filter(name='Priya Iyer', role='tenant').exists())
+
+        # 2. Indian Properties
+        self.assertEqual(Property.objects.count(), 4)
+        gulmohar = Property.objects.get(id='prop_1')
+        self.assertEqual(gulmohar.name, 'Gulmohar Residency')
+        self.assertEqual(gulmohar.city, 'Bengaluru')
+
+        # 3. Units & Doors
+        self.assertEqual(Unit.objects.count(), 18)
+        self.assertTrue(Unit.objects.filter(property=gulmohar, unit_number='Flat 4B').exists())
+
+        # 4. Leases
+        self.assertGreaterEqual(Lease.objects.filter(status='active').count(), 3)
+
+        # 5. Ledger Payments
+        self.assertGreaterEqual(Payment.objects.count(), 6)
+        self.assertTrue(Payment.objects.filter(payment_method='upi').exists())
+
+        # 6. Maintenance Work Orders
+        self.assertGreaterEqual(MaintenanceTicket.objects.count(), 3)
+
+        # 7. Inquiries & Reviews
+        self.assertGreaterEqual(FeedbackReview.objects.count(), 3)
+        self.assertGreaterEqual(ContactMessage.objects.count(), 2)
+
+    def test_demo_landlord_rajesh_creates_unit_in_gulmohar_residency(self):
+        res = self.client.post('/api/units', {
+            'property_id': 'prop_1',
+            'unit_number': 'Flat 5C',
+            'bedrooms': 3,
+            'bathrooms': 3.0,
+            'square_feet': 1650,
+            'rent_amount': 45000,
+            'deposit_amount': 135000,
+            'notes': 'Park-facing 3BHK flat'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+        self.assertEqual(res.status_code, 201)
+        unit_id = res.json().get('data', {}).get('id')
+        self.assertTrue(Unit.objects.filter(id=unit_id, unit_number='Flat 5C').exists())
+
+    def test_demo_landlord_creates_lease_and_updates_occupancy(self):
+        # Create vacant unit
+        vacant_unit = Unit.objects.create(
+            property_id='prop_1',
+            unit_number='Studio 101',
+            rent_amount=20000,
+            deposit_amount=60000,
+            status='vacant'
+        )
+        self.assertEqual(vacant_unit.status, 'vacant')
+
+        # Create lease for tenant Aarav Mehta
+        res = self.client.post('/api/leases', {
+            'unit_id': vacant_unit.id,
+            'tenant_email': 'aarav.mehta@example.in',
+            'start_date': '2026-11-01',
+            'end_date': '2027-10-31',
+            'rent_amount': 20000,
+            'deposit_amount': 60000,
+            'terms': 'Standard 11-month registered rental agreement.'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+        self.assertEqual(res.status_code, 201)
+        lease_id = res.json().get('data', {}).get('id')
+        self.assertTrue(Lease.objects.filter(id=lease_id).exists())
+
+        # Verify unit status automatically transitioned to occupied in database
+        vacant_unit.refresh_from_db()
+        self.assertEqual(vacant_unit.status, 'occupied')
+
+    def test_demo_tenant_priya_iyer_pays_rent_via_upi_autoplay(self):
+        res = self.client.post('/api/payments', {
+            'amount': 28500,
+            'payment_method': 'upi',
+            'notes': 'November 2026 Rent - Flat 4B via UPI AutoPay'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.priya_token}')
+        self.assertEqual(res.status_code, 201)
+        pay_id = res.json().get('data', {}).get('id')
+
+        # Verify persistent record in SQLite database
+        payment = Payment.objects.get(id=pay_id)
+        self.assertEqual(payment.tenant, self.tenant_priya)
+        self.assertEqual(payment.amount, 28500.0)
+        self.assertEqual(payment.payment_method, 'upi')
+        self.assertEqual(payment.status, 'paid')
+
+    def test_demo_tenant_submits_and_landlord_resolves_maintenance_ticket(self):
+        # Priya submits Urban Company RO water purifier ticket
+        res = self.client.post('/api/maintenance', {
+            'title': 'Urban Company RO Purifier Filter Service',
+            'category': 'appliance',
+            'priority': 'medium',
+            'description': 'Annual sediment and carbon filter replacement needed.'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.priya_token}')
+        self.assertEqual(res.status_code, 201)
+        ticket_id = res.json().get('data', {}).get('id')
+        self.assertTrue(MaintenanceTicket.objects.filter(id=ticket_id).exists())
+
+        # Rajesh moves ticket to in_progress
+        res_progress = self.client.put(f'/api/maintenance/{ticket_id}', {
+            'status': 'in_progress',
+            'resolution_notes': 'Urban Company service booked for Friday 11 AM.'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+        self.assertEqual(res_progress.status_code, 200)
+
+        # Rajesh marks ticket resolved
+        res_resolved = self.client.put(f'/api/maintenance/{ticket_id}', {
+            'status': 'resolved',
+            'actual_cost': 1250,
+            'resolution_notes': 'New filters installed. TDS level tested at 85.'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+        self.assertEqual(res_resolved.status_code, 200)
+
+        ticket = MaintenanceTicket.objects.get(id=ticket_id)
+        self.assertEqual(ticket.status, 'resolved')
+        self.assertEqual(ticket.actual_cost, 1250.0)
+
+    def test_demo_feedback_review_upvote_persists_in_database(self):
+        # Review rev_1 from seed data
+        review = FeedbackReview.objects.first()
+        self.assertIsNotNone(review)
+        initial_count = review.helpful_count
+
+        res = self.client.post(f'/api/feedback/{review.id}/helpful')
+        self.assertEqual(res.status_code, 200)
+        review.refresh_from_db()
+        self.assertEqual(review.helpful_count, initial_count + 1)
+
+
 

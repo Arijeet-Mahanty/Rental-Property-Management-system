@@ -304,6 +304,12 @@
         <button type="button" class="neo-modal-close" aria-label="Close modal">&times;</button>
       </div>
       <form id="form-record-payment">
+        <div class="form-group" id="pay-lease-group">
+          <label class="form-label" for="pay-lease-select">Select Lease &amp; Tenant</label>
+          <select id="pay-lease-select" class="form-control">
+            <option value="">Auto-match active tenant lease...</option>
+          </select>
+        </div>
         <div class="form-group">
           <label class="form-label" for="pay-amount">Payment Amount (₹) *</label>
           <input type="number" id="pay-amount" class="form-control" placeholder="28500" step="1" min="1" required>

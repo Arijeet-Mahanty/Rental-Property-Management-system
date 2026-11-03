@@ -12,12 +12,11 @@ function getApiBase() {
   if (protocol === 'file:') {
     return 'http://127.0.0.1:8000/api';
   }
-  if (port === '8000') {
-    return '/api';
-  }
-  if (port && port !== '8000') {
+  // When running on standard frontend dev servers (Live Server 5500, Node 3000, Vite 5173), route to Django on 8000
+  if (port && ['3000', '5000', '5173', '5500'].includes(port)) {
     return `http://${hostname || '127.0.0.1'}:8000/api`;
   }
+  // When running directly via Django on port 8000 or any standard server/domain, use relative /api
   return '/api';
 }
 
@@ -415,6 +414,16 @@ export async function getFeedbackReviews() {
     method: 'GET'
   });
   return res.reviews || [];
+}
+
+/**
+ * Increments helpful count for a review.
+ */
+export async function upvoteFeedbackReview(reviewId) {
+  const res = await request(`/feedback/${encodeURIComponent(reviewId)}/helpful`, {
+    method: 'POST'
+  });
+  return res;
 }
 
 /**

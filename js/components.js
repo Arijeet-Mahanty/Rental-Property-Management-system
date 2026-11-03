@@ -162,8 +162,8 @@ export function injectNavbar() {
   let mobileAuthActionsHtml = '';
 
   if (currentUser) {
-    const roleBadgeClass = currentUser.role === 'landlord' ? 'badge--landlord' : 'badge--tenant';
-    const roleLabel = currentUser.role === 'landlord' ? 'Landlord' : 'Tenant';
+    const roleBadgeClass = currentUser.role === 'admin' ? 'badge--admin' : (currentUser.role === 'landlord' ? 'badge--landlord' : 'badge--tenant');
+    const roleLabel = currentUser.role === 'admin' ? 'Admin' : (currentUser.role === 'landlord' ? 'Landlord' : 'Tenant');
     const initials = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U';
 
     authActionsHtml = `

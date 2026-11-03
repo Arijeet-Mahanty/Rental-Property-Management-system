@@ -81,6 +81,12 @@ def get_authenticated_user(request):
         if cookie_val and cookie_val not in ('null', 'undefined'):
             token = cookie_val.strip()
 
+    # Check query parameter token fallback
+    if not token and hasattr(request, 'GET') and 'token' in request.GET:
+        get_val = request.GET.get('token')
+        if get_val and get_val not in ('null', 'undefined'):
+            token = get_val.strip()
+
     if not token:
         return None
 

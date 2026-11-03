@@ -2,7 +2,7 @@
  * RentRoll - Main Entry Point
  */
 import { injectNavbar, injectFooter, injectBackgroundBlobs, showToast } from './components.js';
-import { submitContactForm, submitFeedbackReview, getCurrentUser, getFeedbackReviews } from './api.js';
+import { submitContactForm, submitFeedbackReview, getCurrentUser, getFeedbackReviews, upvoteFeedbackReview } from './api.js';
 import { initLoginForm, initSignupForm } from './auth.js';
 import { initDashboard } from './dashboard.js';
 
@@ -76,7 +76,7 @@ function initHeroVideo() {
   if (playPromise !== undefined) {
     playPromise.catch(() => {
       const playOnInteraction = () => {
-        video.play().catch(() => {});
+        video.play().catch(() => { });
         window.removeEventListener('click', playOnInteraction);
         window.removeEventListener('touchstart', playOnInteraction);
         window.removeEventListener('scroll', playOnInteraction);
@@ -189,7 +189,7 @@ function initFeedbackSection() {
   grid.addEventListener('click', (e) => {
     const helpfulBtn = e.target.closest('.feedback-helpful-btn');
     if (!helpfulBtn) return;
-    
+
     if (helpfulBtn.classList.contains('is-helpful')) {
       showToast('Already Marked', 'You have already marked this review as helpful.', 'info', 2000);
       return;
@@ -205,6 +205,10 @@ function initFeedbackSection() {
       }
       btn.classList.add('is-helpful');
     });
+
+    if (revId) {
+      upvoteFeedbackReview(revId).catch(() => { });
+    }
 
     showToast('Feedback Noted', 'Thank you for your vote of confidence!', 'success', 2000);
   });

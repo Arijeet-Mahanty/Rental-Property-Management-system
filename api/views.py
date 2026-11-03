@@ -310,6 +310,25 @@ def signup_view(request):
     if request.method != 'POST':
         return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
 
+
+@csrf_exempt
+def feedback_helpful_view(request, review_id):
+    """POST /api/feedback/<review_id>/helpful"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+    rev = FeedbackReview.objects.filter(id=review_id).first()
+    if not rev:
+        return JsonResponse({'success': True, 'message': 'Helpful vote recorded', 'helpful_count': 1})
+
+    rev.helpful_count += 1
+    rev.save()
+    return JsonResponse({
+        'success': True,
+        'message': 'Helpful vote recorded',
+        'helpful_count': rev.helpful_count
+    })
+
     try:
         body = json.loads(request.body)
     except Exception:
@@ -365,6 +384,25 @@ def login_view(request):
     """POST /api/auth/login"""
     if request.method != 'POST':
         return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+
+@csrf_exempt
+def feedback_helpful_view(request, review_id):
+    """POST /api/feedback/<review_id>/helpful"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+    rev = FeedbackReview.objects.filter(id=review_id).first()
+    if not rev:
+        return JsonResponse({'success': True, 'message': 'Helpful vote recorded', 'helpful_count': 1})
+
+    rev.helpful_count += 1
+    rev.save()
+    return JsonResponse({
+        'success': True,
+        'message': 'Helpful vote recorded',
+        'helpful_count': rev.helpful_count
+    })
 
     try:
         body = json.loads(request.body)
@@ -467,12 +505,12 @@ def dashboard_stats_view(request):
     user = get_authenticated_user(request)
     if not user:
         # Fallback to demo landlord if preview
-        user = User.objects.filter(id='usr_landlord_demo').first()
+        user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
         if not user:
             return JsonResponse({'success': False, 'message': 'Authentication required.'}, status=401)
 
     stats = compute_dashboard_stats(user)
-    return JsonResponse({'success': True, 'data': stats})
+    return JsonResponse({'success': True, 'data': stats, 'stats': stats})
 
 
 @csrf_exempt
@@ -480,7 +518,7 @@ def properties_view(request):
     """GET & POST /api/properties"""
     user = get_authenticated_user(request)
     if not user:
-        user = User.objects.filter(id='usr_landlord_demo').first()
+        user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
 
     if request.method == 'GET':
         if not user:
@@ -535,11 +573,30 @@ def properties_view(request):
 
 
 @csrf_exempt
+def feedback_helpful_view(request, review_id):
+    """POST /api/feedback/<review_id>/helpful"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+    rev = FeedbackReview.objects.filter(id=review_id).first()
+    if not rev:
+        return JsonResponse({'success': True, 'message': 'Helpful vote recorded', 'helpful_count': 1})
+
+    rev.helpful_count += 1
+    rev.save()
+    return JsonResponse({
+        'success': True,
+        'message': 'Helpful vote recorded',
+        'helpful_count': rev.helpful_count
+    })
+
+
+@csrf_exempt
 def property_detail_view(request, property_id):
     """GET & DELETE /api/properties/<id>"""
     user = get_authenticated_user(request)
     if not user:
-        user = User.objects.filter(id='usr_landlord_demo').first()
+        user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
 
     prop = Property.objects.filter(id=property_id).first()
     if not prop:
@@ -560,11 +617,30 @@ def property_detail_view(request, property_id):
 
 
 @csrf_exempt
+def feedback_helpful_view(request, review_id):
+    """POST /api/feedback/<review_id>/helpful"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+    rev = FeedbackReview.objects.filter(id=review_id).first()
+    if not rev:
+        return JsonResponse({'success': True, 'message': 'Helpful vote recorded', 'helpful_count': 1})
+
+    rev.helpful_count += 1
+    rev.save()
+    return JsonResponse({
+        'success': True,
+        'message': 'Helpful vote recorded',
+        'helpful_count': rev.helpful_count
+    })
+
+
+@csrf_exempt
 def units_view(request):
     """GET & POST /api/units"""
     user = get_authenticated_user(request)
     if not user:
-        user = User.objects.filter(id='usr_landlord_demo').first()
+        user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
 
     if request.method == 'GET':
         property_id = request.GET.get('propertyId')
@@ -624,10 +700,48 @@ def units_view(request):
 
 
 @csrf_exempt
+def feedback_helpful_view(request, review_id):
+    """POST /api/feedback/<review_id>/helpful"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+    rev = FeedbackReview.objects.filter(id=review_id).first()
+    if not rev:
+        return JsonResponse({'success': True, 'message': 'Helpful vote recorded', 'helpful_count': 1})
+
+    rev.helpful_count += 1
+    rev.save()
+    return JsonResponse({
+        'success': True,
+        'message': 'Helpful vote recorded',
+        'helpful_count': rev.helpful_count
+    })
+
+
+@csrf_exempt
 def unit_detail_view(request, unit_id):
     """PUT /api/units/<id>"""
     if request.method != 'PUT':
         return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+
+@csrf_exempt
+def feedback_helpful_view(request, review_id):
+    """POST /api/feedback/<review_id>/helpful"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+    rev = FeedbackReview.objects.filter(id=review_id).first()
+    if not rev:
+        return JsonResponse({'success': True, 'message': 'Helpful vote recorded', 'helpful_count': 1})
+
+    rev.helpful_count += 1
+    rev.save()
+    return JsonResponse({
+        'success': True,
+        'message': 'Helpful vote recorded',
+        'helpful_count': rev.helpful_count
+    })
 
     user = get_authenticated_user(request)
     unit = Unit.objects.filter(id=unit_id).first()
@@ -672,7 +786,7 @@ def leases_view(request):
     """GET & POST /api/leases"""
     user = get_authenticated_user(request)
     if not user:
-        user = User.objects.filter(id='usr_landlord_demo').first()
+        user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
 
     if request.method == 'GET':
         if not user:
@@ -761,11 +875,30 @@ def leases_view(request):
 
 
 @csrf_exempt
+def feedback_helpful_view(request, review_id):
+    """POST /api/feedback/<review_id>/helpful"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+    rev = FeedbackReview.objects.filter(id=review_id).first()
+    if not rev:
+        return JsonResponse({'success': True, 'message': 'Helpful vote recorded', 'helpful_count': 1})
+
+    rev.helpful_count += 1
+    rev.save()
+    return JsonResponse({
+        'success': True,
+        'message': 'Helpful vote recorded',
+        'helpful_count': rev.helpful_count
+    })
+
+
+@csrf_exempt
 def payments_view(request):
     """GET & POST /api/payments"""
     user = get_authenticated_user(request)
     if not user:
-        user = User.objects.filter(id='usr_landlord_demo').first()
+        user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
 
     if request.method == 'GET':
         if not user:
@@ -797,16 +930,20 @@ def payments_view(request):
         # Determine payer & landlord
         if user and user.role == 'tenant':
             tenant = user
-            landlord = User.objects.filter(id='usr_landlord_demo').first()
-            if not landlord:
-                landlord = User.objects.filter(role='landlord').first()
+            active_lease = Lease.objects.filter(tenant=user, status='active').first()
+            if active_lease:
+                landlord = active_lease.landlord
+                lease = active_lease
+            else:
+                landlord = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
+                lease = None
         else:
             tenant_id = body.get('tenant_id')
-            tenant = User.objects.filter(id=tenant_id).first() if tenant_id else User.objects.filter(id='usr_tenant_demo').first()
-            landlord = user if (user and user.role == 'landlord') else User.objects.filter(id='usr_landlord_demo').first()
+            tenant = User.objects.filter(id=tenant_id).first() if tenant_id else (User.objects.filter(id='usr_tenant_demo').first() or User.objects.filter(role='tenant').first())
+            landlord = user if (user and user.role == 'landlord') else (User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first())
 
-        lease_id = body.get('lease_id')
-        lease = Lease.objects.filter(id=lease_id).first() if lease_id else Lease.objects.filter(tenant=tenant).first()
+            lease_id = body.get('lease_id')
+            lease = Lease.objects.filter(id=lease_id).first() if lease_id else (Lease.objects.filter(tenant=tenant).first() if tenant else None)
 
         due_date = body.get('due_date') or str(datetime.date.today())
         payment = Payment.objects.create(
@@ -832,11 +969,30 @@ def payments_view(request):
 
 
 @csrf_exempt
+def feedback_helpful_view(request, review_id):
+    """POST /api/feedback/<review_id>/helpful"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+    rev = FeedbackReview.objects.filter(id=review_id).first()
+    if not rev:
+        return JsonResponse({'success': True, 'message': 'Helpful vote recorded', 'helpful_count': 1})
+
+    rev.helpful_count += 1
+    rev.save()
+    return JsonResponse({
+        'success': True,
+        'message': 'Helpful vote recorded',
+        'helpful_count': rev.helpful_count
+    })
+
+
+@csrf_exempt
 def maintenance_view(request):
     """GET & POST /api/maintenance"""
     user = get_authenticated_user(request)
     if not user:
-        user = User.objects.filter(id='usr_landlord_demo').first()
+        user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
 
     if request.method == 'GET':
         if not user:
@@ -877,13 +1033,18 @@ def maintenance_view(request):
             active_lease = Lease.objects.filter(tenant=user, status='active').first()
             unit = active_lease.unit if active_lease else None
             prop = unit.property if unit else Property.objects.first()
-            landlord = active_lease.landlord if active_lease else (prop.landlord if prop else User.objects.filter(role='landlord').first())
+            landlord = active_lease.landlord if active_lease else (prop.landlord if prop else (User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()))
         else:
-            landlord = user if (user and user.role == 'landlord') else User.objects.filter(role='landlord').first()
-            tenant = User.objects.filter(id='usr_tenant_demo').first()
+            landlord = user if (user and user.role == 'landlord') else (User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first())
+            tenant = User.objects.filter(id='usr_tenant_demo').first() or User.objects.filter(role='tenant').first() or user
             unit_id = body.get('unit_id')
             unit = Unit.objects.filter(id=unit_id).first() if unit_id else Unit.objects.first()
             prop = unit.property if unit else Property.objects.first()
+
+        if not prop:
+            prop = Property.objects.first()
+        if not landlord:
+            landlord = User.objects.filter(role='landlord').first() or user
 
         tkt = MaintenanceTicket.objects.create(
             property=prop,
@@ -908,10 +1069,48 @@ def maintenance_view(request):
 
 
 @csrf_exempt
+def feedback_helpful_view(request, review_id):
+    """POST /api/feedback/<review_id>/helpful"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+    rev = FeedbackReview.objects.filter(id=review_id).first()
+    if not rev:
+        return JsonResponse({'success': True, 'message': 'Helpful vote recorded', 'helpful_count': 1})
+
+    rev.helpful_count += 1
+    rev.save()
+    return JsonResponse({
+        'success': True,
+        'message': 'Helpful vote recorded',
+        'helpful_count': rev.helpful_count
+    })
+
+
+@csrf_exempt
 def maintenance_detail_view(request, ticket_id):
     """PUT /api/maintenance/<id>"""
     if request.method != 'PUT':
         return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+
+@csrf_exempt
+def feedback_helpful_view(request, review_id):
+    """POST /api/feedback/<review_id>/helpful"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+    rev = FeedbackReview.objects.filter(id=review_id).first()
+    if not rev:
+        return JsonResponse({'success': True, 'message': 'Helpful vote recorded', 'helpful_count': 1})
+
+    rev.helpful_count += 1
+    rev.save()
+    return JsonResponse({
+        'success': True,
+        'message': 'Helpful vote recorded',
+        'helpful_count': rev.helpful_count
+    })
 
     user = get_authenticated_user(request)
     tkt = MaintenanceTicket.objects.filter(id=ticket_id).first()
@@ -947,6 +1146,25 @@ def contact_view(request):
     """POST /api/contact"""
     if request.method != 'POST':
         return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+
+@csrf_exempt
+def feedback_helpful_view(request, review_id):
+    """POST /api/feedback/<review_id>/helpful"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+    rev = FeedbackReview.objects.filter(id=review_id).first()
+    if not rev:
+        return JsonResponse({'success': True, 'message': 'Helpful vote recorded', 'helpful_count': 1})
+
+    rev.helpful_count += 1
+    rev.save()
+    return JsonResponse({
+        'success': True,
+        'message': 'Helpful vote recorded',
+        'helpful_count': rev.helpful_count
+    })
 
     try:
         body = json.loads(request.body)
@@ -985,9 +1203,11 @@ def feedback_view(request):
     """GET & POST /api/feedback"""
     if request.method == 'GET':
         reviews = FeedbackReview.objects.all()
+        serialized_reviews = [serialize_review(r) for r in reviews]
         return JsonResponse({
             'success': True,
-            'reviews': [serialize_review(r) for r in reviews]
+            'reviews': serialized_reviews,
+            'data': serialized_reviews
         })
 
     elif request.method == 'POST':
@@ -1025,13 +1245,53 @@ def feedback_view(request):
             verified=True
         )
 
+        serialized = serialize_review(rev)
         return JsonResponse({
             'success': True,
             'message': 'Thank you for your feedback! Your review has been published.',
-            'review': serialize_review(rev)
+            'review': serialized,
+            'data': serialized
         }, status=201)
 
     return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+
+
+@csrf_exempt
+def feedback_helpful_view(request, review_id):
+    """POST /api/feedback/<review_id>/helpful"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+    rev = FeedbackReview.objects.filter(id=review_id).first()
+    if not rev:
+        return JsonResponse({'success': True, 'message': 'Helpful vote recorded', 'helpful_count': 1})
+
+    rev.helpful_count += 1
+    rev.save()
+    return JsonResponse({
+        'success': True,
+        'message': 'Helpful vote recorded',
+        'helpful_count': rev.helpful_count
+    })
+
+@csrf_exempt
+def feedback_helpful_view(request, review_id):
+    """POST /api/feedback/<review_id>/helpful"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+    rev = FeedbackReview.objects.filter(id=review_id).first()
+    if not rev:
+        return JsonResponse({'success': True, 'message': 'Helpful vote recorded', 'helpful_count': 1})
+
+    rev.helpful_count += 1
+    rev.save()
+    return JsonResponse({
+        'success': True,
+        'message': 'Helpful vote recorded',
+        'helpful_count': rev.helpful_count
+    })
 
 
 @csrf_exempt

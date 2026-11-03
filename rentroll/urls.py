@@ -56,7 +56,16 @@ urlpatterns = [
     path('', lambda req: serve_frontend_page(req, 'index.html'), name='root_index'),
     path('index.html', lambda req: serve_frontend_page(req, 'index.html'), name='page_index'),
     path('dashboard.html', lambda req: serve_frontend_page(req, 'dashboard.html'), name='page_dashboard'),
+    path('dashboard', lambda req: serve_frontend_page(req, 'dashboard.html')),
+    path('dashboard/', lambda req: serve_frontend_page(req, 'dashboard.html')),
     path('login.html', lambda req: serve_frontend_page(req, 'login.html'), name='page_login'),
+    path('login', lambda req: serve_frontend_page(req, 'login.html')),
+    path('login/', lambda req: serve_frontend_page(req, 'login.html')),
     path('signup.html', lambda req: serve_frontend_page(req, 'signup.html'), name='page_signup'),
+    path('signup', lambda req: serve_frontend_page(req, 'signup.html')),
+    path('signup/', lambda req: serve_frontend_page(req, 'signup.html')),
+
+    # Favicon fallback
+    path('favicon.ico', lambda req: serve_directory_asset(req, 'assets', 'logo.svg')),
 ]
 

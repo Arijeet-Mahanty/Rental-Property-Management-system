@@ -37,6 +37,7 @@ urlpatterns = [
 
     # Feedback & Reviews
     re_path(r'^feedback/?$', views.feedback_view, name='api_feedback'),
+    re_path(r'^feedback/(?P<review_id>[^/]+)/helpful/?$', views.feedback_helpful_view, name='api_feedback_helpful'),
 
     # Admin Command Center endpoints
     re_path(r'^admin/users/?$', views.admin_users_view, name='api_admin_users'),
