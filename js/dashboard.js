@@ -161,8 +161,9 @@ async function refreshDashboardData(user) {
     cachedInquiries = (adminInquiries && adminInquiries.inquiries) || [];
     cachedReviews = (adminInquiries && adminInquiries.reviews) || [];
 
-    // Update Tab Counts
+    // Update Tab Counts and Form Dropdowns
     updateTabBadges(isLandlord, isAdmin);
+    updateModalDropdowns();
 
     // Render active tab
     renderActiveTab(user);
@@ -1123,7 +1124,11 @@ function renderPropertiesTab(container, isLandlord, isAdmin) {
           <div class="property-card__footer">
             <span style="font-size: var(--font-size-xs); color: var(--color-text-subtle);">${prop.occupied_units_count || 0} Leased Units</span>
             ${canManage ? `
-              <div style="display: flex; gap: var(--space-2);">
+              <div style="display: flex; gap: var(--space-2); align-items: center;">
+                <button type="button" class="btn btn--outline btn--sm btn-card-add-unit" data-prop-id="${prop.id}" title="Add Door to this Property">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                  <span>+ Door</span>
+                </button>
                 <button type="button" class="btn btn--ghost btn--sm btn-delete-prop" data-prop-id="${prop.id}" title="Delete Property">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
                 </button>
@@ -1176,6 +1181,19 @@ function renderPropertiesTab(container, isLandlord, isAdmin) {
 
   document.getElementById('btn-tab-add-property')?.addEventListener('click', () => openModal('modal-add-property'));
   document.getElementById('btn-tab-add-unit')?.addEventListener('click', () => openModal('modal-add-unit'));
+
+  // Add unit directly to specific property
+  container.querySelectorAll('.btn-card-add-unit').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const propId = btn.getAttribute('data-prop-id');
+      const selectProp = document.getElementById('unit-property-select');
+      if (selectProp && propId) {
+        selectProp.value = propId;
+      }
+      openModal('modal-add-unit');
+    });
+  });
 
   // Delete property handlers
   container.querySelectorAll('.btn-delete-prop').forEach(btn => {
@@ -1452,30 +1470,57 @@ function renderMaintenanceTab(container, isLandlord, isAdmin) {
 // ============================================================================
 // 6. MODALS SETUP & HANDLERS
 // ============================================================================
+function updateModalDropdowns() {
+  // 1. Property dropdown in Add Unit modal
+  const selectProp = document.getElementById('unit-property-select');
+  if (selectProp && cachedProperties.length) {
+    const curVal = selectProp.value;
+    selectProp.innerHTML = cachedProperties.map(p => `<option value="${p.id}">${p.name} (${p.city || ''})</option>`).join('');
+    if (curVal && cachedProperties.some(p => p.id === curVal)) {
+      selectProp.value = curVal;
+    }
+  }
+
+  // 2. Unit dropdown in Create Lease modal
+  const selectUnit = document.getElementById('lease-unit-select');
+  if (selectUnit && cachedUnits.length) {
+    const vacantUnits = cachedUnits.filter(u => u.status === 'vacant');
+    const displayUnits = vacantUnits.length > 0 ? vacantUnits : cachedUnits;
+    const curUnitVal = selectUnit.value;
+    selectUnit.innerHTML = displayUnits.map(u => `<option value="${u.id}">${u.unit_number} — ${u.property_name || 'Property'} (${formatCurrency(u.rent_amount)}/mo)</option>`).join('');
+    if (curUnitVal && displayUnits.some(u => u.id === curUnitVal)) {
+      selectUnit.value = curUnitVal;
+    }
+
+    // Auto-populate initial rent/deposit for currently selected unit
+    const activeUnit = displayUnits.find(u => u.id === selectUnit.value) || displayUnits[0];
+    const rentInput = document.getElementById('lease-rent');
+    const depositInput = document.getElementById('lease-deposit');
+    if (activeUnit && rentInput && !rentInput.value) {
+      rentInput.value = activeUnit.rent_amount || '';
+    }
+    if (activeUnit && depositInput && !depositInput.value) {
+      depositInput.value = activeUnit.deposit_amount || (activeUnit.rent_amount ? activeUnit.rent_amount * 2 : '');
+    }
+  }
+
+  // 3. Lease dropdown in Record Payment modal
+  const selectLease = document.getElementById('pay-lease-select');
+  if (selectLease && cachedLeases.length) {
+    const curLeaseVal = selectLease.value;
+    selectLease.innerHTML = '<option value="">Auto-match active tenant lease...</option>' +
+      cachedLeases.map(l => `<option value="${l.id}">${l.unit_number} — ${l.tenant_name} (${formatCurrency(l.rent_amount)})</option>`).join('');
+    if (curLeaseVal && cachedLeases.some(l => l.id === curLeaseVal)) {
+      selectLease.value = curLeaseVal;
+    }
+  }
+}
+
 function openModal(modalId) {
   const modal = document.getElementById(modalId);
   if (!modal) return;
 
-  if (modalId === 'modal-add-unit') {
-    const selectProp = document.getElementById('unit-property-select');
-    if (selectProp && cachedProperties.length) {
-      selectProp.innerHTML = cachedProperties.map(p => `<option value="${p.id}">${p.name} (${p.city || ''})</option>`).join('');
-    }
-  } else if (modalId === 'modal-create-lease') {
-    const selectUnit = document.getElementById('lease-unit-select');
-    if (selectUnit && cachedUnits.length) {
-      const vacantOrAll = cachedUnits.filter(u => u.status === 'vacant').length > 0 
-        ? cachedUnits.filter(u => u.status === 'vacant')
-        : cachedUnits;
-      selectUnit.innerHTML = vacantOrAll.map(u => `<option value="${u.id}">${u.unit_number} — ${u.property_name || 'Property'} (${formatCurrency(u.rent_amount)}/mo)</option>`).join('');
-    }
-  } else if (modalId === 'modal-record-payment') {
-    const selectLease = document.getElementById('pay-lease-select');
-    if (selectLease && cachedLeases.length) {
-      selectLease.innerHTML = '<option value="">Auto-match active tenant lease...</option>' +
-        cachedLeases.map(l => `<option value="${l.id}">${l.unit_number} — ${l.tenant_name} (${formatCurrency(l.rent_amount)})</option>`).join('');
-    }
-  }
+  updateModalDropdowns();
 
   modal.classList.add('is-open');
   modal.setAttribute('aria-hidden', 'false');
@@ -1490,6 +1535,37 @@ function closeModal(modal) {
 }
 
 function setupModals(user) {
+  // Populate dropdowns initially
+  updateModalDropdowns();
+
+  // Dynamic auto-fill on dropdown change
+  const selectLeaseUnit = document.getElementById('lease-unit-select');
+  if (selectLeaseUnit) {
+    selectLeaseUnit.addEventListener('change', () => {
+      const selectedId = selectLeaseUnit.value;
+      const unit = cachedUnits.find(u => u.id === selectedId);
+      if (unit) {
+        const rentInput = document.getElementById('lease-rent');
+        const depositInput = document.getElementById('lease-deposit');
+        if (rentInput && unit.rent_amount) rentInput.value = unit.rent_amount;
+        if (depositInput && (unit.deposit_amount || unit.rent_amount)) {
+          depositInput.value = unit.deposit_amount || (unit.rent_amount * 2);
+        }
+      }
+    });
+  }
+
+  const selectPayLease = document.getElementById('pay-lease-select');
+  if (selectPayLease) {
+    selectPayLease.addEventListener('change', () => {
+      const selectedId = selectPayLease.value;
+      const lease = cachedLeases.find(l => l.id === selectedId);
+      if (lease) {
+        const amountInput = document.getElementById('pay-amount');
+        if (amountInput && lease.rent_amount) amountInput.value = lease.rent_amount;
+      }
+    });
+  }
   // Bind close buttons and backdrop clicks
   document.querySelectorAll('.neo-modal-backdrop').forEach(modal => {
     modal.querySelectorAll('.neo-modal-close, .btn-modal-cancel').forEach(btn => {

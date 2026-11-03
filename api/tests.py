@@ -502,5 +502,68 @@ class IndianDemoDataPersistenceTests(TestCase):
         review.refresh_from_db()
         self.assertEqual(review.helpful_count, initial_count + 1)
 
+    def test_add_property_unit_and_deletion_persists_in_database(self):
+        # 1. Add Property via POST /api/properties
+        res_prop = self.client.post('/api/properties', {
+            'name': 'Brigade Gateway Premium Towers',
+            'address': '26/1 Dr Rajkumar Road, Malleshwaram',
+            'city': 'Bengaluru',
+            'state': 'KA',
+            'zip_code': '560055',
+            'property_type': 'High-Rise Gated Community'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+        self.assertEqual(res_prop.status_code, 201)
+        prop_id = res_prop.json().get('data', {}).get('id')
+        self.assertTrue(Property.objects.filter(id=prop_id, name='Brigade Gateway Premium Towers').exists())
+
+        # 2. Add Unit Door to newly created property
+        res_unit = self.client.post('/api/units', {
+            'property_id': prop_id,
+            'unit_number': 'Tower B - 1402',
+            'bedrooms': 3,
+            'bathrooms': 3.0,
+            'square_feet': 1850,
+            'rent_amount': '55,000',
+            'deposit_amount': '165,000'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+        self.assertEqual(res_unit.status_code, 201)
+        unit_id = res_unit.json().get('data', {}).get('id')
+        self.assertTrue(Unit.objects.filter(id=unit_id, property_id=prop_id).exists())
+
+        # 3. Delete property via DELETE /api/properties/<id>
+        res_del = self.client.delete(f'/api/properties/{prop_id}', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+        self.assertEqual(res_del.status_code, 200)
+        self.assertFalse(Property.objects.filter(id=prop_id).exists())
+        self.assertFalse(Unit.objects.filter(id=unit_id).exists())
+
+    def test_robust_fallback_add_unit_and_lease_creation(self):
+        # Unit creation without explicit property falls back to landlord's existing property
+        res_unit = self.client.post('/api/units', {
+            'unit_number': 'Penthouse PH-1',
+            'bedrooms': 4,
+            'bathrooms': 4.0,
+            'square_feet': 2800,
+            'rent_amount': '₹ 85,000',
+            'deposit_amount': '₹ 255,000'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+        self.assertEqual(res_unit.status_code, 201)
+        unit_data = res_unit.json().get('data', {})
+        self.assertEqual(unit_data.get('rent_amount'), 85000.0)
+
+        # Lease creation with string rent amount binds unit and marks it occupied
+        res_lease = self.client.post('/api/leases', {
+            'unit_id': unit_data['id'],
+            'tenant_name': 'Kavita Chawla',
+            'tenant_email': 'kavita.chawla@example.in',
+            'rent_amount': '₹ 85,000'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+        self.assertEqual(res_lease.status_code, 201)
+        lease_data = res_lease.json().get('data', {})
+        self.assertEqual(lease_data.get('rent_amount'), 85000.0)
+
+        unit_obj = Unit.objects.get(id=unit_data['id'])
+        self.assertEqual(unit_obj.status, 'occupied')
+
+
 
 
