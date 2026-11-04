@@ -79,7 +79,6 @@ export async function initDashboard() {
   // Populate Banner
   const nameEl = document.getElementById('dash-user-name');
   const emailEl = document.getElementById('dash-user-email');
-  const roleBadgeEl = document.getElementById('dash-role-badge');
   const avatarEl = document.getElementById('dash-user-avatar');
   const logoutBtn = document.getElementById('dash-logout-btn');
 
@@ -89,19 +88,6 @@ export async function initDashboard() {
 
   const isLandlord = user.role === 'landlord';
   const isAdmin = user.role === 'admin';
-
-  if (roleBadgeEl) {
-    if (isAdmin) {
-      roleBadgeEl.className = 'badge badge--admin';
-      roleBadgeEl.textContent = 'Platform Administrator';
-    } else if (isLandlord) {
-      roleBadgeEl.className = 'badge badge--landlord';
-      roleBadgeEl.textContent = 'Landlord Account';
-    } else {
-      roleBadgeEl.className = 'badge badge--tenant';
-      roleBadgeEl.textContent = 'Tenant Account';
-    }
-  }
 
   // Admin tabs visibility
   const usersTabNav = document.getElementById('tab-nav-users');
@@ -125,11 +111,25 @@ export async function initDashboard() {
   // Bind tab switching
   setupTabNavigation(user);
 
+  // Parse URL parameters (e.g. ?tab=properties&action=add-property)
+  const urlParams = new URLSearchParams(window.location.search);
+  const targetTab = urlParams.get('tab');
+  if (targetTab && ['overview', 'properties', 'leases', 'payments', 'maintenance', 'users', 'inquiries'].includes(targetTab)) {
+    activeTab = targetTab;
+    document.querySelectorAll('.dash-tab-btn').forEach(b => b.classList.remove('dash-tab-btn--active'));
+    document.querySelector(`[data-tab="${targetTab}"]`)?.classList.add('dash-tab-btn--active');
+  }
+
   // Setup Modals
   setupModals(user);
 
   // Initial Data Load
   await refreshDashboardData(user);
+
+  // Trigger modal if requested via URL
+  if (urlParams.get('action') === 'add-property') {
+    setTimeout(() => openModal('modal-add-property'), 250);
+  }
 }
 
 /**
@@ -353,24 +353,6 @@ function renderAdminOverviewTab(container, user) {
         </div>
         <div class="dash-stat-card__val">${cachedTickets.length} Work Orders</div>
         <div class="dash-stat-card__sub" style="color: var(--color-accent);">&bull; 1 High priority electrical</div>
-      </div>
-    </div>
-
-    <!-- Platform Health & Operational Status Beacon Card -->
-    <div class="glass-card" style="padding: var(--space-5) var(--space-6); margin-bottom: var(--space-6); display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: var(--space-4); border: 1px solid rgba(109, 40, 217, 0.2);">
-      <div style="display: flex; align-items: center; gap: var(--space-3);">
-        <span style="display: inline-block; width: 10px; height: 10px; border-radius: 50%; background-color: #10b981; box-shadow: 0 0 10px #10b981;"></span>
-        <div>
-          <span style="font-weight: var(--font-weight-bold); font-size: var(--font-size-sm); color: var(--color-text-main);">Django 5.2 Relational Backend & API Server</span>
-          <span style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin-left: var(--space-2);">Operational &bull; SQLite ACID Persistence &bull; Timezone Asia/Kolkata</span>
-        </div>
-      </div>
-      <div style="display: flex; gap: var(--space-3); font-size: var(--font-size-xs); color: var(--color-text-subtle);">
-        <span>Security: <strong>bcrypt + JWT HttpOnly</strong></span>
-        <span>&bull;</span>
-        <span>Currency: <strong>INR (₹)</strong></span>
-        <span>&bull;</span>
-        <span>Region: <strong>India Metros</strong></span>
       </div>
     </div>
 
@@ -603,6 +585,34 @@ function renderOverviewTab(container, user, isLandlord) {
           </button>
         </div>
       </div>
+
+      <!-- Managed Portfolio Properties Overview Strip -->
+      <div class="glass-card" style="padding: var(--space-6); margin-bottom: var(--space-8);">
+        <div class="dash-section-header" style="margin-bottom: var(--space-4);">
+          <div>
+            <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold); color: var(--color-text-main);">Managed Properties (${cachedProperties.length})</h3>
+            <p style="font-size: var(--font-size-xs); color: var(--color-text-muted);">Real-time portfolio doors and occupancy rates</p>
+          </div>
+          <button type="button" class="btn btn--ghost btn--sm" id="btn-view-all-props">View All Properties &rarr;</button>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-4);">
+          ${cachedProperties.slice(0, 3).map(p => `
+            <div style="background: rgba(255,255,255,0.6); border-radius: var(--border-radius-md); padding: var(--space-4); border: 1px solid rgba(0,0,0,0.06);">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-2);">
+                <h4 style="font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); margin: 0; color: var(--color-primary);">${p.name}</h4>
+                <span class="badge badge--landlord">${p.units_count || 0} Doors</span>
+              </div>
+              <div style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin-bottom: var(--space-2);">
+                ${p.address}, ${p.city}
+              </div>
+              <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-subtle);">
+                <span>${p.occupancy_rate || 0}% Occupied</span>
+                <span style="font-weight: var(--font-weight-bold); color: var(--color-text-main);">${formatCurrency(p.monthly_rent_total || 0)}/mo</span>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      </div>
     `;
 
     // Bind Overview quick buttons
@@ -723,6 +733,9 @@ function bindOverviewEvents() {
   document.getElementById('btn-action-record-pay')?.addEventListener('click', () => openModal('modal-record-payment'));
   document.getElementById('btn-view-all-payments')?.addEventListener('click', () => {
     document.querySelector('[data-tab="payments"]')?.click();
+  });
+  document.getElementById('btn-view-all-props')?.addEventListener('click', () => {
+    document.querySelector('[data-tab="properties"]')?.click();
   });
   document.getElementById('btn-view-ticket-triage')?.addEventListener('click', () => {
     document.querySelector('[data-tab="maintenance"]')?.click();
@@ -1592,17 +1605,24 @@ function setupModals(user) {
       const submitBtn = formAddProp.querySelector('button[type="submit"]');
       submitBtn.classList.add('btn--loading');
       try {
-        await createProperty({
-          name: formAddProp.querySelector('#prop-name').value,
+        const propName = formAddProp.querySelector('#prop-name').value;
+        const newProp = await createProperty({
+          name: propName,
           address: formAddProp.querySelector('#prop-address').value,
           city: formAddProp.querySelector('#prop-city').value,
           state: formAddProp.querySelector('#prop-state').value,
           zip_code: formAddProp.querySelector('#prop-zip').value,
           property_type: formAddProp.querySelector('#prop-type').value
         });
-        showToast('Property Added', 'Added new property to your portfolio.', 'success', 2500);
+        showToast('Property Added', `Added "${propName}" to your portfolio.`, 'success', 3000);
         closeModal(document.getElementById('modal-add-property'));
         formAddProp.reset();
+
+        // Switch active tab to properties so the user immediately sees the newly added property
+        activeTab = 'properties';
+        document.querySelectorAll('.dash-tab-btn').forEach(b => b.classList.remove('dash-tab-btn--active'));
+        document.querySelector('[data-tab="properties"]')?.classList.add('dash-tab-btn--active');
+
         await refreshDashboardData(user);
       } catch (err) {
         showToast('Failed to add property', err.message, 'error', 3500);

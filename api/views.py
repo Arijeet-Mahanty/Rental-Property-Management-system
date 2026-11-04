@@ -500,19 +500,22 @@ def dashboard_stats_view(request):
 def properties_view(request):
     """GET & POST /api/properties"""
     user = get_authenticated_user(request)
-    if not user:
-        user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
 
     if request.method == 'GET':
-        if not user:
-            return JsonResponse({'success': True, 'data': []})
-        if user.role == 'admin':
-            props = Property.objects.all()
+        # Public showcase (landing page or unauthenticated visitor) or Admin: return all properties
+        is_public = request.GET.get('public') == 'true' or not user
+        if is_public or (user and user.role == 'admin'):
+            props = Property.objects.all().order_by('-created_at')
         else:
-            props = Property.objects.filter(landlord=user)
+            props = Property.objects.filter(landlord=user).order_by('-created_at')
+            if not props.exists():
+                props = Property.objects.all().order_by('-created_at')
         return JsonResponse({'success': True, 'data': [serialize_property(p) for p in props]})
 
     elif request.method == 'POST':
+        if not user:
+            user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
+
         if not user or user.role not in ['landlord', 'admin']:
             return JsonResponse({'success': False, 'message': 'Unauthorized: Landlord or Admin access required.'}, status=403)
 
@@ -522,14 +525,24 @@ def properties_view(request):
             body = request.POST
 
         name = (body.get('name') or '').strip()
-        address = (body.get('address') or '').strip()
-        city = (body.get('city') or '').strip()
-        state = (body.get('state') or '').strip().upper()
-        zip_code = (body.get('zip_code') or '').strip()
-        property_type = body.get('property_type') or 'Apartment Society'
+        if not name:
+            return JsonResponse({'success': False, 'message': 'Property name is required.'}, status=400)
 
-        if not name or not address or not city or not state or not zip_code:
-            return JsonResponse({'success': False, 'message': 'Name, address, city, state, and zip code are required.'}, status=400)
+        address = (body.get('address') or '').strip() or 'Prime Residential Corridor'
+        city = (body.get('city') or '').strip() or 'Bengaluru'
+        state = (body.get('state') or '').strip().upper() or 'KA'
+        zip_code = (body.get('zip_code') or '').strip() or '560001'
+        property_type = body.get('property_type') or 'Apartment Building'
+
+        sample_images = [
+            'assets/indian_modern_villa.jpg',
+            'assets/indian_luxury_apartment.jpg',
+            'assets/urban_brownstone.jpg',
+            'assets/tenant_apartment.jpg',
+            'assets/landlord_property.jpg'
+        ]
+        image_idx = Property.objects.count() % len(sample_images)
+        image_url = (body.get('image_url') or '').strip() or sample_images[image_idx]
 
         # For admin, assign to default landlord if not specified
         landlord_target = user
@@ -543,7 +556,8 @@ def properties_view(request):
             city=city,
             state=state,
             zip_code=zip_code,
-            property_type=property_type
+            property_type=property_type,
+            image_url=image_url
         )
 
         return JsonResponse({

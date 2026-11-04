@@ -162,8 +162,6 @@ export function injectNavbar() {
   let mobileAuthActionsHtml = '';
 
   if (currentUser) {
-    const roleBadgeClass = currentUser.role === 'admin' ? 'badge--admin' : (currentUser.role === 'landlord' ? 'badge--landlord' : 'badge--tenant');
-    const roleLabel = currentUser.role === 'admin' ? 'Admin' : (currentUser.role === 'landlord' ? 'Landlord' : 'Tenant');
     const initials = currentUser.name ? currentUser.name.charAt(0).toUpperCase() : 'U';
 
     authActionsHtml = `
@@ -171,7 +169,6 @@ export function injectNavbar() {
         <a href="${dashboardLink}" class="navbar__user-info" title="View Dashboard">
           <span class="navbar__avatar">${initials}</span>
           <span class="navbar__user-name">${currentUser.name}</span>
-          <span class="badge ${roleBadgeClass}">${roleLabel}</span>
         </a>
         <button id="nav-logout-btn" class="btn btn--ghost btn--sm" type="button" aria-label="Log out of account">
           ${ICONS.logout}
@@ -184,7 +181,6 @@ export function injectNavbar() {
       <div class="navbar__user-info" style="margin-bottom: var(--space-3);">
         <span class="navbar__avatar">${initials}</span>
         <span class="navbar__user-name">${currentUser.name}</span>
-        <span class="badge ${roleBadgeClass}">${roleLabel}</span>
       </div>
       <a href="${dashboardLink}" class="btn btn--primary btn--full">Go to Dashboard</a>
       <button id="mobile-nav-logout-btn" class="btn btn--ghost btn--full" type="button">

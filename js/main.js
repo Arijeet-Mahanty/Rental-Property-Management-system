@@ -2,7 +2,7 @@
  * RentRoll - Main Entry Point
  */
 import { injectNavbar, injectFooter, injectBackgroundBlobs, showToast } from './components.js';
-import { submitContactForm, submitFeedbackReview, getCurrentUser, getFeedbackReviews, upvoteFeedbackReview } from './api.js';
+import { submitContactForm, submitFeedbackReview, getCurrentUser, getFeedbackReviews, upvoteFeedbackReview, getProperties } from './api.js';
 import { initLoginForm, initSignupForm } from './auth.js';
 import { initDashboard } from './dashboard.js';
 
@@ -30,6 +30,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // 4. Landing Page Interactive Customer Feedback & Contact Us sections
   initFeedbackSection();
   initContactForm();
+
+  // 5. Landing Page Live Portfolio Properties Showcase
+  initLandingProperties();
 
   // 6. Page specific initializers based on present DOM nodes
   if (document.getElementById('login-form')) {
@@ -703,5 +706,131 @@ function initContactForm() {
       if (charCount) charCount.textContent = '0 / 500';
     });
   }
+}
+
+/**
+ * Dynamically populates live portfolio properties on the landing page
+ */
+async function initLandingProperties() {
+  const archGrid = document.getElementById('architecture-cards-grid');
+  const galleryGrid = document.getElementById('property-gallery-grid');
+  if (!archGrid && !galleryGrid) return;
+
+  try {
+    const properties = await getProperties(true);
+    if (!properties || properties.length === 0) return;
+
+    if (archGrid) {
+      renderLandingArchitectureCards(archGrid, properties);
+    }
+    if (galleryGrid) {
+      renderLandingGalleryCards(galleryGrid, properties);
+    }
+  } catch (err) {
+    console.warn('[Landing] Could not dynamically refresh properties:', err);
+  }
+}
+
+function formatInrCurrency(val) {
+  const num = Number(val) || 0;
+  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR', maximumFractionDigits: 0 }).format(num);
+}
+
+function renderLandingArchitectureCards(container, properties) {
+  const sampleImages = [
+    'assets/indian_modern_villa.jpg',
+    'assets/indian_luxury_apartment.jpg',
+    'assets/urban_brownstone.jpg',
+    'assets/tenant_apartment.jpg',
+    'assets/landlord_property.jpg'
+  ];
+
+  container.innerHTML = properties.slice(0, 6).map((prop, idx) => {
+    const imgSrc = prop.image_url || sampleImages[idx % sampleImages.length];
+    const totalDoors = prop.units_count || (prop.occupied_units_count ? prop.occupied_units_count : 1);
+    const occupancyRate = prop.occupancy_rate || 100;
+    const monthlyRent = prop.monthly_rent_total > 0 ? formatInrCurrency(prop.monthly_rent_total) : '₹75,000';
+    const locationText = prop.address ? `${prop.address} • ${prop.city || 'Bengaluru'}` : `${prop.city || 'Bengaluru'}, ${prop.state || 'KA'}`;
+
+    return `
+      <div class="glass-card architecture-card">
+        <div class="architecture-card__img-wrap">
+          <img src="${imgSrc}" alt="${escapeHtml(prop.name)}" class="architecture-card__img" loading="lazy">
+          <div class="architecture-card__badge">
+            <span class="badge badge--landlord">${totalDoors} ${totalDoors === 1 ? 'Unit' : 'Units'} &bull; ${occupancyRate}% Occupied</span>
+          </div>
+        </div>
+
+        <div class="architecture-card__title-group">
+          <h3 class="architecture-card__title">${escapeHtml(prop.name)}</h3>
+          <div class="architecture-card__location">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span>${escapeHtml(locationText)}</span>
+          </div>
+        </div>
+
+        <div class="architecture-card__stats">
+          <div class="architecture-card__stat-box">
+            <div class="architecture-card__stat-label">Monthly Rent Flow</div>
+            <div class="architecture-card__stat-val">${monthlyRent}</div>
+          </div>
+          <div class="architecture-card__stat-box">
+            <div class="architecture-card__stat-label">Autopay Adoption</div>
+            <div class="architecture-card__stat-val">100% UPI</div>
+          </div>
+        </div>
+
+        <div class="architecture-card__checklist">
+          <div class="architecture-card__checklist-item">
+            <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>${escapeHtml(prop.property_type || 'Apartment Society')}</span>
+          </div>
+          <div class="architecture-card__checklist-item">
+            <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Automated monthly direct deposits &amp; rent reminder shield</span>
+          </div>
+          <div class="architecture-card__checklist-item">
+            <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Registered digital rental agreements on file</span>
+          </div>
+        </div>
+
+        <a href="dashboard.html?tab=properties" class="btn btn--primary">Manage Property</a>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderLandingGalleryCards(container, properties) {
+  const sampleImages = [
+    'assets/indian_modern_villa.jpg',
+    'assets/indian_luxury_apartment.jpg',
+    'assets/urban_brownstone.jpg',
+    'assets/tenant_apartment.jpg'
+  ];
+
+  container.innerHTML = properties.slice(0, 4).map((prop, idx) => {
+    const imgSrc = prop.image_url || sampleImages[idx % sampleImages.length];
+    const totalDoors = prop.units_count || 1;
+    const monthlyRent = prop.monthly_rent_total > 0 ? formatInrCurrency(prop.monthly_rent_total) + '/mo' : '₹75,000/mo';
+
+    return `
+      <div class="glass-card property-photo-card">
+        <div class="property-photo-card__img-wrap">
+          <img src="${imgSrc}" alt="${escapeHtml(prop.name)}" class="property-photo-card__img" loading="lazy">
+          <span class="badge badge--landlord property-photo-card__badge">${totalDoors} ${totalDoors === 1 ? 'Unit' : 'Units'}</span>
+        </div>
+        <h4 class="property-photo-card__title">${escapeHtml(prop.name)}</h4>
+        <p class="property-photo-card__sub">${escapeHtml(prop.city || 'Bengaluru')}, ${escapeHtml(prop.state || 'KA')} &bull; Active Portfolio</p>
+        <div class="property-photo-card__meta">
+          <span class="property-photo-card__rent">${monthlyRent}</span>
+          <span class="property-photo-card__tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+            <span>Verified</span>
+          </span>
+        </div>
+      </div>
+    `;
+  }).join('');
 }
 

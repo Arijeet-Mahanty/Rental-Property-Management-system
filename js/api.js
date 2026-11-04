@@ -12,12 +12,12 @@ function getApiBase() {
   if (protocol === 'file:') {
     return 'http://127.0.0.1:8000/api';
   }
-  // When running on standard frontend dev servers (Live Server 5500, Node 3000, Vite 5173), route to Django on 8000
-  if (port && ['3000', '5000', '5173', '5500'].includes(port)) {
-    return `http://${hostname || '127.0.0.1'}:8000/api`;
+  // When running directly via Django on port 8000 or root production domain, use relative /api
+  if (port === '8000' || port === '') {
+    return '/api';
   }
-  // When running directly via Django on port 8000 or any standard server/domain, use relative /api
-  return '/api';
+  // Any frontend dev server (5500, 5501, 3000, 5173, etc.) routes to Django on 8000
+  return `http://${hostname || '127.0.0.1'}:8000/api`;
 }
 
 const API_BASE = getApiBase();
@@ -264,10 +264,11 @@ export async function getDashboardStats() {
 }
 
 /**
- * Fetches landlord's properties.
+ * Fetches properties (all if isPublic or portfolio).
  */
-export async function getProperties() {
-  const res = await request('/properties', { method: 'GET' });
+export async function getProperties(isPublic = false) {
+  const endpoint = isPublic ? '/properties?public=true' : '/properties';
+  const res = await request(endpoint, { method: 'GET' });
   return res.data || [];
 }
 
@@ -696,13 +697,43 @@ async function handleOfflineRequest(endpoint, options = {}) {
   }
 
   if (endpoint.startsWith('/properties')) {
+    if (options.method === 'POST') {
+      let body = {};
+      try {
+        body = typeof options.body === 'string' ? JSON.parse(options.body) : (options.body || {});
+      } catch (e) {
+        body = {};
+      }
+      const newProp = {
+        id: `prop_local_${Date.now()}`,
+        name: body.name || 'New Property',
+        address: body.address || 'MG Road Corridor',
+        city: body.city || 'Bengaluru',
+        state: body.state || 'KA',
+        zip_code: body.zip_code || '560001',
+        property_type: body.property_type || 'Apartment Building',
+        image_url: 'assets/indian_modern_villa.jpg',
+        units_count: 0,
+        occupied_units_count: 0,
+        occupancy_rate: 0,
+        monthly_rent_total: 0,
+        created_at: new Date().toISOString()
+      };
+      const stored = JSON.parse(localStorage.getItem('rentroll_properties') || '[]');
+      stored.unshift(newProp);
+      localStorage.setItem('rentroll_properties', JSON.stringify(stored));
+      return { success: true, message: 'Property created successfully.', data: newProp };
+    }
+
+    const defaultProps = [
+      { id: 'prop_1', name: 'Gulmohar Residency', address: '14th Main, 4th Block, Koramangala', city: 'Bengaluru', state: 'KA', zip_code: '560034', property_type: 'Apartment Building', image_url: 'assets/indian_modern_villa.jpg', units_count: 6, occupied_units_count: 5, occupancy_rate: 83, monthly_rent_total: 165000 },
+      { id: 'prop_2', name: 'Bandra Sea Breeze Heights', address: 'Pali Hill, Bandra West', city: 'Mumbai', state: 'MH', zip_code: '400050', property_type: 'Multi-Family', image_url: 'assets/indian_luxury_apartment.jpg', units_count: 5, occupied_units_count: 5, occupancy_rate: 100, monthly_rent_total: 215000 },
+      { id: 'prop_3', name: 'DLF Cyber Suites', address: 'Phase 5, Golf Course Road', city: 'Gurugram', state: 'HR', zip_code: '122009', property_type: 'Duplex/Triplex', image_url: 'assets/urban_brownstone.jpg', units_count: 2, occupied_units_count: 2, occupancy_rate: 100, monthly_rent_total: 75000 },
+      { id: 'prop_4', name: 'Koregaon Palms Villa', address: 'Lane 7, Koregaon Park', city: 'Pune', state: 'MH', zip_code: '411001', property_type: 'Multi-Family', image_url: 'assets/tenant_apartment.jpg', units_count: 5, occupied_units_count: 5, occupancy_rate: 100, monthly_rent_total: 80000 }
+    ];
+    const localProps = JSON.parse(localStorage.getItem('rentroll_properties') || '[]');
     return {
-      data: [
-        { id: 'prop_1', name: 'Gulmohar Residency', address: '14th Main, 4th Block, Koramangala', city: 'Bengaluru', state: 'KA', zip_code: '560034', property_type: 'Apartment Building', units_count: 6, occupied_units_count: 5, occupancy_rate: 83, monthly_rent_total: 165000 },
-        { id: 'prop_2', name: 'Bandra Sea Breeze Heights', address: 'Pali Hill, Bandra West', city: 'Mumbai', state: 'MH', zip_code: '400050', property_type: 'Multi-Family', units_count: 5, occupied_units_count: 5, occupancy_rate: 100, monthly_rent_total: 215000 },
-        { id: 'prop_3', name: 'DLF Cyber Suites', address: 'Phase 5, Golf Course Road', city: 'Gurugram', state: 'HR', zip_code: '122009', property_type: 'Duplex/Triplex', units_count: 2, occupied_units_count: 2, occupancy_rate: 100, monthly_rent_total: 75000 },
-        { id: 'prop_4', name: 'Koregaon Palms Villa', address: 'Lane 7, Koregaon Park', city: 'Pune', state: 'MH', zip_code: '411001', property_type: 'Multi-Family', units_count: 5, occupied_units_count: 5, occupancy_rate: 100, monthly_rent_total: 80000 }
-      ]
+      data: [...localProps, ...defaultProps]
     };
   }
 
