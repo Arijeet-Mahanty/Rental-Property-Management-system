@@ -34,6 +34,9 @@ document.addEventListener('DOMContentLoaded', () => {
   // 5. Landing Page Live Portfolio Properties Showcase
   initLandingProperties();
 
+  // 5b. Landing Page Smooth Scroll & Load Reveal Animations
+  initScrollReveal();
+
   // 6. Page specific initializers based on present DOM nodes
   if (document.getElementById('login-form')) {
     initLoginForm();
@@ -726,6 +729,7 @@ async function initLandingProperties() {
     if (galleryGrid) {
       renderLandingGalleryCards(galleryGrid, properties);
     }
+    initScrollReveal();
   } catch (err) {
     console.warn('[Landing] Could not dynamically refresh properties:', err);
   }
@@ -745,7 +749,7 @@ function renderLandingArchitectureCards(container, properties) {
     'assets/landlord_property.jpg'
   ];
 
-  container.innerHTML = properties.slice(0, 6).map((prop, idx) => {
+  container.innerHTML = properties.slice(0, 3).map((prop, idx) => {
     const imgSrc = prop.image_url || sampleImages[idx % sampleImages.length];
     const totalDoors = prop.units_count || (prop.occupied_units_count ? prop.occupied_units_count : 1);
     const occupancyRate = prop.occupancy_rate || 100;
@@ -809,7 +813,7 @@ function renderLandingGalleryCards(container, properties) {
     'assets/tenant_apartment.jpg'
   ];
 
-  container.innerHTML = properties.slice(0, 4).map((prop, idx) => {
+  container.innerHTML = properties.slice(0, 3).map((prop, idx) => {
     const imgSrc = prop.image_url || sampleImages[idx % sampleImages.length];
     const totalDoors = prop.units_count || 1;
     const monthlyRent = prop.monthly_rent_total > 0 ? formatInrCurrency(prop.monthly_rent_total) + '/mo' : '₹75,000/mo';
@@ -832,5 +836,57 @@ function renderLandingGalleryCards(container, properties) {
       </div>
     `;
   }).join('');
+}
+
+/**
+ * Smooth Entrance & Scroll Reveal Observer for Landing Page Elements
+ */
+let scrollRevealObserver = null;
+
+function initScrollReveal() {
+  const elementsToReveal = document.querySelectorAll(`
+    .section-header,
+    .features-grid > .glass-card,
+    .architecture-cards-grid > .architecture-card,
+    .property-gallery-grid > .property-photo-card,
+    .steps-grid > .step-card,
+    .portals-grid > .portal-card,
+    .trust-badges-grid > .trust-badge-item,
+    .contact-grid > div,
+    .faq-item
+  `);
+
+  if (!elementsToReveal.length) return;
+
+  elementsToReveal.forEach(el => {
+    if (!el.classList.contains('reveal-fade-up')) {
+      el.classList.add('reveal-fade-up');
+    }
+  });
+
+  if (!('IntersectionObserver' in window)) {
+    elementsToReveal.forEach(el => el.classList.add('is-revealed'));
+    return;
+  }
+
+  if (!scrollRevealObserver) {
+    scrollRevealObserver = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-revealed');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, {
+      threshold: 0.08,
+      rootMargin: '0px 0px -25px 0px'
+    });
+  }
+
+  elementsToReveal.forEach(el => {
+    if (!el.classList.contains('is-revealed')) {
+      scrollRevealObserver.observe(el);
+    }
+  });
 }
 

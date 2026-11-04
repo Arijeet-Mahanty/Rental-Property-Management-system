@@ -1662,13 +1662,14 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: var(--space-8);
-  margin-bottom: var(--space-14);
+  margin-bottom: var(--space-20);
 }
 
 @media (max-width: 992px) {
   .architecture-cards-grid {
     grid-template-columns: 1fr;
     gap: var(--space-6);
+    margin-bottom: var(--space-12);
   }
 }
 
@@ -1799,24 +1800,42 @@
 /* Property Photo Gallery Grid */
 .property-gallery-header {
   text-align: center;
-  margin-bottom: var(--space-8);
+  margin-top: var(--space-20);
+  margin-bottom: var(--space-10);
+  padding-top: var(--space-12);
+  position: relative;
+}
+
+.property-gallery-header::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 140px;
+  height: 3px;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, transparent, rgba(206, 192, 175, 0.75), transparent);
+}
+
+@media (max-width: 992px) {
+  .property-gallery-header {
+    margin-top: var(--space-12);
+    padding-top: var(--space-8);
+    margin-bottom: var(--space-8);
+  }
 }
 
 .property-gallery-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-6);
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-8);
 }
 
-@media (max-width: 1024px) {
-  .property-gallery-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-
-@media (max-width: 600px) {
+@media (max-width: 992px) {
   .property-gallery-grid {
     grid-template-columns: 1fr;
+    gap: var(--space-6);
   }
 }
 
@@ -2467,6 +2486,36 @@
   background: linear-gradient(135deg, var(--color-bg-surface) 0%, var(--color-bg-surface-elevated) 100%);
 }
 
+/* Tenant Home Spotlight Top Badges: Rounded Rectangle Shape */
+.tenant-spotlight-card .badge {
+  border-radius: 6px !important;
+  padding: 0.35rem 0.75rem;
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  box-shadow: var(--neo-shadow-raised-sm);
+}
+
+.tenant-spotlight-card .badge--tenant {
+  background-color: #fef3c7;
+  color: #92400e;
+  border: 1px solid rgba(180, 83, 9, 0.3);
+  border-radius: 6px !important;
+}
+
+.tenant-spotlight-card .badge--paid {
+  background-color: #ecfdf5;
+  color: #065f46;
+  border: 1px solid rgba(5, 150, 105, 0.3);
+  border-radius: 6px !important;
+}
+
+.dashboard-banner .badge,
+.dashboard-banner__meta .badge {
+  border-radius: 6px !important;
+}
+
 .tenant-spotlight-grid {
   display: grid;
   grid-template-columns: 2fr 1fr;
@@ -2494,5 +2543,148 @@
   font-weight: var(--font-weight-extrabold);
   color: var(--color-text-main);
   margin: var(--space-2) 0;
+}
+
+/* ==========================================================================
+   Smooth Landing Page Opening & Scroll Load Animations
+   ========================================================================== */
+
+@keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes navSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.navbar {
+  animation: navSlideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.hero__title {
+  animation: heroFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.08s both;
+}
+
+.hero__subtitle {
+  animation: heroFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.18s both;
+}
+
+.hero__cta-group {
+  animation: heroFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.28s both;
+}
+
+.hero__stats {
+  animation: heroFadeUp 0.75s cubic-bezier(0.16, 1, 0.3, 1) 0.38s both;
+}
+
+/* Smooth Scroll & Load Reveal Animations */
+.reveal-fade-up {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+
+.reveal-fade-up.is-revealed {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Staggered ripples for sibling grid cards */
+.features-grid > .reveal-fade-up:nth-child(1),
+.architecture-cards-grid > .reveal-fade-up:nth-child(1),
+.property-gallery-grid > .reveal-fade-up:nth-child(1),
+.steps-grid > .reveal-fade-up:nth-child(1),
+.portals-grid > .reveal-fade-up:nth-child(1),
+.trust-badges-grid > .reveal-fade-up:nth-child(1) {
+  transition-delay: 0.04s;
+}
+
+.features-grid > .reveal-fade-up:nth-child(2),
+.architecture-cards-grid > .reveal-fade-up:nth-child(2),
+.property-gallery-grid > .reveal-fade-up:nth-child(2),
+.steps-grid > .reveal-fade-up:nth-child(2),
+.portals-grid > .reveal-fade-up:nth-child(2),
+.trust-badges-grid > .reveal-fade-up:nth-child(2) {
+  transition-delay: 0.12s;
+}
+
+.features-grid > .reveal-fade-up:nth-child(3),
+.architecture-cards-grid > .reveal-fade-up:nth-child(3),
+.property-gallery-grid > .reveal-fade-up:nth-child(3),
+.steps-grid > .reveal-fade-up:nth-child(3),
+.portals-grid > .reveal-fade-up:nth-child(3),
+.trust-badges-grid > .reveal-fade-up:nth-child(3) {
+  transition-delay: 0.20s;
+}
+
+.features-grid > .reveal-fade-up:nth-child(4),
+.features-grid > .reveal-fade-up:nth-child(5),
+.features-grid > .reveal-fade-up:nth-child(6) {
+  transition-delay: 0.28s;
+}
+
+/* Polished Card Hover Transitions */
+.architecture-card,
+.property-photo-card,
+.feature-card,
+.step-card,
+.portal-card {
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.35s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.architecture-card:hover,
+.property-photo-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 12px 12px 28px rgba(190, 178, 163, 0.55), -12px -12px 28px #ffffff;
+}
+
+.step-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 10px 10px 24px rgba(190, 178, 163, 0.5), -10px -10px 24px #ffffff;
+}
+
+/* Smooth image zoom inside cards */
+.architecture-card__img,
+.property-photo-card__img {
+  transition: transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.architecture-card:hover .architecture-card__img,
+.property-photo-card:hover .property-photo-card__img {
+  transform: scale(1.035);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .navbar,
+  .hero__title,
+  .hero__subtitle,
+  .hero__cta-group,
+  .hero__stats,
+  .reveal-fade-up,
+  .architecture-card,
+  .property-photo-card,
+  .feature-card,
+  .step-card,
+  .portal-card {
+    animation: none !important;
+    transition: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
 }
 

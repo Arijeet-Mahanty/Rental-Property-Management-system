@@ -629,8 +629,8 @@ function renderOverviewTab(container, user, isLandlord) {
         <div class="tenant-spotlight-grid">
           <div>
             <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
-              <span class="badge badge--tenant">Active Resident</span>
-              <span class="badge badge--paid">Autopay Active</span>
+              <span class="badge badge--tenant" style="border-radius: 6px;">Active Resident</span>
+              <span class="badge badge--paid" style="border-radius: 6px;">Autopay Active</span>
             </div>
             <h2 style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-extrabold); color: var(--color-text-main); margin-bottom: var(--space-1);">
               ${lease.unitName || 'Flat 4B'} — ${lease.propertyName || 'Gulmohar Residency'}

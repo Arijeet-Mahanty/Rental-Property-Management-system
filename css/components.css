@@ -759,7 +759,7 @@ input[type="number"].form-control {
   border: var(--neo-border);
   box-shadow: var(--neo-shadow-raised-sm);
   padding: 0.35rem 0.85rem;
-  border-radius: var(--radius-full);
+  border-radius: 8px;
 }
 
 .navbar__avatar {
@@ -1170,8 +1170,8 @@ input[type="number"].form-control {
 .dash-tab-count {
   font-size: 11px;
   font-weight: var(--font-weight-bold);
-  padding: 1px 7px;
-  border-radius: var(--radius-full);
+  padding: 2px 7px;
+  border-radius: 6px;
   background-color: var(--color-bg-inset);
   color: var(--color-text-subtle);
   border: var(--neo-border-inset);
