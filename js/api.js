@@ -251,6 +251,42 @@ export async function verifySession() {
   }
 }
 
+/**
+ * Requests a secure password reset link for the provided email.
+ * @param {string} email
+ * @returns {Promise<Object>}
+ */
+export async function requestPasswordReset(email) {
+  return await request('/auth/password-reset/request', {
+    method: 'POST',
+    body: { email }
+  });
+}
+
+/**
+ * Validates a password reset token.
+ * @param {string} token
+ * @returns {Promise<Object>}
+ */
+export async function verifyPasswordResetToken(token) {
+  return await request(`/auth/password-reset/verify?token=${encodeURIComponent(token)}`, {
+    method: 'GET'
+  });
+}
+
+/**
+ * Sets a new password using a valid reset token.
+ * @param {string} token
+ * @param {string} newPassword
+ * @returns {Promise<Object>}
+ */
+export async function confirmPasswordReset(token, newPassword) {
+  return await request('/auth/password-reset/confirm', {
+    method: 'POST',
+    body: { token, new_password: newPassword }
+  });
+}
+
 // ----------------------------------------------------------------------------
 // DASHBOARD & ENTITIES CLIENT METHODS (PHASE 2)
 // ----------------------------------------------------------------------------
@@ -260,6 +296,14 @@ export async function verifySession() {
  */
 export async function getDashboardStats() {
   const res = await request('/dashboard/stats', { method: 'GET' });
+  return res.data;
+}
+
+/**
+ * Fetches public aggregated platform metrics for the landing page.
+ */
+export async function getPublicStats() {
+  const res = await request('/dashboard/stats?public=true', { method: 'GET' });
   return res.data;
 }
 
@@ -348,6 +392,28 @@ export async function createPayment(payData) {
     body: payData
   });
   return res.data;
+}
+
+/**
+ * Generates an Indian UPI Payment Order (Razorpay / Cashfree standard format).
+ */
+export async function createUpiPaymentOrder(orderData) {
+  const res = await request('/payments/create-order', {
+    method: 'POST',
+    body: orderData
+  });
+  return res;
+}
+
+/**
+ * Verifies UPI payment settlement and records transaction in ledger.
+ */
+export async function verifyUpiWebhookPayment(verifyData) {
+  const res = await request('/payments/verify-webhook', {
+    method: 'POST',
+    body: verifyData
+  });
+  return res;
 }
 
 /**
@@ -622,6 +688,41 @@ async function handleOfflineRequest(endpoint, options = {}) {
     return { success: true, message: 'Logged out successfully' };
   }
 
+  if (endpoint.startsWith('/auth/password-reset/request')) {
+    const body = typeof options.body === 'string' ? JSON.parse(options.body) : (options.body || {});
+    const email = (body.email || '').toLowerCase().trim();
+    const mockToken = `mock_rst_${Date.now()}`;
+    return {
+      success: true,
+      message: 'If an account is associated with this email address, password reset instructions have been sent.',
+      reset_url: `reset-password.html?token=${mockToken}`,
+      token: mockToken
+    };
+  }
+
+  if (endpoint.startsWith('/auth/password-reset/verify')) {
+    return {
+      success: true,
+      valid: true,
+      email: 'user@rentroll.com',
+      message: 'Token is valid.'
+    };
+  }
+
+  if (endpoint.startsWith('/auth/password-reset/confirm')) {
+    const body = typeof options.body === 'string' ? JSON.parse(options.body) : (options.body || {});
+    const newPass = body.new_password || body.password;
+    if (!newPass || newPass.length < 8) {
+      const err = new Error('Password must be at least 8 characters long.');
+      err.status = 400;
+      throw err;
+    }
+    return {
+      success: true,
+      message: 'Your password has been successfully reset. You can now log in with your new password.'
+    };
+  }
+
   if (endpoint.startsWith('/auth/me')) {
     const currentUser = getCurrentUser();
     if (!currentUser) {
@@ -633,6 +734,22 @@ async function handleOfflineRequest(endpoint, options = {}) {
   }
 
   if (endpoint.startsWith('/dashboard/stats')) {
+    if (endpoint.includes('public=true')) {
+      return {
+        data: {
+          role: 'public',
+          totalProperties: 6,
+          totalUnits: 20,
+          occupiedUnits: 18,
+          occupancyRate: 90,
+          totalRentCollected: 259500,
+          monthlyRentRoll: 1171500,
+          activeLeasesCount: 5,
+          reviewsCount: 4,
+          onTimePaymentRate: 99.4
+        }
+      };
+    }
     if (user.role === 'admin') {
       return {
         data: {
@@ -726,10 +843,10 @@ async function handleOfflineRequest(endpoint, options = {}) {
     }
 
     const defaultProps = [
-      { id: 'prop_1', name: 'Gulmohar Residency', address: '14th Main, 4th Block, Koramangala', city: 'Bengaluru', state: 'KA', zip_code: '560034', property_type: 'Apartment Building', image_url: 'assets/indian_modern_villa.jpg', units_count: 6, occupied_units_count: 5, occupancy_rate: 83, monthly_rent_total: 165000 },
-      { id: 'prop_2', name: 'Bandra Sea Breeze Heights', address: 'Pali Hill, Bandra West', city: 'Mumbai', state: 'MH', zip_code: '400050', property_type: 'Multi-Family', image_url: 'assets/indian_luxury_apartment.jpg', units_count: 5, occupied_units_count: 5, occupancy_rate: 100, monthly_rent_total: 215000 },
-      { id: 'prop_3', name: 'DLF Cyber Suites', address: 'Phase 5, Golf Course Road', city: 'Gurugram', state: 'HR', zip_code: '122009', property_type: 'Duplex/Triplex', image_url: 'assets/urban_brownstone.jpg', units_count: 2, occupied_units_count: 2, occupancy_rate: 100, monthly_rent_total: 75000 },
-      { id: 'prop_4', name: 'Koregaon Palms Villa', address: 'Lane 7, Koregaon Park', city: 'Pune', state: 'MH', zip_code: '411001', property_type: 'Multi-Family', image_url: 'assets/tenant_apartment.jpg', units_count: 5, occupied_units_count: 5, occupancy_rate: 100, monthly_rent_total: 80000 }
+      { id: 'prop_1', name: 'Gulmohar Residency', address: '42, 80 Feet Road, 4th Block, Koramangala', city: 'Bengaluru', state: 'KA', zip_code: '560034', property_type: 'Apartment Society', image_url: 'assets/indian_modern_villa.jpg', units_count: 6, occupied_units_count: 5, occupancy_rate: 83, monthly_rent_total: 202500 },
+      { id: 'prop_2', name: 'Skyline Palms Heights', address: '15, Turner Road, Bandra West', city: 'Mumbai', state: 'MH', zip_code: '400050', property_type: 'Gated High-Rise', image_url: 'assets/indian_luxury_apartment.jpg', units_count: 5, occupied_units_count: 5, occupancy_rate: 100, monthly_rent_total: 443000 },
+      { id: 'prop_3', name: 'Greenfield Heights Duplex', address: '88, Whitefield Main Road', city: 'Bengaluru', state: 'KA', zip_code: '560066', property_type: 'Independent Villa/Duplex', image_url: 'assets/tenant_apartment.jpg', units_count: 2, occupied_units_count: 2, occupancy_rate: 100, monthly_rent_total: 120000 },
+      { id: 'prop_4', name: 'Cyber Greens Residency', address: 'DLF Phase 5, Golf Course Road', city: 'Gurugram', state: 'HR', zip_code: '122002', property_type: 'Luxury Condominium', image_url: 'assets/urban_brownstone.jpg', units_count: 5, occupied_units_count: 5, occupancy_rate: 100, monthly_rent_total: 339000 }
     ];
     const localProps = JSON.parse(localStorage.getItem('rentroll_properties') || '[]');
     return {
@@ -740,11 +857,11 @@ async function handleOfflineRequest(endpoint, options = {}) {
   if (endpoint.startsWith('/units')) {
     return {
       data: [
-        { id: 'unit_101', property_name: 'Gulmohar Residency', unit_number: 'Flat 1A', bedrooms: 2, bathrooms: 2, square_feet: 1050, rent_amount: 26000, status: 'occupied', current_tenant: { name: 'Sanjay Verma' } },
-        { id: 'unit_102', property_name: 'Gulmohar Residency', unit_number: 'Flat 2A', bedrooms: 2, bathrooms: 2, square_feet: 1100, rent_amount: 28000, status: 'occupied', current_tenant: { name: 'Aarav Mehta' } },
-        { id: 'unit_104', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', bedrooms: 2, bathrooms: 2, square_feet: 1150, rent_amount: 28500, status: 'occupied', current_tenant: { name: 'Priya Iyer' } },
-        { id: 'unit_106', property_name: 'Gulmohar Residency', unit_number: 'Flat 6C', bedrooms: 1, bathrooms: 1, square_feet: 650, rent_amount: 21000, status: 'vacant', current_tenant: null },
-        { id: 'unit_201', property_name: 'Bandra Sea Breeze Heights', unit_number: 'Penthouse 12A', bedrooms: 3, bathrooms: 3, square_feet: 1850, rent_amount: 65000, status: 'occupied', current_tenant: { name: 'Ananya Deshmukh' } }
+        { id: 'unit_101', property_name: 'Gulmohar Residency', unit_number: 'Flat 1A', bedrooms: 1, bathrooms: 1.0, square_feet: 680, rent_amount: 24000, status: 'occupied', current_tenant: { name: 'Sanjay Verma' } },
+        { id: 'unit_102', property_name: 'Gulmohar Residency', unit_number: 'Flat 2A', bedrooms: 2, bathrooms: 2.0, square_feet: 1050, rent_amount: 35000, status: 'occupied', current_tenant: { name: 'Aarav Mehta' } },
+        { id: 'unit_104', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', bedrooms: 2, bathrooms: 2.0, square_feet: 1100, rent_amount: 28500, status: 'occupied', current_tenant: { name: 'Priya Iyer' } },
+        { id: 'unit_106', property_name: 'Gulmohar Residency', unit_number: 'Flat 6C', bedrooms: 1, bathrooms: 1.0, square_feet: 650, rent_amount: 22000, status: 'vacant', current_tenant: null },
+        { id: 'unit_201', property_name: 'Skyline Palms Heights', unit_number: 'Tower 101', bedrooms: 2, bathrooms: 2.0, square_feet: 1150, rent_amount: 65000, status: 'occupied', current_tenant: { name: 'Ananya Deshmukh' } }
       ]
     };
   }
@@ -753,8 +870,8 @@ async function handleOfflineRequest(endpoint, options = {}) {
     return {
       data: [
         { id: 'lease_1', unit_number: 'Flat 4B', property_name: 'Gulmohar Residency', tenant_name: 'Priya Iyer', tenant_email: 'tenant@rentroll.com', start_date: '2026-02-01', end_date: '2027-01-31', rent_amount: 28500, deposit_amount: 85500, status: 'active' },
-        { id: 'lease_2', unit_number: 'Flat 2A', property_name: 'Gulmohar Residency', tenant_name: 'Aarav Mehta', tenant_email: 'aarav.mehta@example.com', start_date: '2026-01-01', end_date: '2026-12-31', rent_amount: 28000, deposit_amount: 84000, status: 'active' },
-        { id: 'lease_3', unit_number: 'Penthouse 12A', property_name: 'Bandra Sea Breeze Heights', tenant_name: 'Ananya Deshmukh', tenant_email: 'ananya.d@example.com', start_date: '2026-03-01', end_date: '2027-02-28', rent_amount: 65000, deposit_amount: 195000, status: 'active' }
+        { id: 'lease_2', unit_number: 'Flat 2A', property_name: 'Gulmohar Residency', tenant_name: 'Aarav Mehta', tenant_email: 'aarav.mehta@example.in', start_date: '2026-01-01', end_date: '2026-12-31', rent_amount: 35000, deposit_amount: 105000, status: 'active' },
+        { id: 'lease_3', unit_number: 'Tower 101', property_name: 'Skyline Palms Heights', tenant_name: 'Ananya Deshmukh', tenant_email: 'ananya.d@example.in', start_date: '2026-03-01', end_date: '2027-02-28', rent_amount: 65000, deposit_amount: 195000, status: 'active' }
       ]
     };
   }
@@ -762,10 +879,10 @@ async function handleOfflineRequest(endpoint, options = {}) {
   if (endpoint.startsWith('/payments')) {
     return {
       data: [
-        { id: 'pay_101', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', tenant_name: 'Priya Iyer', amount: 28500, due_date: '2026-10-01', paid_date: '2026-10-01', status: 'paid', payment_method: 'upi', transaction_ref: 'UPI-RR-90421', notes: 'October 2026 Rent - Paid via UPI AutoPay' },
-        { id: 'pay_104', property_name: 'Gulmohar Residency', unit_number: 'Flat 2A', tenant_name: 'Aarav Mehta', amount: 28000, due_date: '2026-10-01', paid_date: '2026-10-02', status: 'paid', payment_method: 'ach', transaction_ref: 'NACH-HDFC-4028', notes: 'October 2026 Rent - eNACH debit' },
-        { id: 'pay_105', property_name: 'Bandra Sea Breeze Heights', unit_number: 'Penthouse 12A', tenant_name: 'Ananya Deshmukh', amount: 65000, due_date: '2026-10-01', paid_date: '2026-10-01', status: 'paid', payment_method: 'bank_transfer', transaction_ref: 'IMPS-ICICI-1192', notes: 'October 2026 Rent - IMPS transfer' },
-        { id: 'pay_106', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', tenant_name: 'Priya Iyer', amount: 28500, due_date: '2026-11-01', paid_date: null, status: 'pending', payment_method: 'upi', transaction_ref: null, notes: 'November 2026 Rent (Upcoming UPI AutoPay)' }
+        { id: 'pay_101', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', tenant_name: 'Priya Iyer', amount: 28500, due_date: '2026-10-01', paid_date: '2026-10-01', status: 'paid', payment_method: 'upi', transaction_ref: 'UPI-RR-90421', notes: 'October 2026 Rent - Paid via Google Pay UPI' },
+        { id: 'pay_104', property_name: 'Gulmohar Residency', unit_number: 'Flat 2A', tenant_name: 'Aarav Mehta', amount: 35000, due_date: '2026-10-01', paid_date: '2026-10-02', status: 'paid', payment_method: 'enach', transaction_ref: 'eNACH-HDFC-4028', notes: 'October 2026 Rent - eNACH Mandate Cleared' },
+        { id: 'pay_105', property_name: 'Skyline Palms Heights', unit_number: 'Tower 101', tenant_name: 'Ananya Deshmukh', amount: 65000, due_date: '2026-10-01', paid_date: '2026-10-01', status: 'paid', payment_method: 'netbanking', transaction_ref: 'IMPS-ICICI-1192', notes: 'October 2026 Rent - Direct IMPS Transfer' },
+        { id: 'pay_106', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', tenant_name: 'Priya Iyer', amount: 28500, due_date: '2026-11-01', paid_date: null, status: 'pending', payment_method: 'upi', transaction_ref: null, notes: 'November 2026 Rent (Upcoming UPI Auto-Debit)' }
       ]
     };
   }
@@ -773,9 +890,9 @@ async function handleOfflineRequest(endpoint, options = {}) {
   if (endpoint.startsWith('/maintenance')) {
     return {
       data: [
-        { id: 'tkt_1', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', tenant_name: 'Priya Iyer', title: 'Low hot water pressure in master bathroom geyser', category: 'plumbing', priority: 'high', status: 'in_progress', description: 'The geyser pressure in the master bathroom shower has noticeably dropped since yesterday evening.', estimated_cost: 1500, actual_cost: 0, resolution_notes: 'Urban Company certified technician scheduled for tomorrow 9:00 AM.', created_at: '2026-10-24T14:20:00.000Z' },
-        { id: 'tkt_2', property_name: 'Bandra Sea Breeze Heights', unit_number: 'Penthouse 12A', tenant_name: 'Ananya Deshmukh', title: 'RO water purifier filter change warning indicator', category: 'appliance', priority: 'medium', status: 'open', description: 'The Kent RO unit on the kitchen wall has a red beeping filter indicator.', estimated_cost: 1800, actual_cost: 0, created_at: '2026-10-25T09:10:00.000Z' },
-        { id: 'tkt_3', property_name: 'Gulmohar Residency', unit_number: 'Flat 2A', tenant_name: 'Aarav Mehta', title: 'Living room ceiling fan regulator humming', category: 'electrical', priority: 'low', status: 'resolved', description: 'Fan making clicking sound on speed 3.', estimated_cost: 450, actual_cost: 400, resolution_notes: 'Replaced anchor capacitor and regulator.', created_at: '2026-10-18T16:45:00.000Z' }
+        { id: 'tkt_1', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', tenant_name: 'Priya Iyer', title: 'Water purifier (RO) filter servicing', category: 'plumbing', priority: 'medium', status: 'in_progress', description: 'RO water purifier flow has slowed down significantly. Filter cartridge replacement required.', estimated_cost: 1200, actual_cost: 0, resolution_notes: 'Urban Company technician booked for tomorrow 10:00 AM.', created_at: '2026-10-24T14:20:00.000Z' },
+        { id: 'tkt_2', property_name: 'Gulmohar Residency', unit_number: 'Flat 101', tenant_name: 'Priya Iyer', title: 'Bathroom hot water geyser inspection', category: 'electrical', priority: 'high', status: 'open', description: 'Geyser is tripping the MCB switch whenever switched on. Heating element needs check.', estimated_cost: 1500, actual_cost: 0, created_at: '2026-10-25T09:10:00.000Z' },
+        { id: 'tkt_3', property_name: 'Gulmohar Residency', unit_number: 'Flat 2A', tenant_name: 'Aarav Mehta', title: 'Ceiling fan regulator replacement', category: 'electrical', priority: 'low', status: 'resolved', description: 'Master bedroom fan running only at speed 5. Regulator switch replaced.', estimated_cost: 450, actual_cost: 400, resolution_notes: 'Replaced modular regulator switch. Working smoothly.', created_at: '2026-10-18T16:45:00.000Z' }
       ]
     };
   }

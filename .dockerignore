@@ -1,0 +1,37 @@
+# Git & version control
+.git
+.gitignore
+.github
+
+# Python artifacts
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache
+.coverage
+htmlcov
+
+# Node & frontend dependencies
+node_modules
+package-lock.json
+
+# Local environment & secrets
+.env
+.env.local
+.env.production
+*.sqlite3
+db.sqlite3
+
+# Scratch & temporary test scripts
+scratch/
+test-auth.js
+test_*.py
+
+# Large media files (served via CDN in cloud)
+videos/Hero_video.mp4
+
+# OS generated files
+.DS_Store
+Thumbs.db
+

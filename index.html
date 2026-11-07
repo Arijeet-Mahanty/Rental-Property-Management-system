@@ -1,1158 +1,2598 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>RentRoll — Modern Property Management for Independent Landlords</title>
-  <meta name="description" content="Streamline properties, automate rent collection, screen tenants, and track maintenance for 1-50 units with RentRoll. Zero spreadsheets.">
-  
-  <!-- Google Fonts: Inter -->
-  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  
-  <!-- Stylesheets -->
-  <link rel="stylesheet" href="css/variables.css">
-  <link rel="stylesheet" href="css/base.css">
-  <link rel="stylesheet" href="css/components.css">
-  <link rel="stylesheet" href="css/pages.css">
-</head>
-<body id="top">
-  <a href="#main-content" class="skip-to-content">Skip to main content</a>
-
-  <!-- Injected Sticky Glass Navbar -->
-  <header id="header-root"></header>
-
-  <main id="main-content" class="main-content">
-    <!-- Hero Section -->
-    <section class="hero" aria-labelledby="hero-title">
-      <!-- Background Ambient Video -->
-      <div class="hero-video-bg-container" aria-hidden="true">
-        <video class="hero-video-bg" autoplay muted loop playsinline preload="auto">
-          <source src="videos/Hero_video.mp4" type="video/mp4">
-        </video>
-        <div class="hero-video-overlay"></div>
-      </div>
-
-      <div class="container hero__grid">
-        <div class="hero__content">
-          <!-- <div class="hero__badge"> -->
-            <!-- <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg> -->
-            <!-- <span>Built specifically for 1–50 units</span> -->
-          <!-- </div> -->
-
-          <h1 id="hero-title" class="hero__title">
-            Property management <span class="text-gradient">without the corporate bloat.</span>
-          </h1>
-
-          <p class="hero__subtitle">
-            Say goodbye to messy spreadsheets, missed checks, and scattered texts. RentRoll gives independent landlords a sleek, automated command center for leases, rent, and repairs.
-          </p>
-
-          <div class="hero__cta-group">
-            <a href="signup.html" class="btn btn--primary btn--lg" id="hero-cta-signup">
-              <span>Start Free 30-Day Trial</span>
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
-            </a>
-            <a href="#portals" class="btn btn--ghost btn--lg" id="hero-cta-explore">
-              <span>Explore Portals</span>
-            </a>
-          </div>
-
-          <div class="hero__stats">
-            <div class="hero__stat-item">
-              <span class="hero__stat-val">₹45 Cr+</span>
-              <span class="hero__stat-label">Monthly Rent Collected</span>
-            </div>
-            <div class="hero__stat-item">
-              <span class="hero__stat-val">99.4%</span>
-              <span class="hero__stat-label">On-Time Payment Rate</span>
-            </div>
-            <div class="hero__stat-item">
-              <span class="hero__stat-val">Zero</span>
-              <span class="hero__stat-label">Spreadsheet Headaches</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Features Section -->
-    <section class="features-section" id="features" aria-labelledby="features-title">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-tag">Purpose-Built Features</span>
-          <h2 id="features-title" class="section-title">Everything you need to run your rentals like a pro</h2>
-          <p class="section-desc">Designed from the ground up for indie landlords who want enterprise efficiency without the complex training manuals.</p>
-        </div>
-
-        <div class="features-grid">
-          <!-- Feature 1 -->
-          <div class="glass-card glass-card--interactive feature-card">
-            <div class="feature-card__icon-wrap">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
-            </div>
-            <h3 class="feature-card__title">Automated Rent Collection</h3>
-            <p class="feature-card__desc">Deposit rent directly into your bank via UPI AutoPay, eNACH, or NetBanking. Automatic WhatsApp reminders and late fees apply without awkward conversations.</p>
-          </div>
-
-          <!-- Feature 2 -->
-          <div class="glass-card glass-card--interactive feature-card">
-            <div class="feature-card__icon-wrap">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
-            </div>
-            <h3 class="feature-card__title">Digital Leases & Screening</h3>
-            <p class="feature-card__desc">Screen prospective tenants with instant Aadhaar verification, PAN validation, and police verification workflows. Issue state-compliant e-Stamp registered rental agreements.</p>
-          </div>
-
-          <!-- Feature 3 -->
-          <div class="glass-card glass-card--interactive feature-card">
-            <div class="feature-card__icon-wrap">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
-            </div>
-            <h3 class="feature-card__title">Smart Maintenance Hub</h3>
-            <p class="feature-card__desc">Tenants snap photos and describe issues from their phones. Triage repair requests, assign contractors, and keep everyone updated in real-time.</p>
-          </div>
-
-          <!-- Feature 4 -->
-          <div class="glass-card glass-card--interactive feature-card">
-            <div class="feature-card__icon-wrap">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
-            </div>
-            <h3 class="feature-card__title">Multi-Unit & Portfolio View</h3>
-            <p class="feature-card__desc">Organize independent villas, builder floors, and multi-unit societies under one roof. Track vacancy periods, lease expirations, and turnover checklists.</p>
-          </div>
-
-          <!-- Feature 5 -->
-          <div class="glass-card glass-card--interactive feature-card">
-            <div class="feature-card__icon-wrap">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg>
-            </div>
-            <h3 class="feature-card__title">Financial & Tax Insights</h3>
-            <p class="feature-card__desc">Categorize maintenance expenses automatically. Generate instant HRA rent receipts with Landlord PAN, ITR & GST-ready financial ledgers per unit anytime.</p>
-          </div>
-
-          <!-- Feature 6 -->
-          <div class="glass-card glass-card--interactive feature-card">
-            <div class="feature-card__icon-wrap">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
-            </div>
-            <h3 class="feature-card__title">Tenant Self-Service Portal</h3>
-            <p class="feature-card__desc">Delight your renters with a polished mobile-friendly portal to review lease documents, set UPI autopay, download HRA receipts, and submit tickets.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Architecture & Portfolio Showcase -->
-    <section class="portfolio-showcase-section" id="portfolio-architecture" aria-labelledby="portfolio-arch-title">
-      <div class="container">
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+  <meta charset="UTF-8">
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>RentRoll — Modern Property Management for Independent Landlords</title>
+
+  <meta name="description"
+    content="Streamline properties, automate rent collection, screen tenants, and track maintenance for 1-50 units with RentRoll. Zero spreadsheets.">
+
+
+
+  <!-- Google Fonts: Inter -->
+
+  <link rel="icon" type="image/svg+xml" href="assets/logo.svg">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+
+
+  <!-- Stylesheets -->
+
+  <link rel="stylesheet" href="css/variables.css">
+
+  <link rel="stylesheet" href="css/base.css">
+
+  <link rel="stylesheet" href="css/components.css">
+
+  <link rel="stylesheet" href="css/pages.css">
+
+</head>
+
+<body id="top">
+
+  <a href="#main-content" class="skip-to-content">Skip to main content</a>
+
+
+
+  <!-- Injected Sticky Glass Navbar -->
+
+  <header id="header-root"></header>
+
+
+
+  <main id="main-content" class="main-content">
+
+    <!-- Hero Section -->
+
+    <section class="hero" aria-labelledby="hero-title">
+
+      <!-- Background Ambient Video -->
+
+      <div class="hero-video-bg-container" aria-hidden="true">
+
+        <video class="hero-video-bg" autoplay muted loop playsinline preload="auto">
+
+          <source src="videos/Hero_video.mp4" type="video/mp4">
+
+        </video>
+
+        <div class="hero-video-overlay"></div>
+
+      </div>
+
+
+
+      <div class="container hero__grid">
+
+        <div class="hero__content">
+
+          <!-- <div class="hero__badge"> -->
+
+          <!-- <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg> -->
+
+          <!-- <span>Built specifically for 1–50 units</span> -->
+
+          <!-- </div> -->
+
+
+
+          <h1 id="hero-title" class="hero__title">
+
+            Property management <span class="text-gradient">without the corporate bloat.</span>
+
+          </h1>
+
+
+
+          <p class="hero__subtitle">
+
+            Say goodbye to messy spreadsheets, missed checks, and scattered texts. RentRoll gives independent landlords
+            a sleek, automated command center for leases, rent, and repairs.
+
+          </p>
+
+
+
+          <div class="hero__cta-group">
+
+            <a href="signup.html" class="btn btn--primary btn--lg" id="hero-cta-signup">
+
+              <span>Start Free 30-Day Trial</span>
+
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+                <polyline points="12 5 19 12 12 19"></polyline>
+              </svg>
+
+            </a>
+
+            <a href="#portals" class="btn btn--ghost btn--lg" id="hero-cta-explore">
+
+              <span>Explore Portals</span>
+
+            </a>
+
+          </div>
+
+
+
+          <div class="hero__stats">
+
+            <div class="hero__stat-item">
+
+              <span class="hero__stat-val">₹45 Cr+</span>
+
+              <span class="hero__stat-label">Monthly Rent Collected</span>
+
+            </div>
+
+            <div class="hero__stat-item">
+
+              <span class="hero__stat-val">99.4%</span>
+
+              <span class="hero__stat-label">On-Time Payment Rate</span>
+
+            </div>
+
+            <div class="hero__stat-item">
+
+              <span class="hero__stat-val">Zero</span>
+
+              <span class="hero__stat-label">Spreadsheet Headaches</span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- Features Section -->
+
+    <section class="features-section" id="features" aria-labelledby="features-title">
+
+      <div class="container">
+
         <div class="section-header">
 
-          <span class="section-tag">Property Architecture & Portfolio</span>
+          <span class="section-tag">Purpose-Built Features</span>
 
-          <h2 id="portfolio-arch-title" class="section-title">Built for duplexes, builder floors, and luxury residential towers</h2>
+          <h2 id="features-title" class="section-title">Everything you need to run your rentals like a pro</h2>
 
-          <p class="section-desc">Experience and manage your complete property portfolio with high-resolution visual architectural profiles, automated rent collection, and instant lease insights.</p>
+          <p class="section-desc">Designed from the ground up for indie landlords who want enterprise efficiency without
+            the complex training manuals.</p>
 
         </div>
 
 
 
-        <!-- Architectural Property Cards Grid -->
-        <div class="architecture-cards-grid" id="architecture-cards-grid">
-          <!-- Card 1: Modern Duplex -->
-          <div class="glass-card architecture-card">
-            <div class="architecture-card__img-wrap">
-              <img src="assets/indian_modern_villa.jpg" alt="Gulmohar Garden Duplex" class="architecture-card__img" loading="lazy">
-              <div class="architecture-card__badge">
-                <span class="badge badge--landlord">2 Units &bull; 100% Occupied</span>
-              </div>
-            </div>
-
-            <div class="architecture-card__title-group">
-              <h3 class="architecture-card__title">Gulmohar Garden Duplex</h3>
-              <div class="architecture-card__location">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                <span>Koramangala 4th Block &bull; Bengaluru</span>
-              </div>
-            </div>
-
-            <div class="architecture-card__stats">
-              <div class="architecture-card__stat-box">
-                <div class="architecture-card__stat-label">Monthly Rent Flow</div>
-                <div class="architecture-card__stat-val">₹75,000</div>
-              </div>
-              <div class="architecture-card__stat-box">
-                <div class="architecture-card__stat-label">Autopay Adoption</div>
-                <div class="architecture-card__stat-val">100% UPI</div>
-              </div>
-            </div>
-
-            <div class="architecture-card__checklist">
-              <div class="architecture-card__checklist-item">
-                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Dual private entrances with teakwood architectural elevation</span>
-              </div>
-              <div class="architecture-card__checklist-item">
-                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Automated monthly direct deposits &amp; rent reminder shield</span>
-              </div>
-              <div class="architecture-card__checklist-item">
-                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Karnataka e-Stamp registered digital rental agreements on file</span>
-              </div>
-            </div>
-
-            <a href="signup.html" class="btn btn--primary">Manage Duplex Units</a>
-          </div>
-
-          <!-- Card 2: Historic Brownstone -->
-          <div class="glass-card architecture-card">
-            <div class="architecture-card__img-wrap">
-              <img src="assets/urban_brownstone.jpg" alt="Heritage Haveli Triplex" class="architecture-card__img" loading="lazy">
-              <div class="architecture-card__badge">
-                <span class="badge badge--landlord">3 Units &bull; Fully Leased</span>
-              </div>
-            </div>
-
-            <div class="architecture-card__title-group">
-              <h3 class="architecture-card__title">Heritage Haveli Triplex</h3>
-              <div class="architecture-card__location">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                <span>Koregaon Park &bull; Pune</span>
-              </div>
-            </div>
-
-            <div class="architecture-card__stats">
-              <div class="architecture-card__stat-box">
-                <div class="architecture-card__stat-label">Monthly Rent Flow</div>
-                <div class="architecture-card__stat-val">₹1,25,000</div>
-              </div>
-              <div class="architecture-card__stat-box">
-                <div class="architecture-card__stat-label">Autopay Adoption</div>
-                <div class="architecture-card__stat-val">100% On-Time</div>
-              </div>
-            </div>
-
-            <div class="architecture-card__checklist">
-              <div class="architecture-card__checklist-item">
-                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Restored colonial heritage facade with rooftop garden terrace</span>
-              </div>
-              <div class="architecture-card__checklist-item">
-                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Individual utility sub-metering &amp; zero fee processing</span>
-              </div>
-              <div class="architecture-card__checklist-item">
-                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Digital tenant screening &amp; Aadhaar police verification</span>
-              </div>
-            </div>
-
-            <a href="signup.html" class="btn btn--primary">Manage Triplex Units</a>
-          </div>
-
-          <!-- Card 3: Highland Boutique Multi-Unit -->
-          <div class="glass-card architecture-card">
-            <div class="architecture-card__img-wrap">
-              <img src="assets/indian_luxury_apartment.jpg" alt="Skyline Palms Tower" class="architecture-card__img" loading="lazy">
-              <div class="architecture-card__badge">
-                <span class="badge badge--landlord">18 Units &bull; Bandra West</span>
-              </div>
-            </div>
-
-            <div class="architecture-card__title-group">
-              <h3 class="architecture-card__title">Skyline Palms Tower</h3>
-              <div class="architecture-card__location">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                <span>Pali Hill Corridor &bull; Mumbai</span>
-              </div>
-            </div>
-
-            <div class="architecture-card__stats">
-              <div class="architecture-card__stat-box">
-                <div class="architecture-card__stat-label">Monthly Rent Flow</div>
-                <div class="architecture-card__stat-val">₹5,80,000</div>
-              </div>
-              <div class="architecture-card__stat-box">
-                <div class="architecture-card__stat-label">Autopay Adoption</div>
-                <div class="architecture-card__stat-val">99.8% eNACH</div>
-              </div>
-            </div>
-
-            <div class="architecture-card__checklist">
-              <div class="architecture-card__checklist-item">
-                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Luxury high-rise apartments with private balconies &amp; parking</span>
-              </div>
-              <div class="architecture-card__checklist-item">
-                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Real-time contractor dispatch with photo repair logs</span>
-              </div>
-              <div class="architecture-card__checklist-item">
-                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>CA-ready HRA rent receipt exports with automated categorization</span>
-              </div>
-            </div>
-
-            <a href="signup.html" class="btn btn--primary">Manage Multi-Unit Doors</a>
-          </div>
-        </div>
-
-        <!-- Featured Property Photo Gallery -->
-        <div class="property-gallery-header">
-          <span class="section-tag">Curated Real Estate</span>
-          <h3 class="section-title" style="font-size: var(--font-size-2xl);">Properties managed seamlessly on RentRoll</h3>
-        </div>
-
-        <div class="property-gallery-grid" id="property-gallery-grid">
-          <!-- Property Photo 1 -->
-          <div class="glass-card property-photo-card">
-            <div class="property-photo-card__img-wrap">
-              <img src="assets/indian_modern_villa.jpg" alt="Gulmohar Garden Duplex" class="property-photo-card__img" loading="lazy">
-              <span class="badge badge--landlord property-photo-card__badge">2 Units</span>
-            </div>
-            <h4 class="property-photo-card__title">Gulmohar Garden Duplex</h4>
-            <p class="property-photo-card__sub">Koramangala 4th Block &bull; Bengaluru</p>
-            <div class="property-photo-card__meta">
-              <span class="property-photo-card__rent">₹75,000/mo</span>
-              <span class="property-photo-card__tag">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                100% Occupied
-              </span>
-            </div>
-          </div>
-
-          <!-- Property Photo 2 -->
-          <div class="glass-card property-photo-card">
-            <div class="property-photo-card__img-wrap">
-              <img src="assets/indian_luxury_apartment.jpg" alt="Skyline Palms Tower" class="property-photo-card__img" loading="lazy">
-              <span class="badge badge--landlord property-photo-card__badge">18 Units</span>
-            </div>
-            <h4 class="property-photo-card__title">Skyline Palms Tower</h4>
-            <p class="property-photo-card__sub">Bandra West &bull; Mumbai</p>
-            <div class="property-photo-card__meta">
-              <span class="property-photo-card__rent">₹5,80,000/mo</span>
-              <span class="property-photo-card__tag">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                UPI &amp; eNACH AutoPay
-              </span>
-            </div>
-          </div>
-
-          <!-- Property Photo 3 -->
-          <div class="glass-card property-photo-card">
-            <div class="property-photo-card__img-wrap">
-              <img src="assets/urban_brownstone.jpg" alt="Heritage Haveli Triplex" class="property-photo-card__img" loading="lazy">
-              <span class="badge badge--landlord property-photo-card__badge">3 Units</span>
-            </div>
-            <h4 class="property-photo-card__title">Heritage Haveli Triplex</h4>
-            <p class="property-photo-card__sub">Koregaon Park &bull; Pune</p>
-            <div class="property-photo-card__meta">
-              <span class="property-photo-card__rent">₹1,25,000/mo</span>
-              <span class="property-photo-card__tag">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                Zero Delinquency
-              </span>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-
-    <!-- How It Works Section -->
-    <section class="how-it-works-section" id="how-it-works" aria-labelledby="how-title">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-tag">Simple 3-Step Setup</span>
-          <h2 id="how-title" class="section-title">Up and running in less than 15 minutes</h2>
-          <p class="section-desc">Migrating from spreadsheets or paper checks has never been smoother.</p>
-        </div>
-
-        <div class="steps-grid">
-          <div class="glass-card step-card">
-            <div class="step-card__number">01</div>
-            <h3 class="step-card__title">Add Properties & Units</h3>
-            <p class="step-card__desc">Enter your addresses, unit numbers, monthly rent rates, and deposit amounts. Batch import existing properties in seconds.</p>
-          </div>
-
-          <div class="glass-card step-card">
-            <div class="step-card__number">02</div>
-            <h3 class="step-card__title">Invite Tenants Digitally</h3>
-            <p class="step-card__desc">Send a simple WhatsApp or email link. Tenants join their personal portal, configure autopay via secure UPI or eNACH, and store their digital lease.</p>
-          </div>
-
-          <div class="glass-card step-card">
-            <div class="step-card__number">03</div>
-            <h3 class="step-card__title">Relax on Autopilot</h3>
-            <p class="step-card__desc">Rent deposits directly into your account on the 1st. Repairs, reminders, and financial summaries run hands-free in the background.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Landlord vs Tenant Portals Section -->
-    <section class="portals-section" id="portals" aria-labelledby="portals-title">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-tag">Two Dedicated Experiences</span>
-          <h2 id="portals-title" class="section-title">Crafted for both landlords and tenants</h2>
-          <p class="section-desc">Each user gets a tailored interface with the exact tools they need, with zero confusion.</p>
-        </div>
-
-        <div class="portals-grid">
-          <!-- Landlord Card -->
-          <div class="glass-card portal-card">
-            <!-- Landlord Visual Image Banner -->
-            <div class="portal-card__img-wrapper">
-              <img src="assets/landlord_property.jpg" alt="Landlord Rental Portfolio Overview" class="portal-card__img" loading="lazy">
-              <div class="portal-card__img-overlay">
-                <span class="portal-card__img-tag">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  18 Doors Managed &bull; 99.4% On-Time Rent
-                </span>
-              </div>
-            </div>
-
-            <div class="portal-card__badge">
-              <span class="badge badge--landlord">Landlord Command Center</span>
-            </div>
-            <h3 class="portal-card__title">Total Portfolio Control</h3>
-            <p class="portal-card__desc">
-              Designed specifically for owners managing 1 to 50 doors. Get a birds-eye view of your occupancy, cash flows, and repair dispatches.
-            </p>
-            <div class="portal-card__checklist">
-              <div class="portal-checklist-item">
-                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Automated UPI &amp; eNACH rent deposits &amp; WhatsApp reminders</span>
-              </div>
-              <div class="portal-checklist-item">
-                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Full applicant Aadhaar screening &amp; police verification</span>
-              </div>
-              <div class="portal-checklist-item">
-                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Contractor maintenance dispatch &amp; photo logs</span>
-              </div>
-              <div class="portal-checklist-item">
-                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>GST &amp; HRA rent receipt exports with categorized expense tracking</span>
-              </div>
-            </div>
-            <a href="signup.html" class="btn btn--primary">Create Landlord Account</a>
-          </div>
-
-          <!-- Tenant Card -->
-          <div class="glass-card portal-card">
-            <!-- Tenant Visual Image Banner -->
-            <div class="portal-card__img-wrapper">
-              <img src="assets/tenant_apartment.jpg" alt="Modern Tenant Apartment Living Space" class="portal-card__img" loading="lazy">
-              <div class="portal-card__img-overlay">
-                <span class="portal-card__img-tag">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                  Resident Mobile Portal &bull; 1-Click Autopay
-                </span>
-              </div>
-            </div>
-
-            <div class="portal-card__badge">
-              <span class="badge badge--tenant">Tenant Self-Service</span>
-            </div>
-            <h3 class="portal-card__title">Stress-Free Renting</h3>
-            <p class="portal-card__desc">
-              Give your tenants the frictionless, modern rental experience they expect. No more cheques to deposit or phone tag for repairs.
-            </p>
-            <div class="portal-card__checklist">
-              <div class="portal-checklist-item">
-                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>1-Click UPI AutoPay setup with zero transaction surprise</span>
-              </div>
-              <div class="portal-checklist-item">
-                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Submit photo repair requests anytime from mobile</span>
-              </div>
-              <div class="portal-checklist-item">
-                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Access signed e-Stamp lease agreements and HRA rent receipts 24/7</span>
-              </div>
-              <div class="portal-checklist-item">
-                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Direct WhatsApp and maintenance resolution notifications</span>
-              </div>
-            </div>
-            <a href="login.html" class="btn btn--ghost">Enter Tenant Portal</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Trust & Compliance Badges Banner -->
-    <section class="trust-banner-section" aria-label="Security and Compliance Guarantees">
-      <div class="container">
-        <div class="glass-card trust-banner">
-          <div class="trust-badge-item">
-            <div class="trust-badge-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
-            </div>
-            <div>
-              <div class="trust-badge-title">256-Bit SSL Encryption</div>
-              <div class="trust-badge-sub">Bank-grade data protection</div>
-            </div>
-          </div>
-
-          <div class="trust-badge-item">
-            <div class="trust-badge-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            </div>
-            <div>
-              <div class="trust-badge-title">NPCI eNACH &amp; UPI Certified</div>
-              <div class="trust-badge-sub">Zero-friction direct bank auto-debit</div>
-            </div>
-          </div>
-
-          <div class="trust-badge-item">
-            <div class="trust-badge-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><polyline points="16 11 18 13 22 9"></polyline></svg>
-            </div>
-            <div>
-              <div class="trust-badge-title">Aadhaar &amp; Police Verification</div>
-              <div class="trust-badge-sub">DigiLocker &amp; CERSAI integrated checks</div>
-            </div>
-          </div>
-
-          <div class="trust-badge-item">
-            <div class="trust-badge-icon">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 14 14"></polyline></svg>
-            </div>
-            <div>
-              <div class="trust-badge-title">99.98% High Availability</div>
-              <div class="trust-badge-sub">RBI data localized cloud security</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Customer Feedback & Verified Reviews Section -->
-    <section class="feedback-section" id="feedback" aria-labelledby="feedback-title">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-tag">Social Proof & Reviews</span>
-          <h2 id="feedback-title" class="section-title">Loved by independent landlords and happy residents</h2>
-          <p class="section-desc">Real stories from property owners managing 1 to 50 doors and residents enjoying frictionless living.</p>
-        </div>
-
-        <!-- Rating & Stats Summary Capsule -->
-        <div class="feedback-stats-bar">
-          <div class="feedback-score-card">
-            <div class="feedback-score-val">4.9<span class="feedback-score-max">/5</span></div>
-            <div class="feedback-stars" aria-label="5 out of 5 stars">
-              ★★★★★
-            </div>
-            <div class="feedback-score-label">Based on 1,250+ verified reviews</div>
-          </div>
-
-          <div class="feedback-metrics-grid">
-            <div class="feedback-metric-item">
-              <span class="feedback-metric-num">99.4%</span>
-              <span class="feedback-metric-desc">On-time rent payment rate with automated UPI AutoPay</span>
-            </div>
-            <div class="feedback-metric-item">
-              <span class="feedback-metric-num">&lt; 15 min</span>
-              <span class="feedback-metric-desc">Average onboarding & spreadsheet migration time</span>
-            </div>
-            <div class="feedback-metric-item">
-              <span class="feedback-metric-num">98.7%</span>
-              <span class="feedback-metric-desc">Tenant satisfaction rating with digital repairs &amp; HRA receipts</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Filter Controls & Leave Feedback Action -->
-        <div class="feedback-controls-bar">
-          <div class="feedback-filter-tabs" role="tablist" aria-label="Review role filters">
-            <button type="button" class="feedback-filter-btn is-active" data-filter="all" role="tab" aria-selected="true">
-              <span>All Reviews</span>
-              <span class="feedback-filter-count" id="count-all">6</span>
-            </button>
-            <button type="button" class="feedback-filter-btn" data-filter="landlord" role="tab" aria-selected="false">
-              <span>Landlords & Owners</span>
-              <span class="feedback-filter-count" id="count-landlords">4</span>
-            </button>
-            <button type="button" class="feedback-filter-btn" data-filter="tenant" role="tab" aria-selected="false">
-              <span>Tenants & Residents</span>
-              <span class="feedback-filter-count" id="count-tenants">2</span>
-            </button>
-          </div>
-
-          <button type="button" class="btn btn--primary btn--sm" id="btn-open-feedback-modal">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-            <span>Share Your Experience</span>
-          </button>
-        </div>
-
-        <!-- Feedback Infinite Marquee Wrapper -->
-        <div class="feedback-marquee-wrapper" id="feedback-marquee-wrapper">
-          <!-- Feedback Cards Continuous Marquee Track -->
-          <div class="feedback-grid feedback-marquee-track" id="feedback-grid" role="region" aria-label="Customer reviews infinite marquee">
-          <!-- Review 1: Landlord -->
-          <div class="glass-card feedback-card" data-role="landlord">
-            <div class="feedback-card__header">
-              <div class="feedback-card__author">
-                <div class="feedback-card__avatar feedback-card__avatar--indigo">RS</div>
-                <div>
-                  <div class="feedback-card__name">Rajesh Sharma</div>
-                  <div class="feedback-card__meta">Gulmohar Residency Portfolio &bull; Koramangala, Bengaluru</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="feedback-card__stars">★★★★★</div>
-            <h3 class="feedback-card__title">"Automated UPI &amp; eNACH collection reclaimed my entire first week of the month"</h3>
-            <p class="feedback-card__quote">
-              "Before RentRoll, I was chasing 18 separate cheques, tracking partial payments across multiple UPI handles, and logging late fees manually. Now, 99% of my tenants are on UPI AutoPay. Deposits hit my HDFC current account like clockwork on the 1st, and my CA loved the GST &amp; HRA receipt exports."
-            </p>
-
-            <div class="feedback-card__footer">
-              <div class="feedback-verified-badge">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Verified Landlord &bull; 2 Yrs</span>
-              </div>
-              <button type="button" class="feedback-helpful-btn" data-id="rev-1" title="Mark as helpful">
-                <span class="helpful-icon">👍</span>
-                <span>Helpful (<strong class="helpful-count">38</strong>)</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Review 2: Landlord -->
-          <div class="glass-card feedback-card" data-role="landlord">
-            <div class="feedback-card__header">
-              <div class="feedback-card__author">
-                <div class="feedback-card__avatar feedback-card__avatar--emerald">SK</div>
-                <div>
-                  <div class="feedback-card__name">Sunita Kulkarni</div>
-                  <div class="feedback-card__meta">Whitefield Duplexes &bull; Bengaluru</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="feedback-card__stars">★★★★★</div>
-            <h3 class="feedback-card__title">"The photo repair triage saved me thousands in emergency contractor fees"</h3>
-            <p class="feedback-card__quote">
-              "When a geyser short-circuit happened on a chilly Sunday evening, my tenant submitted a video ticket with sound directly from her phone. I was able to dispatch our verified technician with the exact spare part and save an emergency ₹3,500 call-out fee. Unbelievably intuitive."
-            </p>
-
-            <div class="feedback-card__footer">
-              <div class="feedback-verified-badge">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Verified Landlord &bull; 1.5 Yrs</span>
-              </div>
-              <button type="button" class="feedback-helpful-btn" data-id="rev-2" title="Mark as helpful">
-                <span class="helpful-icon">👍</span>
-                <span>Helpful (<strong class="helpful-count">27</strong>)</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Review 3: Tenant -->
-          <div class="glass-card feedback-card" data-role="tenant">
-            <div class="feedback-card__header">
-              <div class="feedback-card__author">
-                <div class="feedback-card__avatar feedback-card__avatar--terracotta">PI</div>
-                <div>
-                  <div class="feedback-card__name">Priya Iyer</div>
-                  <div class="feedback-card__meta">Gulmohar Residency Flat 4B &bull; Koramangala, Bengaluru</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="feedback-card__stars">★★★★★</div>
-            <h3 class="feedback-card__title">"Finally a tenant portal that feels like a modern Indian fintech app"</h3>
-            <p class="feedback-card__quote">
-              "No clunky legacy software, no confusing deductions. I set up UPI AutoPay in literally 60 seconds with my UPI ID. Whenever a maintenance ticket is resolved, I get a clear WhatsApp alert with technician notes. Generating instant HRA receipts with landlord PAN for my tax declaration takes one click."
-            </p>
-
-            <div class="feedback-card__footer">
-              <div class="feedback-verified-badge">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Verified Resident &bull; 18 Mos</span>
-              </div>
-              <button type="button" class="feedback-helpful-btn" data-id="rev-3" title="Mark as helpful">
-                <span class="helpful-icon">👍</span>
-                <span>Helpful (<strong class="helpful-count">19</strong>)</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Review 4: Landlord -->
-          <div class="glass-card feedback-card" data-role="landlord">
-            <div class="feedback-card__header">
-              <div class="feedback-card__author">
-                <div class="feedback-card__avatar feedback-card__avatar--violet">VS</div>
-                <div>
-                  <div class="feedback-card__name">Vikramaditya Singhania</div>
-                  <div class="feedback-card__meta">Bandra Sea Breeze Heights &bull; Mumbai, MH</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="feedback-card__stars">★★★★★</div>
-            <h3 class="feedback-card__title">"GST and HRA rent receipts made our Chartered Accountant literally cheer"</h3>
-            <p class="feedback-card__quote">
-              "Tax season used to be a nightmare of physical rent counterfoils and manual bank reconciliation. With RentRoll, all rent inflows and vendor maintenance payouts are categorized automatically. We exported our GST-compliant audit report and 80GG/HRA summaries in one click without sweating."
-            </p>
-
-            <div class="feedback-card__footer">
-              <div class="feedback-verified-badge">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Verified Landlord &bull; 14 Mos</span>
-              </div>
-              <button type="button" class="feedback-helpful-btn" data-id="rev-4" title="Mark as helpful">
-                <span class="helpful-icon">👍</span>
-                <span>Helpful (<strong class="helpful-count">31</strong>)</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Review 5: Tenant -->
-          <div class="glass-card feedback-card" data-role="tenant">
-            <div class="feedback-card__header">
-              <div class="feedback-card__author">
-                <div class="feedback-card__avatar feedback-card__avatar--blue">RD</div>
-                <div>
-                  <div class="feedback-card__name">Rohan Deshmukh</div>
-                  <div class="feedback-card__meta">Koregaon Park Villa &bull; Pune, MH</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="feedback-card__stars">★★★★★</div>
-            <h3 class="feedback-card__title">"Digital e-Stamp lease signing and instant rent receipts on my phone"</h3>
-            <p class="feedback-card__quote">
-              "Moving into Pune was completely seamless. I signed the registered e-Stamp rent agreement on my phone, paid the security deposit securely via NetBanking, and have immediate access to my stamp duty countersigned copy and rent receipts anytime. Best rental experience I've had in India."
-            </p>
-
-            <div class="feedback-card__footer">
-              <div class="feedback-verified-badge">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Verified Resident &bull; 1 Yr</span>
-              </div>
-              <button type="button" class="feedback-helpful-btn" data-id="rev-5" title="Mark as helpful">
-                <span class="helpful-icon">👍</span>
-                <span>Helpful (<strong class="helpful-count">14</strong>)</span>
-              </button>
-            </div>
-          </div>
-
-          <!-- Review 6: Landlord -->
-          <div class="glass-card feedback-card" data-role="landlord">
-            <div class="feedback-card__header">
-              <div class="feedback-card__author">
-                <div class="feedback-card__avatar feedback-card__avatar--amber">DC</div>
-                <div>
-                  <div class="feedback-card__name">Deepak Chawla</div>
-                  <div class="feedback-card__meta">DLF Cyber Suites &bull; Gurugram, NCR</div>
-                </div>
-              </div>
-            </div>
-
-            <div class="feedback-card__stars">★★★★★</div>
-            <h3 class="feedback-card__title">"Built for indie Indian property owners, not complicated global software"</h3>
-            <p class="feedback-card__quote">
-              "Every other global property platform asks for exorbitant monthly dollar fees and doesn't support UPI, eNACH, or Indian HRA receipts. RentRoll was built specifically for owners like me who manage 3 to 15 flats in metro cities and just want things to run flawlessly."
-            </p>
-
-            <div class="feedback-card__footer">
-              <div class="feedback-verified-badge">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                <span>Verified Landlord &bull; 2.5 Yrs</span>
-              </div>
-              <button type="button" class="feedback-helpful-btn" data-id="rev-6" title="Mark as helpful">
-                <span class="helpful-icon">👍</span>
-                <span>Helpful (<strong class="helpful-count">42</strong>)</span>
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-    <!-- Contact Us Section -->
-    <section class="contact-section" id="contact" aria-labelledby="contact-title">
-      <div class="container">
-        <div class="section-header">
-          <span class="section-tag">Get In Touch</span>
-          <h2 id="contact-title" class="section-title">Have questions? We're here to help you succeed.</h2>
-          <p class="section-desc">Whether you want a personalized walk-through, help onboarding your units, or have general questions, our property specialists respond swiftly.</p>
-        </div>
-
-        <div class="contact-grid">
-          <!-- Left Column: Channels & FAQ -->
-          <div class="contact-info-col">
-            <!-- Direct Channels Card -->
-            <div class="glass-card contact-channel-card">
-              <h3 class="contact-col-heading">Direct Channels</h3>
-
-              <div class="contact-channel-list">
-                <div class="contact-channel-item">
-                  <div class="contact-channel-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                  </div>
-                  <div class="contact-channel-details">
-                    <div class="contact-channel-label">Email Support &amp; Sales</div>
-                    <a href="mailto:support@rentroll.in" class="contact-channel-value" id="contact-email-link">support@rentroll.in</a>
-                    <div class="contact-channel-sub">Average response time: &lt; 2 business hours</div>
-                  </div>
-                  <button type="button" class="contact-copy-btn" id="btn-copy-email" title="Copy email address" aria-label="Copy email address">
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-                  </button>
-                </div>
-
-                <div class="contact-channel-item">
-                  <div class="contact-channel-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                  </div>
-                  <div class="contact-channel-details">
-                    <div class="contact-channel-label">Landlord Advisory Line</div>
-                    <a href="tel:+918041235678" class="contact-channel-value">+91 (080) 4123-5678</a>
-                    <div class="contact-channel-sub">Mon–Sat: 9:00 AM – 7:00 PM IST</div>
-                  </div>
-                </div>
-
-                <div class="contact-channel-item">
-                  <div class="contact-channel-icon">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                  </div>
-                  <div class="contact-channel-details">
-                    <div class="contact-channel-label">India Operations &amp; HQ</div>
-                    <div class="contact-channel-value" style="font-size: var(--font-size-sm); color: var(--color-text-main);">Prestige Meridian Towers, 14th Main, 4th Block</div>
-                    <div class="contact-channel-sub">Koramangala, Bengaluru, KA 560034 &bull; India</div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- Live Beacon Status -->
-              <div class="contact-status-beacon">
-                <span class="contact-beacon-dot"></span>
-                <span>System Status: <strong>Operational</strong> &bull; Specialists Online</span>
-              </div>
-            </div>
-
-            <!-- Quick FAQ Accordion -->
-            <div class="glass-card contact-faq-card">
-              <h3 class="contact-col-heading">Frequently Asked Questions</h3>
-
-              <div class="faq-accordion" id="faq-accordion">
-                <div class="faq-item is-open">
-                  <button type="button" class="faq-question" aria-expanded="true" aria-controls="faq-ans-1">
-                    <span>How quickly can I migrate my current tenants?</span>
-                    <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                  </button>
-                  <div class="faq-answer" id="faq-ans-1">
-                    <p>Under 15 minutes! Simply enter your property address and unit numbers, then send automated WhatsApp or email invitations to your tenants. They connect UPI AutoPay in 60 seconds with GPay, PhonePe, or NetBanking via NPCI eNACH.</p>
-                  </div>
-                </div>
-
-                <div class="faq-item">
-                  <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-ans-2">
-                    <span>Does RentRoll charge hidden transaction fees on UPI / NetBanking?</span>
-                    <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                  </button>
-                  <div class="faq-answer is-collapsed" id="faq-ans-2">
-                    <p>Zero hidden fees. UPI AutoPay and direct NetBanking transfers are 100% free for both landlords and tenants. Standard card processing fees are transparently displayed upfront without markups.</p>
-                  </div>
-                </div>
-
-                <div class="faq-item">
-                  <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-ans-3">
-                    <span>Can I use RentRoll if I only have 1 or 2 flats or an independent duplex?</span>
-                    <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                  </button>
-                  <div class="faq-answer is-collapsed" id="faq-ans-3">
-                    <p>Yes! RentRoll was purpose-built for independent Indian owners with 1 to 50 doors. There are no minimum flat requirements, no rigid annual contracts, and no bloated legacy software.</p>
-                  </div>
-                </div>
-
-                <div class="faq-item">
-                  <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-ans-4">
-                    <span>How do HRA rent receipts and GST / ITR reports work?</span>
-                    <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                  </button>
-                  <div class="faq-answer is-collapsed" id="faq-ans-4">
-                    <p>All recorded rent collections automatically generate compliant monthly HRA rent receipts displaying the Landlord's verified PAN for tenant tax deduction filings. Landlords can also export one-click CA-ready income and maintenance ledgers.</p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Right Column: Interactive Neomorphic Contact Form -->
-          <div class="contact-form-col">
-            <div class="glass-card contact-form-card" id="contact-form-card">
-              <div class="contact-form-header">
-                <h3 class="contact-form-title">Send Us a Direct Message</h3>
-                <p class="contact-form-subtitle">Fill out the fields below and our dedicated property advisor will get in touch.</p>
-              </div>
-
-              <form id="landing-contact-form" class="contact-form" novalidate>
-                <div class="form-row form-row--2col">
-                  <div class="form-group">
-                    <label for="contact-name" class="form-label">Full Name <span class="text-danger">*</span></label>
-                    <div class="form-input-wrap">
-                      <input type="text" id="contact-name" name="name" class="form-input" placeholder="e.g. Rajesh Sharma" required autocomplete="name">
-                    </div>
-                    <div class="form-error" id="error-contact-name">Please enter your full name.</div>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="contact-email" class="form-label">Email Address <span class="text-danger">*</span></label>
-                    <div class="form-input-wrap">
-                      <input type="email" id="contact-email" name="email" class="form-input" placeholder="name@domain.com" required autocomplete="email">
-                    </div>
-                    <div class="form-error" id="error-contact-email">Please enter a valid email address.</div>
-                  </div>
-                </div>
-
-                <div class="form-row form-row--2col">
-                  <div class="form-group">
-                    <label for="contact-phone" class="form-label">Phone Number <span class="text-subtle" style="font-weight: normal;">(Optional)</span></label>
-                    <div class="form-input-wrap">
-                      <input type="tel" id="contact-phone" name="phone" class="form-input" placeholder="+91 98765 43210" autocomplete="tel">
-                    </div>
-                  </div>
-
-                  <div class="form-group">
-                    <label for="contact-portfolio" class="form-label">Portfolio Size</label>
-                    <div class="form-input-wrap">
-                      <select id="contact-portfolio" name="portfolioSize" class="form-input">
-                        <option value="1-4 Units">1 – 4 Flats (Independent House / Duplex)</option>
-                        <option value="5-15 Units">5 – 15 Flats (Society Apartments / Builder Floors)</option>
-                        <option value="16-50 Units">16 – 50 Doors (Boutique Portfolio)</option>
-                        <option value="Resident">I am a Tenant / Resident</option>
-                        <option value="Exploring">Exploring / NRI Landlord</option>
-                      </select>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <label for="contact-subject" class="form-label">Inquiry Topic</label>
-                  <div class="form-input-wrap">
-                    <select id="contact-subject" name="subject" class="form-input">
-                      <option value="Live Platform Demo">Request 1-on-1 Platform Demo</option>
-                      <option value="Landlord Sales & Migration">Landlord Sales & Spreadsheet Migration</option>
-                      <option value="Tenant Support">Tenant Support & Rent Pay Help</option>
-                      <option value="Pricing & Custom Quote">Pricing & 15+ Units Custom Quote</option>
-                      <option value="General Question">General Inquiry & Feedback</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div class="form-group">
-                  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
-                    <label for="contact-message" class="form-label" style="margin-bottom: 0;">How can we help? <span class="text-danger">*</span></label>
-                    <span class="form-char-count" id="contact-char-count">0 / 500</span>
-                  </div>
-                  <div class="form-input-wrap">
-                    <textarea id="contact-message" name="message" class="form-input form-textarea" rows="4" placeholder="Tell us about your properties, questions, or what you'd like to automate..." required maxlength="500"></textarea>
-                  </div>
-                  <div class="form-error" id="error-contact-message">Please enter a message (at least 10 characters).</div>
-                </div>
-
-                <button type="submit" class="btn btn--primary btn--lg btn--full" id="contact-submit-btn">
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                  <span>Send Message</span>
-                </button>
-              </form>
-
-              <!-- In-form Success State -->
-              <div class="contact-success-state is-hidden" id="contact-success-state" role="status" aria-live="polite">
-                <div class="contact-success-icon">
-                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
-                </div>
-                <h4 class="contact-success-title">Message Received!</h4>
-                <p class="contact-success-desc" id="contact-success-desc">
-                  Thank you for reaching out. We have received your message and sent a copy to your email. A property specialist will reply within 2 business hours.
-                </p>
-                <button type="button" class="btn btn--ghost btn--sm" id="btn-reset-contact-form">Send Another Message</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="cta-section" aria-labelledby="cta-title">
-      <div class="container">
-        <div class="glass-card cta-banner">
-          <h2 id="cta-title" class="cta-banner__title">Ready to modernize your rental portfolio?</h2>
-          <p class="cta-banner__desc">Join hundreds of independent landlords who automated rent collection and reclaimed their weekends.</p>
-          <div class="cta-banner__buttons">
-            <a href="signup.html" class="btn btn--primary btn--lg" id="cta-get-started">Start 30-Day Free Trial</a>
-            <a href="login.html" class="btn btn--ghost btn--lg">Sign In to Account</a>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <!-- Modal: Authentication Required for Feedback / Reviews (Enforced for Landlords & Tenants Only) -->
-  <div class="neo-modal-backdrop" id="modal-feedback-auth" role="dialog" aria-modal="true" aria-labelledby="modal-auth-title" aria-hidden="true">
-    <div class="neo-modal-card">
-      <div class="neo-modal-header">
-        <div class="neo-modal-title" id="modal-auth-title">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-primary);"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-          <span>Verified Reviews Only</span>
-        </div>
-        <button type="button" class="neo-modal-close btn-modal-auth-cancel" aria-label="Close dialog">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-      </div>
-
-      <div class="neo-modal-body">
-        <div class="feedback-auth-callout">
-          <div class="feedback-auth-callout__icon">🛡️</div>
-          <div class="feedback-auth-callout__text">
-            <strong>Community Authenticity Guarantee</strong>
-            <p>To ensure 100% genuine feedback, reviews on RentRoll can only be submitted by registered landlords and active residents.</p>
-          </div>
-        </div>
-
-        <div class="feedback-auth-features">
-          <div class="feedback-auth-feature-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-success"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span>Verified role badge (Landlord or Resident) attached to your review</span>
-          </div>
-          <div class="feedback-auth-feature-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-success"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span>Your review updates directly onto this landing page immediately</span>
-          </div>
-          <div class="feedback-auth-feature-item">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" class="text-success"><polyline points="20 6 9 17 4 12"></polyline></svg>
-            <span>1-Click demo logins available for testing both Landlord and Tenant flows</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="neo-modal-footer feedback-auth-footer-actions">
-        <a href="login.html?redirect=index.html%3FopenReview%3Dtrue%23feedback" class="btn btn--primary btn--full" id="btn-auth-modal-login">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path><polyline points="10 17 15 12 10 7"></polyline><line x1="15" y1="12" x2="3" y2="12"></line></svg>
-          <span>Log In to Share Review</span>
-        </a>
-        <a href="signup.html?redirect=index.html%3FopenReview%3Dtrue%23feedback" class="btn btn--secondary btn--full" id="btn-auth-modal-signup">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="20" y1="8" x2="20" y2="14"></line><line x1="23" y1="11" x2="17" y2="11"></line></svg>
-          <span>Sign Up as Landlord or Tenant</span>
-        </a>
-        <button type="button" class="btn btn--ghost btn--full btn-modal-auth-cancel">
-          Browse Reviews Without Signing In
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Modal: Share Customer Feedback / Review (Authenticated Landlords & Tenants Only) -->
-  <div class="neo-modal-backdrop" id="modal-feedback" role="dialog" aria-modal="true" aria-labelledby="modal-feedback-title" aria-hidden="true">
-    <div class="neo-modal-card">
-      <div class="neo-modal-header">
-        <div class="neo-modal-title" id="modal-feedback-title">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-primary);"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
-          <span>Share Your Verified Experience</span>
-        </div>
-        <button type="button" class="neo-modal-close btn-modal-cancel" aria-label="Close dialog">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-        </button>
-      </div>
-
-      <form id="form-share-feedback" novalidate>
-        <div class="neo-modal-body">
-          <!-- Verified Account Header Banner -->
-          <div class="feedback-verified-user-card" id="feedback-user-banner">
-            <div class="feedback-card__avatar feedback-card__avatar--indigo" id="feedback-user-avatar">U</div>
-            <div style="flex-grow: 1; min-width: 0;">
-              <div style="display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;">
-                <strong id="feedback-user-banner-name" style="font-size: var(--font-size-sm); color: var(--color-text-main);">User</strong>
-                <span class="badge badge--success" style="font-size: 10px; padding: 2px 7px;">Verified Member</span>
-              </div>
-              <div id="feedback-user-banner-desc" style="font-size: var(--font-size-xs); color: var(--color-text-muted);">Posting as Verified Account</div>
-            </div>
-          </div>
-
-          <!-- Star Rating Interactive Selector -->
-          <div class="form-group">
-            <label class="form-label">Your Rating</label>
-            <div class="feedback-star-picker" id="feedback-star-picker" role="radiogroup" aria-label="Rating out of 5 stars">
-              <button type="button" class="feedback-star-btn is-selected" data-rating="1" aria-label="1 star">★</button>
-              <button type="button" class="feedback-star-btn is-selected" data-rating="2" aria-label="2 stars">★</button>
-              <button type="button" class="feedback-star-btn is-selected" data-rating="3" aria-label="3 stars">★</button>
-              <button type="button" class="feedback-star-btn is-selected" data-rating="4" aria-label="4 stars">★</button>
-              <button type="button" class="feedback-star-btn is-selected" data-rating="5" aria-label="5 stars">★</button>
-              <span class="feedback-star-hint" id="feedback-star-hint">5.0 — Excellent</span>
-            </div>
-            <input type="hidden" id="feedback-rating-val" name="rating" value="5">
-          </div>
-
-          <div class="form-row form-row--2col">
-            <div class="form-group">
-              <label for="feedback-name" class="form-label">Full Name <span class="badge badge--neutral" style="font-size: 10px; margin-left: 4px;">Verified</span></label>
-              <div class="form-input-wrap">
-                <input type="text" id="feedback-name" name="name" class="form-input form-input-locked" readonly required>
-              </div>
-              <div class="form-error" id="error-feedback-name">Please provide your name.</div>
-            </div>
-
-            <div class="form-group">
-              <label for="feedback-role" class="form-label">Your Role <span class="badge badge--neutral" style="font-size: 10px; margin-left: 4px;">Locked</span></label>
-              <div class="form-input-wrap">
-                <select id="feedback-role" name="role" class="form-input form-input-locked" disabled>
-                  <option value="landlord">Landlord / Property Owner</option>
-                  <option value="tenant">Tenant / Resident</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="feedback-property" class="form-label">Property Name / Unit <span class="text-subtle">(Optional)</span></label>
-            <div class="form-input-wrap">
-              <input type="text" id="feedback-property" name="propertyName" class="form-input" placeholder="e.g. Gulmohar Residency (18 Flats) or Flat 4B">
-            </div>
-          </div>
-
-          <div class="form-group">
-            <label for="feedback-headline" class="form-label">Review Headline <span class="text-danger">*</span></label>
-            <div class="form-input-wrap">
-              <input type="text" id="feedback-headline" name="title" class="form-input" placeholder="e.g. UPI AutoPay eliminated late rent completely" required>
-            </div>
-            <div class="form-error" id="error-feedback-headline">Please write a short review headline.</div>
-          </div>
-
-          <div class="form-group">
-            <label for="feedback-comment" class="form-label">Your Review <span class="text-danger">*</span></label>
-            <div class="form-input-wrap">
-              <textarea id="feedback-comment" name="comment" class="form-input form-textarea" rows="3" placeholder="Share your experience with UPI rent collection, Aadhaar verification, maintenance triage, or the tenant portal..." required></textarea>
-            </div>
-            <div class="form-error" id="error-feedback-comment">Please write at least 15 characters of feedback.</div>
-          </div>
-        </div>
-
-        <div class="neo-modal-footer">
-          <button type="button" class="btn btn--ghost btn-modal-cancel">Cancel</button>
-          <button type="submit" class="btn btn--primary" id="btn-submit-feedback">Publish Verified Review</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Injected Glass Footer -->
-  <footer id="footer-root"></footer>
-
-  <!-- Scripts -->
-  <script type="module" src="js/main.js"></script>
-</body>
-</html>
+        <div class="features-grid">
+
+          <!-- Feature 1 -->
+
+          <div class="glass-card glass-card--interactive feature-card">
+
+            <div class="feature-card__icon-wrap">
+
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="12" y1="1" x2="12" y2="23"></line>
+                <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+              </svg>
+
+            </div>
+
+            <h3 class="feature-card__title">Automated Rent Collection</h3>
+
+            <p class="feature-card__desc">Deposit rent directly into your bank via UPI AutoPay, eNACH, or NetBanking.
+              Automatic WhatsApp reminders and late fees apply without awkward conversations.</p>
+
+          </div>
+
+
+
+          <!-- Feature 2 -->
+
+          <div class="glass-card glass-card--interactive feature-card">
+
+            <div class="feature-card__icon-wrap">
+
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                <polyline points="14 2 14 8 20 8"></polyline>
+                <line x1="16" y1="13" x2="8" y2="13"></line>
+                <line x1="16" y1="17" x2="8" y2="17"></line>
+                <polyline points="10 9 9 9 8 9"></polyline>
+              </svg>
+
+            </div>
+
+            <h3 class="feature-card__title">Digital Leases & Screening</h3>
+
+            <p class="feature-card__desc">Screen prospective tenants with instant Aadhaar verification, PAN validation,
+              and police verification workflows. Issue state-compliant e-Stamp registered rental agreements.</p>
+
+          </div>
+
+
+
+          <!-- Feature 3 -->
+
+          <div class="glass-card glass-card--interactive feature-card">
+
+            <div class="feature-card__icon-wrap">
+
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path
+                  d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z">
+                </path>
+              </svg>
+
+            </div>
+
+            <h3 class="feature-card__title">Smart Maintenance Hub</h3>
+
+            <p class="feature-card__desc">Tenants snap photos and describe issues from their phones. Triage repair
+              requests, assign contractors, and keep everyone updated in real-time.</p>
+
+          </div>
+
+
+
+          <!-- Feature 4 -->
+
+          <div class="glass-card glass-card--interactive feature-card">
+
+            <div class="feature-card__icon-wrap">
+
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <rect x="3" y="3" width="7" height="7"></rect>
+                <rect x="14" y="3" width="7" height="7"></rect>
+                <rect x="14" y="14" width="7" height="7"></rect>
+                <rect x="3" y="14" width="7" height="7"></rect>
+              </svg>
+
+            </div>
+
+            <h3 class="feature-card__title">Multi-Unit & Portfolio View</h3>
+
+            <p class="feature-card__desc">Organize independent villas, builder floors, and multi-unit societies under
+              one roof. Track vacancy periods, lease expirations, and turnover checklists.</p>
+
+          </div>
+
+
+
+          <!-- Feature 5 -->
+
+          <div class="glass-card glass-card--interactive feature-card">
+
+            <div class="feature-card__icon-wrap">
+
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="18" y1="20" x2="18" y2="10"></line>
+                <line x1="12" y1="20" x2="12" y2="4"></line>
+                <line x1="6" y1="20" x2="6" y2="14"></line>
+              </svg>
+
+            </div>
+
+            <h3 class="feature-card__title">Financial & Tax Insights</h3>
+
+            <p class="feature-card__desc">Categorize maintenance expenses automatically. Generate instant HRA rent
+              receipts with Landlord PAN, ITR & GST-ready financial ledgers per unit anytime.</p>
+
+          </div>
+
+
+
+          <!-- Feature 6 -->
+
+          <div class="glass-card glass-card--interactive feature-card">
+
+            <div class="feature-card__icon-wrap">
+
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+              </svg>
+
+            </div>
+
+            <h3 class="feature-card__title">Tenant Self-Service Portal</h3>
+
+            <p class="feature-card__desc">Delight your renters with a polished mobile-friendly portal to review lease
+              documents, set UPI autopay, download HRA receipts, and submit tickets.</p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- Architecture & Portfolio Showcase -->
+
+    <section class="portfolio-showcase-section" id="portfolio-architecture" aria-labelledby="portfolio-arch-title">
+
+      <div class="container">
+
+        <div class="section-header">
+
+          <span class="section-tag">Property Architecture & Portfolio</span>
+
+          <h2 id="portfolio-arch-title" class="section-title">Built for duplexes, builder floors, and luxury residential
+            towers</h2>
+
+          <p class="section-desc">Experience and manage your complete property portfolio with high-resolution visual
+            architectural profiles, automated rent collection, and instant lease insights.</p>
+
+        </div>
+
+
+
+        <!-- Architectural Property Cards Grid -->
+
+        <div class="architecture-cards-grid" id="architecture-cards-grid">
+
+          <!-- Card 1: Modern Duplex / Apartment Society -->
+
+          <div class="glass-card architecture-card">
+
+            <div class="architecture-card__img-wrap">
+
+              <img src="assets/indian_modern_villa.jpg" alt="Gulmohar Residency" class="architecture-card__img"
+                loading="lazy">
+
+              <div class="architecture-card__badge">
+
+                <span class="badge badge--landlord">6 Units &bull; 83% Occupied</span>
+
+              </div>
+
+            </div>
+
+
+
+            <div class="architecture-card__title-group">
+
+              <h3 class="architecture-card__title">Gulmohar Residency</h3>
+
+              <div class="architecture-card__location">
+
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+
+                <span>Koramangala 4th Block &bull; Bengaluru</span>
+
+              </div>
+
+            </div>
+
+
+
+            <div class="architecture-card__stats">
+
+              <div class="architecture-card__stat-box">
+
+                <div class="architecture-card__stat-label">Monthly Rent Flow</div>
+
+                <div class="architecture-card__stat-val">₹2,02,500</div>
+
+              </div>
+
+              <div class="architecture-card__stat-box">
+
+                <div class="architecture-card__stat-label">Autopay Adoption</div>
+
+                <div class="architecture-card__stat-val">100% UPI</div>
+
+              </div>
+
+            </div>
+
+
+
+            <div class="architecture-card__checklist">
+
+              <div class="architecture-card__checklist-item">
+
+                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>Gated society flats with balconies &amp; covered car parking</span>
+
+              </div>
+
+              <div class="architecture-card__checklist-item">
+
+                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>Karnataka e-Stamp registered digital rental agreements on file</span>
+
+              </div>
+
+              <div class="architecture-card__checklist-item">
+
+                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>Automated monthly direct deposits &amp; rent reminder shield</span>
+
+              </div>
+
+            </div>
+
+
+
+            <a href="signup.html" class="btn btn--primary">Manage Residency Doors</a>
+
+          </div>
+
+
+
+          <!-- Card 2: Luxury High-Rise -->
+
+          <div class="glass-card architecture-card">
+
+            <div class="architecture-card__img-wrap">
+
+              <img src="assets/indian_luxury_apartment.jpg" alt="Skyline Palms Heights" class="architecture-card__img"
+                loading="lazy">
+
+              <div class="architecture-card__badge">
+
+                <span class="badge badge--landlord">5 Units &bull; 100% Occupied</span>
+
+              </div>
+
+            </div>
+
+
+
+            <div class="architecture-card__title-group">
+
+              <h3 class="architecture-card__title">Skyline Palms Heights</h3>
+
+              <div class="architecture-card__location">
+
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+
+                <span>Turner Road, Bandra West &bull; Mumbai</span>
+
+              </div>
+
+            </div>
+
+
+
+            <div class="architecture-card__stats">
+
+              <div class="architecture-card__stat-box">
+
+                <div class="architecture-card__stat-label">Monthly Rent Flow</div>
+
+                <div class="architecture-card__stat-val">₹4,43,000</div>
+
+              </div>
+
+              <div class="architecture-card__stat-box">
+
+                <div class="architecture-card__stat-label">Autopay Adoption</div>
+
+                <div class="architecture-card__stat-val">99.8% eNACH</div>
+
+              </div>
+
+            </div>
+
+
+
+            <div class="architecture-card__checklist">
+
+              <div class="architecture-card__checklist-item">
+
+                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>Luxury sea-facing high-rise apartments with private elevator access</span>
+
+              </div>
+
+              <div class="architecture-card__checklist-item">
+
+                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>Digital tenant screening &amp; Aadhaar police verification on record</span>
+
+              </div>
+
+              <div class="architecture-card__checklist-item">
+
+                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>CA-ready HRA rent receipt exports with automated categorization</span>
+
+              </div>
+
+            </div>
+
+
+
+            <a href="signup.html" class="btn btn--primary">Manage High-Rise Units</a>
+
+          </div>
+
+
+
+          <!-- Card 3: Luxury Condominium -->
+
+          <div class="glass-card architecture-card">
+
+            <div class="architecture-card__img-wrap">
+
+              <img src="assets/urban_brownstone.jpg" alt="Cyber Greens Residency" class="architecture-card__img"
+                loading="lazy">
+
+              <div class="architecture-card__badge">
+
+                <span class="badge badge--landlord">5 Units &bull; 100% Occupied</span>
+
+              </div>
+
+            </div>
+
+
+
+            <div class="architecture-card__title-group">
+
+              <h3 class="architecture-card__title">Cyber Greens Residency</h3>
+
+              <div class="architecture-card__location">
+
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                  <circle cx="12" cy="10" r="3"></circle>
+                </svg>
+
+                <span>DLF Phase 5, Golf Course Road &bull; Gurugram</span>
+
+              </div>
+
+            </div>
+
+
+
+            <div class="architecture-card__stats">
+
+              <div class="architecture-card__stat-box">
+
+                <div class="architecture-card__stat-label">Monthly Rent Flow</div>
+
+                <div class="architecture-card__stat-val">₹3,39,000</div>
+
+              </div>
+
+              <div class="architecture-card__stat-box">
+
+                <div class="architecture-card__stat-label">Autopay Adoption</div>
+
+                <div class="architecture-card__stat-val">100% On-Time</div>
+
+              </div>
+
+            </div>
+
+
+
+            <div class="architecture-card__checklist">
+
+              <div class="architecture-card__checklist-item">
+
+                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>Smart-access luxury condominiums facing Aravali skyline</span>
+
+              </div>
+
+              <div class="architecture-card__checklist-item">
+
+                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>Real-time contractor dispatch with photo repair logs</span>
+
+              </div>
+
+              <div class="architecture-card__checklist-item">
+
+                <svg class="architecture-card__check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>Zero delinquency automated eNACH bank debit &amp; UPI autopay</span>
+
+              </div>
+
+            </div>
+
+
+
+            <a href="signup.html" class="btn btn--primary">Manage Condominium Units</a>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- Featured Property Photo Gallery -->
+
+        <div class="property-gallery-header">
+
+          <span class="section-tag">Curated Real Estate</span>
+
+          <h3 class="section-title" style="font-size: var(--font-size-2xl);">Properties managed seamlessly on RentRoll
+          </h3>
+
+        </div>
+
+
+
+        <div class="property-gallery-grid" id="property-gallery-grid">
+
+          <!-- Property Photo 1 -->
+
+          <div class="glass-card property-photo-card">
+
+            <div class="property-photo-card__img-wrap">
+
+              <img src="assets/indian_modern_villa.jpg" alt="Gulmohar Residency" class="property-photo-card__img"
+                loading="lazy">
+
+              <span class="badge badge--landlord property-photo-card__badge">6 Units</span>
+
+            </div>
+
+            <h4 class="property-photo-card__title">Gulmohar Residency</h4>
+
+            <p class="property-photo-card__sub">Koramangala 4th Block &bull; Bengaluru</p>
+
+            <div class="property-photo-card__meta">
+
+              <span class="property-photo-card__rent">₹2,02,500/mo</span>
+
+              <span class="property-photo-card__tag">
+
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                83% Occupied
+
+              </span>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- Property Photo 2 -->
+
+          <div class="glass-card property-photo-card">
+
+            <div class="property-photo-card__img-wrap">
+
+              <img src="assets/indian_luxury_apartment.jpg" alt="Skyline Palms Heights" class="property-photo-card__img"
+                loading="lazy">
+
+              <span class="badge badge--landlord property-photo-card__badge">5 Units</span>
+
+            </div>
+
+            <h4 class="property-photo-card__title">Skyline Palms Heights</h4>
+
+            <p class="property-photo-card__sub">Bandra West &bull; Mumbai</p>
+
+            <div class="property-photo-card__meta">
+
+              <span class="property-photo-card__rent">₹4,43,000/mo</span>
+
+              <span class="property-photo-card__tag">
+
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                UPI &amp; eNACH AutoPay
+
+              </span>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- Property Photo 3 -->
+
+          <div class="glass-card property-photo-card">
+
+            <div class="property-photo-card__img-wrap">
+
+              <img src="assets/urban_brownstone.jpg" alt="Cyber Greens Residency" class="property-photo-card__img"
+                loading="lazy">
+
+              <span class="badge badge--landlord property-photo-card__badge">5 Units</span>
+
+            </div>
+
+            <h4 class="property-photo-card__title">Cyber Greens Residency</h4>
+
+            <p class="property-photo-card__sub">DLF Golf Course Road &bull; Gurugram</p>
+
+            <div class="property-photo-card__meta">
+
+              <span class="property-photo-card__rent">₹3,39,000/mo</span>
+
+              <span class="property-photo-card__tag">
+
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                Zero Delinquency
+
+              </span>
+
+            </div>
+
+          </div>
+
+
+
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- How It Works Section -->
+
+    <section class="how-it-works-section" id="how-it-works" aria-labelledby="how-title">
+
+      <div class="container">
+
+        <div class="section-header">
+
+          <span class="section-tag">Simple 3-Step Setup</span>
+
+          <h2 id="how-title" class="section-title">Up and running in less than 15 minutes</h2>
+
+          <p class="section-desc">Migrating from spreadsheets or paper checks has never been smoother.</p>
+
+        </div>
+
+
+
+        <div class="steps-grid">
+
+          <div class="glass-card step-card">
+
+            <div class="step-card__number">01</div>
+
+            <h3 class="step-card__title">Add Properties & Units</h3>
+
+            <p class="step-card__desc">Enter your addresses, unit numbers, monthly rent rates, and deposit amounts.
+              Batch import existing properties in seconds.</p>
+
+          </div>
+
+
+
+          <div class="glass-card step-card">
+
+            <div class="step-card__number">02</div>
+
+            <h3 class="step-card__title">Invite Tenants Digitally</h3>
+
+            <p class="step-card__desc">Send a simple WhatsApp or email link. Tenants join their personal portal,
+              configure autopay via secure UPI or eNACH, and store their digital lease.</p>
+
+          </div>
+
+
+
+          <div class="glass-card step-card">
+
+            <div class="step-card__number">03</div>
+
+            <h3 class="step-card__title">Relax on Autopilot</h3>
+
+            <p class="step-card__desc">Rent deposits directly into your account on the 1st. Repairs, reminders, and
+              financial summaries run hands-free in the background.</p>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- Landlord vs Tenant Portals Section -->
+
+    <section class="portals-section" id="portals" aria-labelledby="portals-title">
+
+      <div class="container">
+
+        <div class="section-header">
+
+          <span class="section-tag">Two Dedicated Experiences</span>
+
+          <h2 id="portals-title" class="section-title">Crafted for both landlords and tenants</h2>
+
+          <p class="section-desc">Each user gets a tailored interface with the exact tools they need, with zero
+            confusion.</p>
+
+        </div>
+
+
+
+        <div class="portals-grid">
+
+          <!-- Landlord Card -->
+
+          <div class="glass-card portal-card">
+
+            <!-- Landlord Visual Image Banner -->
+
+            <div class="portal-card__img-wrapper">
+
+              <img src="assets/landlord_property.jpg" alt="Landlord Rental Portfolio Overview" class="portal-card__img"
+                loading="lazy">
+
+              <div class="portal-card__img-overlay">
+
+                <span class="portal-card__img-tag">
+
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+
+                  18 Doors Managed &bull; 99.4% On-Time Rent
+
+                </span>
+
+              </div>
+
+            </div>
+
+
+
+            <div class="portal-card__badge">
+
+              <span class="badge badge--landlord">Landlord Command Center</span>
+
+            </div>
+
+            <h3 class="portal-card__title">Total Portfolio Control</h3>
+
+            <p class="portal-card__desc">
+
+              Designed specifically for owners managing 1 to 50 doors. Get a birds-eye view of your occupancy, cash
+              flows, and repair dispatches.
+
+            </p>
+
+            <div class="portal-card__checklist">
+
+              <div class="portal-checklist-item">
+
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>Automated UPI &amp; eNACH rent deposits &amp; WhatsApp reminders</span>
+
+              </div>
+
+              <div class="portal-checklist-item">
+
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>Full applicant Aadhaar screening &amp; police verification</span>
+
+              </div>
+
+              <div class="portal-checklist-item">
+
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>Contractor maintenance dispatch &amp; photo logs</span>
+
+              </div>
+
+              <div class="portal-checklist-item">
+
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>GST &amp; HRA rent receipt exports with categorized expense tracking</span>
+
+              </div>
+
+            </div>
+
+            <a href="signup.html" class="btn btn--primary">Create Landlord Account</a>
+
+          </div>
+
+
+
+          <!-- Tenant Card -->
+
+          <div class="glass-card portal-card">
+
+            <!-- Tenant Visual Image Banner -->
+
+            <div class="portal-card__img-wrapper">
+
+              <img src="assets/tenant_apartment.jpg" alt="Modern Tenant Apartment Living Space" class="portal-card__img"
+                loading="lazy">
+
+              <div class="portal-card__img-overlay">
+
+                <span class="portal-card__img-tag">
+
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+
+                  Resident Mobile Portal &bull; 1-Click Autopay
+
+                </span>
+
+              </div>
+
+            </div>
+
+
+
+            <div class="portal-card__badge">
+
+              <span class="badge badge--tenant">Tenant Self-Service</span>
+
+            </div>
+
+            <h3 class="portal-card__title">Stress-Free Renting</h3>
+
+            <p class="portal-card__desc">
+
+              Give your tenants the frictionless, modern rental experience they expect. No more cheques to deposit or
+              phone tag for repairs.
+
+            </p>
+
+            <div class="portal-card__checklist">
+
+              <div class="portal-checklist-item">
+
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>1-Click UPI AutoPay setup with zero transaction surprise</span>
+
+              </div>
+
+              <div class="portal-checklist-item">
+
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>Submit photo repair requests anytime from mobile</span>
+
+              </div>
+
+              <div class="portal-checklist-item">
+
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>Access signed e-Stamp lease agreements and HRA rent receipts 24/7</span>
+
+              </div>
+
+              <div class="portal-checklist-item">
+
+                <svg class="portal-checklist-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                  stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <polyline points="20 6 9 17 4 12"></polyline>
+                </svg>
+
+                <span>Direct WhatsApp and maintenance resolution notifications</span>
+
+              </div>
+
+            </div>
+
+            <a href="login.html" class="btn btn--ghost">Enter Tenant Portal</a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- Trust & Compliance Badges Banner -->
+
+    <section class="trust-banner-section" aria-label="Security and Compliance Guarantees">
+
+      <div class="container">
+
+        <div class="glass-card trust-banner">
+
+          <div class="trust-badge-item">
+
+            <div class="trust-badge-icon">
+
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+              </svg>
+
+            </div>
+
+            <div>
+
+              <div class="trust-badge-title">256-Bit SSL Encryption</div>
+
+              <div class="trust-badge-sub">Bank-grade data protection</div>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="trust-badge-item">
+
+            <div class="trust-badge-icon">
+
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+              </svg>
+
+            </div>
+
+            <div>
+
+              <div class="trust-badge-title">NPCI eNACH &amp; UPI Certified</div>
+
+              <div class="trust-badge-sub">Zero-friction direct bank auto-debit</div>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="trust-badge-item">
+
+            <div class="trust-badge-icon">
+
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                <circle cx="9" cy="7" r="4"></circle>
+                <polyline points="16 11 18 13 22 9"></polyline>
+              </svg>
+
+            </div>
+
+            <div>
+
+              <div class="trust-badge-title">Aadhaar &amp; Police Verification</div>
+
+              <div class="trust-badge-sub">DigiLocker &amp; CERSAI integrated checks</div>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="trust-badge-item">
+
+            <div class="trust-badge-icon">
+
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <polyline points="12 6 12 12 14 14"></polyline>
+              </svg>
+
+            </div>
+
+            <div>
+
+              <div class="trust-badge-title">99.98% High Availability</div>
+
+              <div class="trust-badge-sub">RBI data localized cloud security</div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- Customer Feedback & Verified Reviews Section -->
+
+    <section class="feedback-section" id="feedback" aria-labelledby="feedback-title">
+
+      <div class="container">
+
+        <div class="section-header">
+
+          <span class="section-tag">Social Proof & Reviews</span>
+
+          <h2 id="feedback-title" class="section-title">Loved by independent landlords and happy residents</h2>
+
+          <p class="section-desc">Real stories from property owners managing 1 to 50 doors and residents enjoying
+            frictionless living.</p>
+
+        </div>
+
+
+
+        <!-- Rating & Stats Summary Capsule -->
+
+        <div class="feedback-stats-bar">
+
+          <div class="feedback-score-card">
+
+            <div class="feedback-score-val">4.9<span class="feedback-score-max">/5</span></div>
+
+            <div class="feedback-stars" aria-label="5 out of 5 stars">
+
+              ★★★★★
+
+            </div>
+
+            <div class="feedback-score-label">Based on 1,250+ verified reviews</div>
+
+          </div>
+
+
+
+          <div class="feedback-metrics-grid">
+
+            <div class="feedback-metric-item">
+
+              <span class="feedback-metric-num">99.4%</span>
+
+              <span class="feedback-metric-desc">On-time rent payment rate with automated UPI AutoPay</span>
+
+            </div>
+
+            <div class="feedback-metric-item">
+
+              <span class="feedback-metric-num">&lt; 15 min</span>
+
+              <span class="feedback-metric-desc">Average onboarding & spreadsheet migration time</span>
+
+            </div>
+
+            <div class="feedback-metric-item">
+
+              <span class="feedback-metric-num">98.7%</span>
+
+              <span class="feedback-metric-desc">Tenant satisfaction rating with digital repairs &amp; HRA
+                receipts</span>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+
+        <!-- Filter Controls & Leave Feedback Action -->
+
+        <div class="feedback-controls-bar">
+
+          <div class="feedback-filter-tabs" role="tablist" aria-label="Review role filters">
+
+            <button type="button" class="feedback-filter-btn is-active" data-filter="all" role="tab"
+              aria-selected="true">
+
+              <span>All Reviews</span>
+
+              <span class="feedback-filter-count" id="count-all">6</span>
+
+            </button>
+
+            <button type="button" class="feedback-filter-btn" data-filter="landlord" role="tab" aria-selected="false">
+
+              <span>Landlords & Owners</span>
+
+              <span class="feedback-filter-count" id="count-landlords">4</span>
+
+            </button>
+
+            <button type="button" class="feedback-filter-btn" data-filter="tenant" role="tab" aria-selected="false">
+
+              <span>Tenants & Residents</span>
+
+              <span class="feedback-filter-count" id="count-tenants">2</span>
+
+            </button>
+
+          </div>
+
+
+
+          <button type="button" class="btn btn--primary btn--sm" id="btn-open-feedback-modal">
+
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+              stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M12 20h9"></path>
+              <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+            </svg>
+
+            <span>Share Your Experience</span>
+
+          </button>
+
+        </div>
+
+
+
+        <!-- Feedback Infinite Marquee Wrapper -->
+
+        <div class="feedback-marquee-wrapper" id="feedback-marquee-wrapper">
+
+          <!-- Feedback Cards Continuous Marquee Track -->
+
+          <div class="feedback-grid feedback-marquee-track" id="feedback-grid" role="region"
+            aria-label="Customer reviews infinite marquee">
+
+            <!-- Review 1: Landlord -->
+
+            <div class="glass-card feedback-card" data-role="landlord">
+
+              <div class="feedback-card__header">
+
+                <div class="feedback-card__author">
+
+                  <div class="feedback-card__avatar feedback-card__avatar--indigo">RS</div>
+
+                  <div>
+
+                    <div class="feedback-card__name">Rajesh Sharma</div>
+
+                    <div class="feedback-card__meta">Gulmohar Residency Portfolio &bull; Koramangala, Bengaluru</div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+
+              <div class="feedback-card__stars">★★★★★</div>
+
+              <h3 class="feedback-card__title">"Automated UPI &amp; eNACH collection reclaimed my entire first week of
+                the month"</h3>
+
+              <p class="feedback-card__quote">
+
+                "Before RentRoll, I was chasing 18 separate cheques, tracking partial payments across multiple UPI
+                handles, and logging late fees manually. Now, 99% of my tenants are on UPI AutoPay. Deposits hit my HDFC
+                current account like clockwork on the 1st, and my CA loved the GST &amp; HRA receipt exports."
+
+              </p>
+
+
+
+              <div class="feedback-card__footer">
+
+                <div class="feedback-verified-badge">
+
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+
+                  <span>Verified Landlord &bull; 2 Yrs</span>
+
+                </div>
+
+                <button type="button" class="feedback-helpful-btn" data-id="rev-1" title="Mark as helpful">
+
+                  <span class="helpful-icon">👍</span>
+
+                  <span>Helpful (<strong class="helpful-count">38</strong>)</span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+
+
+            <!-- Review 2: Landlord -->
+
+            <div class="glass-card feedback-card" data-role="landlord">
+
+              <div class="feedback-card__header">
+
+                <div class="feedback-card__author">
+
+                  <div class="feedback-card__avatar feedback-card__avatar--emerald">SK</div>
+
+                  <div>
+
+                    <div class="feedback-card__name">Sunita Kulkarni</div>
+
+                    <div class="feedback-card__meta">Whitefield Duplexes &bull; Bengaluru</div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+
+              <div class="feedback-card__stars">★★★★★</div>
+
+              <h3 class="feedback-card__title">"The photo repair triage saved me thousands in emergency contractor fees"
+              </h3>
+
+              <p class="feedback-card__quote">
+
+                "When a geyser short-circuit happened on a chilly Sunday evening, my tenant submitted a video ticket
+                with sound directly from her phone. I was able to dispatch our verified technician with the exact spare
+                part and save an emergency ₹3,500 call-out fee. Unbelievably intuitive."
+
+              </p>
+
+
+
+              <div class="feedback-card__footer">
+
+                <div class="feedback-verified-badge">
+
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+
+                  <span>Verified Landlord &bull; 1.5 Yrs</span>
+
+                </div>
+
+                <button type="button" class="feedback-helpful-btn" data-id="rev-2" title="Mark as helpful">
+
+                  <span class="helpful-icon">👍</span>
+
+                  <span>Helpful (<strong class="helpful-count">27</strong>)</span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+
+
+            <!-- Review 3: Tenant -->
+
+            <div class="glass-card feedback-card" data-role="tenant">
+
+              <div class="feedback-card__header">
+
+                <div class="feedback-card__author">
+
+                  <div class="feedback-card__avatar feedback-card__avatar--terracotta">PI</div>
+
+                  <div>
+
+                    <div class="feedback-card__name">Priya Iyer</div>
+
+                    <div class="feedback-card__meta">Gulmohar Residency Flat 4B &bull; Koramangala, Bengaluru</div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+
+              <div class="feedback-card__stars">★★★★★</div>
+
+              <h3 class="feedback-card__title">"Finally a tenant portal that feels like a modern Indian fintech app"
+              </h3>
+
+              <p class="feedback-card__quote">
+
+                "No clunky legacy software, no confusing deductions. I set up UPI AutoPay in literally 60 seconds with
+                my UPI ID. Whenever a maintenance ticket is resolved, I get a clear WhatsApp alert with technician
+                notes. Generating instant HRA receipts with landlord PAN for my tax declaration takes one click."
+
+              </p>
+
+
+
+              <div class="feedback-card__footer">
+
+                <div class="feedback-verified-badge">
+
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+
+                  <span>Verified Resident &bull; 18 Mos</span>
+
+                </div>
+
+                <button type="button" class="feedback-helpful-btn" data-id="rev-3" title="Mark as helpful">
+
+                  <span class="helpful-icon">👍</span>
+
+                  <span>Helpful (<strong class="helpful-count">19</strong>)</span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+
+
+            <!-- Review 4: Landlord -->
+
+            <div class="glass-card feedback-card" data-role="landlord">
+
+              <div class="feedback-card__header">
+
+                <div class="feedback-card__author">
+
+                  <div class="feedback-card__avatar feedback-card__avatar--violet">VS</div>
+
+                  <div>
+
+                    <div class="feedback-card__name">Vikramaditya Singhania</div>
+
+                    <div class="feedback-card__meta">Skyline Palms Heights &bull; Mumbai, MH</div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+
+              <div class="feedback-card__stars">★★★★★</div>
+
+              <h3 class="feedback-card__title">"GST and HRA rent receipts made our Chartered Accountant literally cheer"
+              </h3>
+
+              <p class="feedback-card__quote">
+
+                "Tax season used to be a nightmare of physical rent counterfoils and manual bank reconciliation. With
+                RentRoll, all rent inflows and vendor maintenance payouts are categorized automatically. We exported our
+                GST-compliant audit report and 80GG/HRA summaries in one click without sweating."
+
+              </p>
+
+
+
+              <div class="feedback-card__footer">
+
+                <div class="feedback-verified-badge">
+
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+
+                  <span>Verified Landlord &bull; 14 Mos</span>
+
+                </div>
+
+                <button type="button" class="feedback-helpful-btn" data-id="rev-4" title="Mark as helpful">
+
+                  <span class="helpful-icon">👍</span>
+
+                  <span>Helpful (<strong class="helpful-count">31</strong>)</span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+
+
+            <!-- Review 5: Tenant -->
+
+            <div class="glass-card feedback-card" data-role="tenant">
+
+              <div class="feedback-card__header">
+
+                <div class="feedback-card__author">
+
+                  <div class="feedback-card__avatar feedback-card__avatar--blue">RD</div>
+
+                  <div>
+
+                    <div class="feedback-card__name">Rohan Deshmukh</div>
+
+                    <div class="feedback-card__meta">Koregaon Park Villa &bull; Pune, MH</div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+
+              <div class="feedback-card__stars">★★★★★</div>
+
+              <h3 class="feedback-card__title">"Digital e-Stamp lease signing and instant rent receipts on my phone"
+              </h3>
+
+              <p class="feedback-card__quote">
+
+                "Moving into Pune was completely seamless. I signed the registered e-Stamp rent agreement on my phone,
+                paid the security deposit securely via NetBanking, and have immediate access to my stamp duty
+                countersigned copy and rent receipts anytime. Best rental experience I've had in India."
+
+              </p>
+
+
+
+              <div class="feedback-card__footer">
+
+                <div class="feedback-verified-badge">
+
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+
+                  <span>Verified Resident &bull; 1 Yr</span>
+
+                </div>
+
+                <button type="button" class="feedback-helpful-btn" data-id="rev-5" title="Mark as helpful">
+
+                  <span class="helpful-icon">👍</span>
+
+                  <span>Helpful (<strong class="helpful-count">14</strong>)</span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+
+
+            <!-- Review 6: Landlord -->
+
+            <div class="glass-card feedback-card" data-role="landlord">
+
+              <div class="feedback-card__header">
+
+                <div class="feedback-card__author">
+
+                  <div class="feedback-card__avatar feedback-card__avatar--amber">DC</div>
+
+                  <div>
+
+                    <div class="feedback-card__name">Deepak Chawla</div>
+
+                    <div class="feedback-card__meta">Cyber Greens Residency &bull; Gurugram, NCR</div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+
+              <div class="feedback-card__stars">★★★★★</div>
+
+              <h3 class="feedback-card__title">"Built for indie Indian property owners, not complicated global software"
+              </h3>
+
+              <p class="feedback-card__quote">
+
+                "Every other global property platform asks for exorbitant monthly dollar fees and doesn't support UPI,
+                eNACH, or Indian HRA receipts. RentRoll was built specifically for owners like me who manage 3 to 15
+                flats in metro cities and just want things to run flawlessly."
+
+              </p>
+
+
+
+              <div class="feedback-card__footer">
+
+                <div class="feedback-verified-badge">
+
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+
+                  <span>Verified Landlord &bull; 2.5 Yrs</span>
+
+                </div>
+
+                <button type="button" class="feedback-helpful-btn" data-id="rev-6" title="Mark as helpful">
+
+                  <span class="helpful-icon">👍</span>
+
+                  <span>Helpful (<strong class="helpful-count">42</strong>)</span>
+
+                </button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- Contact Us Section -->
+
+    <section class="contact-section" id="contact" aria-labelledby="contact-title">
+
+      <div class="container">
+
+        <div class="section-header">
+
+          <span class="section-tag">Get In Touch</span>
+
+          <h2 id="contact-title" class="section-title">Have questions? We're here to help you succeed.</h2>
+
+          <p class="section-desc">Whether you want a personalized walk-through, help onboarding your units, or have
+            general questions, our property specialists respond swiftly.</p>
+
+        </div>
+
+
+
+        <div class="contact-grid">
+
+          <!-- Left Column: Channels & FAQ -->
+
+          <div class="contact-info-col">
+
+            <!-- Direct Channels Card -->
+
+            <div class="glass-card contact-channel-card">
+
+              <h3 class="contact-col-heading">Direct Channels</h3>
+
+
+
+              <div class="contact-channel-list">
+
+                <div class="contact-channel-item">
+
+                  <div class="contact-channel-icon">
+
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                      <polyline points="22,6 12,13 2,6"></polyline>
+                    </svg>
+
+                  </div>
+
+                  <div class="contact-channel-details">
+
+                    <div class="contact-channel-label">Email Support &amp; Sales</div>
+
+                    <a href="mailto:support@rentroll.in" class="contact-channel-value"
+                      id="contact-email-link">support@rentroll.in</a>
+
+                    <div class="contact-channel-sub">Average response time: &lt; 2 business hours</div>
+
+                  </div>
+
+                  <button type="button" class="contact-copy-btn" id="btn-copy-email" title="Copy email address"
+                    aria-label="Copy email address">
+
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+
+                  </button>
+
+                </div>
+
+
+
+                <div class="contact-channel-item">
+
+                  <div class="contact-channel-icon">
+
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path
+                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z">
+                      </path>
+                    </svg>
+
+                  </div>
+
+                  <div class="contact-channel-details">
+
+                    <div class="contact-channel-label">Landlord Advisory Line</div>
+
+                    <a href="tel:+918041235678" class="contact-channel-value">+91 (080) 4123-5678</a>
+
+                    <div class="contact-channel-sub">Mon–Sat: 9:00 AM – 7:00 PM IST</div>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="contact-channel-item">
+
+                  <div class="contact-channel-icon">
+
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
+                      <circle cx="12" cy="10" r="3"></circle>
+                    </svg>
+
+                  </div>
+
+                  <div class="contact-channel-details">
+
+                    <div class="contact-channel-label">India Operations &amp; HQ</div>
+
+                    <div class="contact-channel-value"
+                      style="font-size: var(--font-size-sm); color: var(--color-text-main);">Prestige Meridian Towers,
+                      14th Main, 4th Block</div>
+
+                    <div class="contact-channel-sub">Koramangala, Bengaluru, KA 560034 &bull; India</div>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+
+
+              <!-- Live Beacon Status -->
+
+              <div class="contact-status-beacon">
+
+                <span class="contact-beacon-dot"></span>
+
+                <span>System Status: <strong>Operational</strong> &bull; Specialists Online</span>
+
+              </div>
+
+            </div>
+
+
+
+            <!-- Quick FAQ Accordion -->
+
+            <div class="glass-card contact-faq-card">
+
+              <h3 class="contact-col-heading">Frequently Asked Questions</h3>
+
+
+
+              <div class="faq-accordion" id="faq-accordion">
+
+                <div class="faq-item is-open">
+
+                  <button type="button" class="faq-question" aria-expanded="true" aria-controls="faq-ans-1">
+
+                    <span>How quickly can I migrate my current tenants?</span>
+
+                    <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+
+                  </button>
+
+                  <div class="faq-answer" id="faq-ans-1">
+
+                    <p>Under 15 minutes! Simply enter your property address and unit numbers, then send automated
+                      WhatsApp or email invitations to your tenants. They connect UPI AutoPay in 60 seconds with GPay,
+                      PhonePe, or NetBanking via NPCI eNACH.</p>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="faq-item">
+
+                  <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-ans-2">
+
+                    <span>Does RentRoll charge hidden transaction fees on UPI / NetBanking?</span>
+
+                    <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+
+                  </button>
+
+                  <div class="faq-answer is-collapsed" id="faq-ans-2">
+
+                    <p>Zero hidden fees. UPI AutoPay and direct NetBanking transfers are 100% free for both landlords
+                      and tenants. Standard card processing fees are transparently displayed upfront without markups.
+                    </p>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="faq-item">
+
+                  <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-ans-3">
+
+                    <span>Can I use RentRoll if I only have 1 or 2 flats or an independent duplex?</span>
+
+                    <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+
+                  </button>
+
+                  <div class="faq-answer is-collapsed" id="faq-ans-3">
+
+                    <p>Yes! RentRoll was purpose-built for independent Indian owners with 1 to 50 doors. There are no
+                      minimum flat requirements, no rigid annual contracts, and no bloated legacy software.</p>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="faq-item">
+
+                  <button type="button" class="faq-question" aria-expanded="false" aria-controls="faq-ans-4">
+
+                    <span>How do HRA rent receipts and GST / ITR reports work?</span>
+
+                    <svg class="faq-chevron" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                      stroke="currentColor" stroke-width="2">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+
+                  </button>
+
+                  <div class="faq-answer is-collapsed" id="faq-ans-4">
+
+                    <p>All recorded rent collections automatically generate compliant monthly HRA rent receipts
+                      displaying the Landlord's verified PAN for tenant tax deduction filings. Landlords can also export
+                      one-click CA-ready income and maintenance ledgers.</p>
+
+                  </div>
+
+                </div>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- Right Column: Interactive Neomorphic Contact Form -->
+
+          <div class="contact-form-col">
+
+            <div class="glass-card contact-form-card" id="contact-form-card">
+
+              <div class="contact-form-header">
+
+                <h3 class="contact-form-title">Send Us a Direct Message</h3>
+
+                <p class="contact-form-subtitle">Fill out the fields below and our dedicated property advisor will get
+                  in touch.</p>
+
+              </div>
+
+
+
+              <form id="landing-contact-form" class="contact-form" novalidate>
+
+                <div class="form-row form-row--2col">
+
+                  <div class="form-group">
+
+                    <label for="contact-name" class="form-label">Full Name <span class="text-danger">*</span></label>
+
+                    <div class="form-input-wrap">
+
+                      <input type="text" id="contact-name" name="name" class="form-input"
+                        placeholder="e.g. Rajesh Sharma" required autocomplete="name">
+
+                    </div>
+
+                    <div class="form-error" id="error-contact-name">Please enter your full name.</div>
+
+                  </div>
+
+
+
+                  <div class="form-group">
+
+                    <label for="contact-email" class="form-label">Email Address <span
+                        class="text-danger">*</span></label>
+
+                    <div class="form-input-wrap">
+
+                      <input type="email" id="contact-email" name="email" class="form-input"
+                        placeholder="name@domain.com" required autocomplete="email">
+
+                    </div>
+
+                    <div class="form-error" id="error-contact-email">Please enter a valid email address.</div>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="form-row form-row--2col">
+
+                  <div class="form-group">
+
+                    <label for="contact-phone" class="form-label">Phone Number <span class="text-subtle"
+                        style="font-weight: normal;">(Optional)</span></label>
+
+                    <div class="form-input-wrap">
+
+                      <input type="tel" id="contact-phone" name="phone" class="form-input" placeholder="+91 98765 43210"
+                        autocomplete="tel">
+
+                    </div>
+
+                  </div>
+
+
+
+                  <div class="form-group">
+
+                    <label for="contact-portfolio" class="form-label">Portfolio Size</label>
+
+                    <div class="form-input-wrap">
+
+                      <select id="contact-portfolio" name="portfolioSize" class="form-input">
+
+                        <option value="1-4 Units">1 – 4 Flats (Independent House / Duplex)</option>
+
+                        <option value="5-15 Units">5 – 15 Flats (Society Apartments / Builder Floors)</option>
+
+                        <option value="16-50 Units">16 – 50 Doors (Boutique Portfolio)</option>
+
+                        <option value="Resident">I am a Tenant / Resident</option>
+
+                        <option value="Exploring">Exploring / NRI Landlord</option>
+
+                      </select>
+
+                    </div>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                  <label for="contact-subject" class="form-label">Inquiry Topic</label>
+
+                  <div class="form-input-wrap">
+
+                    <select id="contact-subject" name="subject" class="form-input">
+
+                      <option value="Live Platform Demo">Request 1-on-1 Platform Demo</option>
+
+                      <option value="Landlord Sales & Migration">Landlord Sales & Spreadsheet Migration</option>
+
+                      <option value="Tenant Support">Tenant Support & Rent Pay Help</option>
+
+                      <option value="Pricing & Custom Quote">Pricing & 15+ Units Custom Quote</option>
+
+                      <option value="General Question">General Inquiry & Feedback</option>
+
+                    </select>
+
+                  </div>
+
+                </div>
+
+
+
+                <div class="form-group">
+
+                  <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
+
+                    <label for="contact-message" class="form-label" style="margin-bottom: 0;">How can we help? <span
+                        class="text-danger">*</span></label>
+
+                    <span class="form-char-count" id="contact-char-count">0 / 500</span>
+
+                  </div>
+
+                  <div class="form-input-wrap">
+
+                    <textarea id="contact-message" name="message" class="form-input form-textarea" rows="4"
+                      placeholder="Tell us about your properties, questions, or what you'd like to automate..." required
+                      maxlength="500"></textarea>
+
+                  </div>
+
+                  <div class="form-error" id="error-contact-message">Please enter a message (at least 10 characters).
+                  </div>
+
+                </div>
+
+
+
+                <button type="submit" class="btn btn--primary btn--lg btn--full" id="contact-submit-btn">
+
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                    stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                  </svg>
+
+                  <span>Send Message</span>
+
+                </button>
+
+              </form>
+
+
+
+              <!-- In-form Success State -->
+
+              <div class="contact-success-state is-hidden" id="contact-success-state" role="status" aria-live="polite">
+
+                <div class="contact-success-icon">
+
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                    stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                  </svg>
+
+                </div>
+
+                <h4 class="contact-success-title">Message Received!</h4>
+
+                <p class="contact-success-desc" id="contact-success-desc">
+
+                  Thank you for reaching out. We have received your message and sent a copy to your email. A property
+                  specialist will reply within 2 business hours.
+
+                </p>
+
+                <button type="button" class="btn btn--ghost btn--sm" id="btn-reset-contact-form">Send Another
+                  Message</button>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+
+
+    <!-- CTA Section -->
+
+    <section class="cta-section" aria-labelledby="cta-title">
+
+      <div class="container">
+
+        <div class="glass-card cta-banner">
+
+          <h2 id="cta-title" class="cta-banner__title">Ready to modernize your rental portfolio?</h2>
+
+          <p class="cta-banner__desc">Join hundreds of independent landlords who automated rent collection and reclaimed
+            their weekends.</p>
+
+          <div class="cta-banner__buttons">
+
+            <a href="signup.html" class="btn btn--primary btn--lg" id="cta-get-started">Start 30-Day Free Trial</a>
+
+            <a href="login.html" class="btn btn--ghost btn--lg">Sign In to Account</a>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
+
+
+
+  <!-- Modal: Authentication Required for Feedback / Reviews (Enforced for Landlords & Tenants Only) -->
+
+  <div class="neo-modal-backdrop" id="modal-feedback-auth" role="dialog" aria-modal="true"
+    aria-labelledby="modal-auth-title" aria-hidden="true">
+
+    <div class="neo-modal-card">
+
+      <div class="neo-modal-header">
+
+        <div class="neo-modal-title" id="modal-auth-title">
+
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-primary);">
+            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
+          </svg>
+
+          <span>Verified Reviews Only</span>
+
+        </div>
+
+        <button type="button" class="neo-modal-close btn-modal-auth-cancel" aria-label="Close dialog">
+
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+
+        </button>
+
+      </div>
+
+
+
+      <div class="neo-modal-body">
+
+        <div class="feedback-auth-callout">
+
+          <div class="feedback-auth-callout__icon">🛡️</div>
+
+          <div class="feedback-auth-callout__text">
+
+            <strong>Community Authenticity Guarantee</strong>
+
+            <p>To ensure 100% genuine feedback, reviews on RentRoll can only be submitted by registered landlords and
+              active residents.</p>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="feedback-auth-features">
+
+          <div class="feedback-auth-feature-item">
+
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              class="text-success">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+
+            <span>Verified role badge (Landlord or Resident) attached to your review</span>
+
+          </div>
+
+          <div class="feedback-auth-feature-item">
+
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              class="text-success">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+
+            <span>Your review updates directly onto this landing page immediately</span>
+
+          </div>
+
+          <div class="feedback-auth-feature-item">
+
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+              class="text-success">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+
+            <span>1-Click demo logins available for testing both Landlord and Tenant flows</span>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+
+      <div class="neo-modal-footer feedback-auth-footer-actions">
+
+        <a href="login.html?redirect=index.html%3FopenReview%3Dtrue%23feedback" class="btn btn--primary btn--full"
+          id="btn-auth-modal-login">
+
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path>
+            <polyline points="10 17 15 12 10 7"></polyline>
+            <line x1="15" y1="12" x2="3" y2="12"></line>
+          </svg>
+
+          <span>Log In to Share Review</span>
+
+        </a>
+
+        <a href="signup.html?redirect=index.html%3FopenReview%3Dtrue%23feedback" class="btn btn--secondary btn--full"
+          id="btn-auth-modal-signup">
+
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <line x1="20" y1="8" x2="20" y2="14"></line>
+            <line x1="23" y1="11" x2="17" y2="11"></line>
+          </svg>
+
+          <span>Sign Up as Landlord or Tenant</span>
+
+        </a>
+
+        <button type="button" class="btn btn--ghost btn--full btn-modal-auth-cancel">
+
+          Browse Reviews Without Signing In
+
+        </button>
+
+      </div>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Modal: Share Customer Feedback / Review (Authenticated Landlords & Tenants Only) -->
+
+  <div class="neo-modal-backdrop" id="modal-feedback" role="dialog" aria-modal="true"
+    aria-labelledby="modal-feedback-title" aria-hidden="true">
+
+    <div class="neo-modal-card">
+
+      <div class="neo-modal-header">
+
+        <div class="neo-modal-title" id="modal-feedback-title">
+
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+            stroke-linecap="round" stroke-linejoin="round" style="color: var(--color-primary);">
+            <path d="M12 20h9"></path>
+            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+          </svg>
+
+          <span>Share Your Verified Experience</span>
+
+        </div>
+
+        <button type="button" class="neo-modal-close btn-modal-cancel" aria-label="Close dialog">
+
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+
+        </button>
+
+      </div>
+
+
+
+      <form id="form-share-feedback" novalidate>
+
+        <div class="neo-modal-body">
+
+          <!-- Verified Account Header Banner -->
+
+          <div class="feedback-verified-user-card" id="feedback-user-banner">
+
+            <div class="feedback-card__avatar feedback-card__avatar--indigo" id="feedback-user-avatar">U</div>
+
+            <div style="flex-grow: 1; min-width: 0;">
+
+              <div style="display: flex; align-items: center; gap: var(--space-2); flex-wrap: wrap;">
+
+                <strong id="feedback-user-banner-name"
+                  style="font-size: var(--font-size-sm); color: var(--color-text-main);">User</strong>
+
+                <span class="badge badge--success" style="font-size: 10px; padding: 2px 7px;">Verified Member</span>
+
+              </div>
+
+              <div id="feedback-user-banner-desc"
+                style="font-size: var(--font-size-xs); color: var(--color-text-muted);">Posting as Verified Account
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+          <!-- Star Rating Interactive Selector -->
+
+          <div class="form-group">
+
+            <label class="form-label">Your Rating</label>
+
+            <div class="feedback-star-picker" id="feedback-star-picker" role="radiogroup"
+              aria-label="Rating out of 5 stars">
+
+              <button type="button" class="feedback-star-btn is-selected" data-rating="1" aria-label="1 star">★</button>
+
+              <button type="button" class="feedback-star-btn is-selected" data-rating="2"
+                aria-label="2 stars">★</button>
+
+              <button type="button" class="feedback-star-btn is-selected" data-rating="3"
+                aria-label="3 stars">★</button>
+
+              <button type="button" class="feedback-star-btn is-selected" data-rating="4"
+                aria-label="4 stars">★</button>
+
+              <button type="button" class="feedback-star-btn is-selected" data-rating="5"
+                aria-label="5 stars">★</button>
+
+              <span class="feedback-star-hint" id="feedback-star-hint">5.0 — Excellent</span>
+
+            </div>
+
+            <input type="hidden" id="feedback-rating-val" name="rating" value="5">
+
+          </div>
+
+
+
+          <div class="form-row form-row--2col">
+
+            <div class="form-group">
+
+              <label for="feedback-name" class="form-label">Full Name <span class="badge badge--neutral"
+                  style="font-size: 10px; margin-left: 4px;">Verified</span></label>
+
+              <div class="form-input-wrap">
+
+                <input type="text" id="feedback-name" name="name" class="form-input form-input-locked" readonly
+                  required>
+
+              </div>
+
+              <div class="form-error" id="error-feedback-name">Please provide your name.</div>
+
+            </div>
+
+
+
+            <div class="form-group">
+
+              <label for="feedback-role" class="form-label">Your Role <span class="badge badge--neutral"
+                  style="font-size: 10px; margin-left: 4px;">Locked</span></label>
+
+              <div class="form-input-wrap">
+
+                <select id="feedback-role" name="role" class="form-input form-input-locked" disabled>
+
+                  <option value="landlord">Landlord / Property Owner</option>
+
+                  <option value="tenant">Tenant / Resident</option>
+
+                </select>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+
+          <div class="form-group">
+
+            <label for="feedback-property" class="form-label">Property Name / Unit <span
+                class="text-subtle">(Optional)</span></label>
+
+            <div class="form-input-wrap">
+
+              <input type="text" id="feedback-property" name="propertyName" class="form-input"
+                placeholder="e.g. Gulmohar Residency (18 Flats) or Flat 4B">
+
+            </div>
+
+          </div>
+
+
+
+          <div class="form-group">
+
+            <label for="feedback-headline" class="form-label">Review Headline <span class="text-danger">*</span></label>
+
+            <div class="form-input-wrap">
+
+              <input type="text" id="feedback-headline" name="title" class="form-input"
+                placeholder="e.g. UPI AutoPay eliminated late rent completely" required>
+
+            </div>
+
+            <div class="form-error" id="error-feedback-headline">Please write a short review headline.</div>
+
+          </div>
+
+
+
+          <div class="form-group">
+
+            <label for="feedback-comment" class="form-label">Your Review <span class="text-danger">*</span></label>
+
+            <div class="form-input-wrap">
+
+              <textarea id="feedback-comment" name="comment" class="form-input form-textarea" rows="3"
+                placeholder="Share your experience with UPI rent collection, Aadhaar verification, maintenance triage, or the tenant portal..."
+                required></textarea>
+
+            </div>
+
+            <div class="form-error" id="error-feedback-comment">Please write at least 15 characters of feedback.</div>
+
+          </div>
+
+        </div>
+
+
+
+        <div class="neo-modal-footer">
+
+          <button type="button" class="btn btn--ghost btn-modal-cancel">Cancel</button>
+
+          <button type="submit" class="btn btn--primary" id="btn-submit-feedback">Publish Verified Review</button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </div>
+
+
+
+  <!-- Injected Glass Footer -->
+
+  <footer id="footer-root"></footer>
+
+
+
+  <!-- Scripts -->
+
+  <script type="module" src="js/main.js"></script>
+
+</body>
+
+</html>

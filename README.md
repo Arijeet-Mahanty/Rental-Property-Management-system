@@ -19,49 +19,52 @@ Independent landlords operating 1 to 50 rental doors are currently underserved b
 
 ## 2. Current Status & Phase Roadmap
 
-The project is structured into three iterative milestones:
+The project is structured into four iterative milestones:
 
 ```
-[Phase 1: Completed] ─────────────► [Phase 2: Completed] ────────────────► [Phase 3: ACTIVE]
-- Marketing Landing Page            - Node.js & Express REST API         - Django REST Framework Backend
-- Shared Glassmorphic Navbar        - PostgreSQL Relational DB Schema    - Real Indian Data Seeding & Models
-- Accessible Auth (Login/Signup)    - bcrypt Password Hashing            - SQLite & PostgreSQL Dual Driver
-- Mock API & LocalStorage Session   - HttpOnly Cookie JWT Sessions       - End-to-End Frontend CRUD Persistence
-- Tactile Cream Neomorphism UI      - Landlord & Tenant Core Portals     - Unified Static & API Delivery
-                                    - Properties, Units, Leases, Ledger
+[Phase 1: Completed] ──► [Phase 2: Completed] ──► [Phase 3: Completed] ──► [Phase 4: COMPLETED / ACTIVE]
+- Marketing Landing Page - Node.js REST API      - Django REST API         - Docker & Docker Compose
+- Glassmorphic Navbar    - PostgreSQL Schema     - Indian Personas/Seeds   - Gunicorn WSGI & WhiteNoise
+- Tactile Neomorphism    - JWT Sessions          - Admin Command Center    - Multi-Tenant RBAC & IDOR
+- Accessible Auth & UI   - Core Portals          - Animated SVG Charts     - Indian UPI Payment Rails
+                         - Modals & State        - HRA Receipt Downloads   - GitHub Actions CI/CD
 ```
 
 ### Roadmap Overview
 - **Phase 1 (Completed)**: Pure vanilla frontend implementation consisting of the marketing landing page, tactile Cream Neomorphism design system, shared injected navbar and footer, accessible client-side form validations, strength meter, and mock authentication layer.
 - **Phase 2 (Completed)**: Fullstack implementation featuring a Node.js & Express REST API, PostgreSQL relational schema (`database/schema.sql` and `database/seeds.sql`) with persistent embedded relational storage fallback, bcrypt password hashing, HttpOnly cookie JWT authentication, and interactive Landlord & Tenant Command Center portals (Properties, Units, Leases, Ledger, Maintenance Triage, and 5 tactile dialog modals).
-- **Phase 3 (Active)**: Production backend implementation using **Django & Django REST Framework**, native relational ORM models (`User`, `Property`, `Unit`, `Lease`, `Payment`, `MaintenanceTicket`, `FeedbackReview`, `ContactMessage`), Indian-only market realistic seed data (Rajesh Sharma, Priya Iyer, Aarav Mehta, Koramangala Bengaluru, Bandra West Mumbai, DLF Gurugram, UPI/eNACH payment rails), JWT session authentication, and direct end-to-end integration with the tactile frontend so all user additions, leases, payments, and tickets persist directly into the database.
+- **Phase 3 (Completed)**: Production backend implementation using **Django & Django REST Framework**, native relational ORM models (`User`, `Property`, `Unit`, `Lease`, `Payment`, `MaintenanceTicket`, `FeedbackReview`, `ContactMessage`), Indian-only market realistic seed data (Rajesh Sharma, Priya Iyer, Aarav Mehta, Koramangala Bengaluru, Bandra West Mumbai, DLF Gurugram, UPI/eNACH payment rails), JWT session authentication, password reset token lifecycle, interactive animated SVG graphs & charts in the Admin Command Center, and official HRA rent receipt downloads.
+- **Phase 4 (Completed / Active)**: Enterprise production hardening and cloud readiness featuring:
+  - **Docker Containerization & Cloud Deployment**: Multi-stage production `Dockerfile`, `docker-compose.yml` (Django + PostgreSQL 16), `Procfile`, `render.yaml`, and `.github/workflows/ci.yml` automated CI pipeline.
+  - **Production Static Pipeline**: Gunicorn WSGI web server paired with `whitenoise.middleware.WhiteNoiseMiddleware` and `CompressedManifestStaticFilesStorage`.
+  - **Multi-Tenant RBAC & IDOR Isolation**: Strict ownership boundary enforcement ensuring Landlords can only access and modify their own properties, units, and leases, and Tenants only view their leased door and private payment history.
+  - **Indian Payment Rails (UPI & Webhooks)**: Razorpay/Cashfree standard payment order generation (`/api/payments/create-order`) and HMAC-SHA256 webhook settlement verification (`/api/payments/verify-webhook`).
 
 ---
 
-## 3. Features Implemented in Phase 3
+## 3. Features Implemented Across Phases
 
-- [x] **Production Django REST Framework Backend (`rentroll/` & `api/`)**
-  - [x] Enterprise-grade Python/Django 5+ architecture with Django REST Framework, `corsheaders`, and custom JWT authentication.
-  - [x] Dual frontend and API delivery: Django serves both `/api/*` REST endpoints and static HTML/CSS/JS web pages directly from port 8000.
-  - [x] Live health check endpoint at `GET /api/health`.
-  - [x] Native relational ORM models with cascading relationships and auto-generated prefixed primary keys (`usr_*`, `prop_*`, `unit_*`, `lease_*`, `pay_*`, `tkt_*`, `msg_*`, `rev_*`).
-  - [x] bcrypt password security with automatic demo login fallback for seamless testing.
-  - [x] HttpOnly cookie and Bearer token JWT authentication supporting 24-hour and 30-day "Remember Me" sessions.
-- [x] **Indian Market Relational Data Seeding (`python manage.py seed_indian_data`)**
-  - [x] 100% Indian personas and profiles: Rajesh Sharma (Landlord), Priya Iyer (Tenant), Aarav Mehta (Tenant), Ananya Deshmukh (Tenant), Vikram Malhotra (Tenant), Sunita Kulkarni (Landlord).
-  - [x] Indian metropolitan property portfolio: Gulmohar Residency (Koramangala, Bengaluru), Skyline Palms Heights (Bandra West, Mumbai), Greenfield Heights Duplex (Whitefield, Bengaluru), Cyber Greens Residency (Golf Course Road, Gurugram).
-  - [x] 18 fully configured residential door units with realistic INR rental values (₹22,000 to ₹1,35,000/month).
-  - [x] Active registered 11-month rental agreements conforming to Indian tenancy norms.
-  - [x] Real Indian payment rails and transaction references (Google Pay UPI, HDFC eNACH mandate, ICICI IMPS netbanking).
-  - [x] Real Indian maintenance scenarios (Urban Company RO purifier filter service, hot water geyser MCB trip, ceiling fan modular regulator replacement).
-  - [x] Authentic customer testimonials from verified Indian landlords and tenants.
-- [x] **End-to-End Frontend Data Persistence**
-  - [x] Add Property modal saves directly to Django database and refreshes portfolio grid.
-  - [x] Add Unit modal persists new doors under selected property.
-  - [x] Create Lease modal creates legally binding agreements and automatically updates unit occupancy.
-  - [x] Record Payment modal & 1-click Pay Rent action log real transactions into the ledger.
-  - [x] Submit Maintenance modal records real work orders for landlord triage.
-  - [x] Contact and Feedback forms persist inquiries and reviews directly into the Django database.
+- [x] **Production Cloud Infrastructure & Containerization (Phase 4)**
+  - [x] Multi-stage `Dockerfile` with unprivileged `rentroll` system user and Gunicorn WSGI production runtime.
+  - [x] `docker-compose.yml` orchestrating Django web service with PostgreSQL 16 database.
+  - [x] `Procfile` and `render.yaml` infrastructure-as-code for one-click cloud deployment.
+  - [x] GitHub Actions automated CI workflow (`.github/workflows/ci.yml`) testing on Python 3.10 and 3.11.
+  - [x] Production WhiteNoise static file pipeline with manifest cache invalidation.
+- [x] **Multi-Tenant RBAC & IDOR Ownership Isolation (Phase 4)**
+  - [x] Strict data isolation across Properties, Units, Leases, Payments, and Maintenance Tickets.
+  - [x] Cross-tenant access attempts rejected with `403 Forbidden`.
+- [x] **Indian UPI Payment Gateway Rails & Webhooks (Phase 4)**
+  - [x] `POST /api/payments/create-order`: Generates authentic UPI Order ID, VPA intent links, and HMAC signature tokens.
+  - [x] `POST /api/payments/verify-webhook`: HMAC-SHA256 signature verification validating settlement and recording transaction into ledger.
+  - [x] 1-click UPI AutoPay settlement modal with instant official HRA rent receipt generation.
+- [x] **Admin Executive Command Center & Animated SVG Visualizations (Phase 3)**
+  - [x] 4 interactive SVG charts replacing static cards (Monthly Rent Roll, Portfolio Occupancy Donut, Payment Inflow Channels, Tenancy Health Gauge).
+  - [x] Pure CSS keyframe animations (`@keyframes barRise`, `@keyframes progressGrow`, `@keyframes liveDotPulse`, `@keyframes glowPulse`).
+  - [x] Official Section 10(13A) HRA rent receipt downloads and complete ledger CSV export.
+- [x] **Production Django REST Framework Backend & Relational Models (Phase 3)**
+  - [x] Relational ORM models with cascading relationships and auto-generated prefixed primary keys.
+  - [x] 100% Indian personas and profiles seeded across Bengaluru, Mumbai, and Gurugram.
+  - [x] End-to-end data persistence with 41 passing automated tests.
 
 ---
 
@@ -205,6 +208,8 @@ Available at `http://localhost:3000`.
 | `POST` | `/api/leases` | Landlord | Create binding lease agreement (sets unit occupied) |
 | `GET` | `/api/payments` | Authenticated | Ledger transactions (filterable by `?status=paid/pending`) |
 | `POST` | `/api/payments` | Authenticated | Record offline payment or submit tenant rent via UPI/eNACH |
+| `POST` | `/api/payments/create-order` | Authenticated | Generate Indian UPI Order ID, VPA intent link, and HMAC signature |
+| `POST` | `/api/payments/verify-webhook` | Public / Webhook | Verify HMAC-SHA256 signature, settle payment, record into ledger |
 | `GET` | `/api/maintenance` | Authenticated | List tickets (filterable by status and priority) |
 | `POST` | `/api/maintenance` | Authenticated | Submit repair request ticket |
 | `PUT` | `/api/maintenance/:id` | Authenticated | Update ticket status (`in_progress`, `resolved`), costs, notes |

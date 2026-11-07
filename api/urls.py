@@ -10,6 +10,9 @@ urlpatterns = [
     re_path(r'^auth/login/?$', views.login_view, name='api_login'),
     re_path(r'^auth/logout/?$', views.logout_view, name='api_logout'),
     re_path(r'^auth/me/?$', views.me_view, name='api_me'),
+    re_path(r'^auth/password-reset/request/?$', views.password_reset_request_view, name='api_password_reset_request'),
+    re_path(r'^auth/password-reset/verify/?$', views.password_reset_verify_view, name='api_password_reset_verify'),
+    re_path(r'^auth/password-reset/confirm/?$', views.password_reset_confirm_view, name='api_password_reset_confirm'),
 
     # Dashboard metrics
     re_path(r'^dashboard/stats/?$', views.dashboard_stats_view, name='api_dashboard_stats'),
@@ -27,6 +30,8 @@ urlpatterns = [
 
     # Payments
     re_path(r'^payments/?$', views.payments_view, name='api_payments'),
+    re_path(r'^payments/create-order/?$', views.payment_create_order_view, name='api_payment_create_order'),
+    re_path(r'^payments/verify-webhook/?$', views.payment_verify_webhook_view, name='api_payment_verify_webhook'),
 
     # Maintenance tickets
     re_path(r'^maintenance/?$', views.maintenance_view, name='api_maintenance'),

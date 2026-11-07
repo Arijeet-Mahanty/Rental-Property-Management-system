@@ -176,9 +176,9 @@
           <label class="form-label" for="unit-property-select">Belongs to Property *</label>
           <select id="unit-property-select" class="form-control" required>
             <option value="prop_1">Gulmohar Residency</option>
-            <option value="prop_2">Bandra Sea Breeze Heights</option>
-            <option value="prop_3">DLF Cyber Suites</option>
-            <option value="prop_4">Koregaon Palms Villa</option>
+            <option value="prop_2">Skyline Palms Heights</option>
+            <option value="prop_3">Greenfield Heights Duplex</option>
+            <option value="prop_4">Cyber Greens Residency</option>
           </select>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
@@ -240,8 +240,8 @@
           <select id="lease-unit-select" class="form-control" required>
             <option value="unit_106">Flat 6C — Gulmohar Residency (Vacant)</option>
             <option value="unit_101">Flat 1A — Gulmohar Residency</option>
-            <option value="unit_202">Sea Breeze 8B — Bandra Heights</option>
-            <option value="unit_301">Villa A — Koregaon Palms</option>
+            <option value="unit_201">Tower 101 — Skyline Palms Heights</option>
+            <option value="unit_301">Villa A (North) — Greenfield Heights Duplex</option>
           </select>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
@@ -342,28 +342,28 @@
       <div class="neo-modal-header">
         <h2 class="neo-modal-title" id="modal-pay-rent-title">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-          <span>Pay Rent — Flat 4B</span>
+          <span id="modal-pay-rent-unit-label">Pay Rent — Flat 4B</span>
         </h2>
         <button type="button" class="neo-modal-close" aria-label="Close modal">&times;</button>
       </div>
       <form id="form-tenant-pay-rent">
         <div style="background-color: var(--color-bg-inset); padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-4); border: var(--neo-border-inset);">
-          <div style="font-size: var(--font-size-xs); color: var(--color-text-muted);">Current Due for November 1, 2026:</div>
-          <div style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-extrabold); color: var(--color-text-main);">₹28,500.00</div>
+          <div style="font-size: var(--font-size-xs); color: var(--color-text-muted);" id="modal-pay-rent-due-label">Current Due for Rent:</div>
+          <div style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-extrabold); color: var(--color-text-main);" id="modal-pay-rent-amount-display">₹28,500.00</div>
           <div style="font-size: 11px; color: var(--color-success);">&check; Zero late fees accrued &bull; Instant HRA Receipt</div>
         </div>
         <div class="form-group">
           <label class="form-label" for="tenant-pay-method">Payment Source</label>
           <select id="tenant-pay-method" class="form-control">
-            <option value="upi">UPI AutoPay (priya.iyer@okaxis) — Instant &amp; Free</option>
-            <option value="ach">HDFC Bank Salary A/C (...4820) — eNACH Auto-Debit</option>
-            <option value="credit_card">ICICI Coral Credit Card (...9104) — Instant</option>
+            <option value="upi">UPI AutoPay (Google Pay / PhonePe / BHIM) — Instant &amp; Free</option>
+            <option value="ach">Salary Bank Account — eNACH Auto-Debit</option>
+            <option value="credit_card">Credit / Debit Card (RuPay / Visa / Mastercard)</option>
           </select>
         </div>
         <div class="neo-modal-footer">
           <button type="button" class="btn btn--ghost btn--sm btn-modal-cancel">Cancel</button>
           <button type="button" class="btn btn--primary btn--sm" id="btn-confirm-tenant-pay">
-            <span>Authorize ₹28,500.00 Payment</span>
+            <span id="modal-pay-rent-btn-label">Authorize ₹28,500.00 Payment</span>
           </button>
         </div>
       </form>
@@ -383,7 +383,7 @@
       <form id="form-create-ticket">
         <div class="form-group">
           <label class="form-label" for="ticket-title">Issue Summary *</label>
-          <input type="text" id="ticket-title" class="form-control" placeholder="e.g. Dishwasher leaking water onto floor" required>
+          <input type="text" id="ticket-title" class="form-control" placeholder="e.g. Water purifier (RO) filter low flow or geyser MCB trip" required>
         </div>
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
           <div class="form-group">

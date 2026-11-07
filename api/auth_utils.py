@@ -14,7 +14,23 @@ def hash_password(plain_password: str) -> str:
 
 def verify_password(plain_password: str, password_hash: str, user_email: str = '') -> bool:
     """Verifies plain password against hash with demo fallback."""
-    # Demo accounts convenience fallback
+    if password_hash:
+        try:
+            if password_hash.startswith('$2'):
+                if bcrypt.checkpw(plain_password.encode('utf-8'), password_hash.encode('utf-8')):
+                    return True
+        except Exception:
+            pass
+
+        # Django fallback
+        from django.contrib.auth.hashers import check_password
+        try:
+            if check_password(plain_password, password_hash):
+                return True
+        except Exception:
+            pass
+
+    # Demo accounts convenience fallback strictly when DEBUG is enabled and password is default demo password
     demo_emails = [
         'admin@rentroll.com',
         'landlord@rentroll.com',
@@ -26,24 +42,10 @@ def verify_password(plain_password: str, password_hash: str, user_email: str = '
         'vikram.m@example.in',
         'sunita.k@example.in'
     ]
-    if user_email.lower() in demo_emails and plain_password == 'Password123!':
+    if getattr(settings, 'DEBUG', False) and user_email.lower() in demo_emails and plain_password == 'Password123!':
         return True
 
-    if not password_hash:
-        return False
-
-    try:
-        if password_hash.startswith('$2'):
-            return bcrypt.checkpw(plain_password.encode('utf-8'), password_hash.encode('utf-8'))
-    except Exception:
-        pass
-
-    # Django fallback
-    from django.contrib.auth.hashers import check_password
-    try:
-        return check_password(plain_password, password_hash)
-    except Exception:
-        return False
+    return False
 
 def generate_jwt_token(user: User, remember_me: bool = False) -> str:
     """Generates standard HS256 JWT session token."""

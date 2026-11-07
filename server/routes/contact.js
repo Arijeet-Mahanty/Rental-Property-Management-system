@@ -52,7 +52,7 @@ router.post('/', async (req, res) => {
     console.error('[Contact API Error]:', err);
     return res.status(500).json({
       success: false,
-      message: 'An error occurred while submitting your inquiry. Please try again or email support@rentroll.io directly.'
+      message: 'An error occurred while submitting your inquiry. Please try again or email support@rentroll.in directly.'
     });
   }
 });

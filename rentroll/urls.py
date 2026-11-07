@@ -7,24 +7,33 @@ from django.http import FileResponse, Http404
 from django.conf import settings
 
 def serve_frontend_page(request, filename='index.html'):
-    """Serves root HTML files (index.html, dashboard.html, login.html, signup.html)."""
-    clean_name = filename.strip('/')
+    """Serves root HTML files strictly from an allowed whitelist."""
+    allowed_pages = {'index.html', 'dashboard.html', 'login.html', 'signup.html', 'reset-password.html'}
+    clean_name = os.path.basename(filename.strip('/'))
     if not clean_name:
         clean_name = 'index.html'
     if not clean_name.endswith('.html'):
         clean_name += '.html'
 
-    filepath = settings.BASE_DIR / clean_name
+    if clean_name not in allowed_pages:
+        clean_name = 'index.html'
+
+    filepath = (settings.BASE_DIR / clean_name).resolve()
     if not filepath.exists() or not filepath.is_file():
-        filepath = settings.BASE_DIR / 'index.html'
+        raise Http404("Page not found")
 
     return FileResponse(open(filepath, 'rb'), content_type='text/html; charset=utf-8')
 
 def serve_directory_asset(request, folder, subpath):
-    """Serves css, js, assets directly with precise mime-types."""
-    filepath = (settings.BASE_DIR / folder / subpath).resolve()
-    # Security: ensure file stays within BASE_DIR
-    if not str(filepath).startswith(str(settings.BASE_DIR.resolve())):
+    """Serves css, js, assets directly with precise mime-types and strict directory sandboxing."""
+    if folder not in ('css', 'js', 'assets', 'data', 'videos'):
+        raise Http404("Forbidden asset folder")
+
+    base_folder = (settings.BASE_DIR / folder).resolve()
+    filepath = (base_folder / subpath).resolve()
+
+    # Security: ensure file stays strictly within its designated base_folder
+    if not str(filepath).startswith(str(base_folder)):
         raise Http404("Forbidden path traversal")
 
     if not filepath.exists() or not filepath.is_file():
@@ -40,7 +49,10 @@ def serve_directory_asset(request, folder, subpath):
     elif str(filepath).endswith('.mp4'):
         content_type = 'video/mp4'
 
-    return FileResponse(open(filepath, 'rb'), content_type=content_type)
+    response = FileResponse(open(filepath, 'rb'), content_type=content_type)
+    if str(filepath).endswith('.mp4'):
+        response['Accept-Ranges'] = 'bytes'
+    return response
 
 urlpatterns = [
     # Admin Interface

@@ -1,7 +1,17 @@
 /**
  * RentRoll - Auth Flows & Page Logic (Login, Signup, Dashboard Guard)
  */
-import { login, signup, getCurrentUser, logout, getStoredToken, clearStoredToken } from './api.js';
+import { 
+  login, 
+  signup, 
+  getCurrentUser, 
+  logout, 
+  getStoredToken, 
+  clearStoredToken,
+  requestPasswordReset,
+  verifyPasswordResetToken,
+  confirmPasswordReset
+} from './api.js';
 import {
   validateEmail,
   validateName,
@@ -232,6 +242,94 @@ export function initLoginForm() {
       passwordInput.focus();
     }
   });
+
+  // Forgot Password Recovery Modal Wiring
+  const forgotLink = document.getElementById('forgot-password-link');
+  const forgotModal = document.getElementById('modal-forgot-password');
+  const forgotForm = document.getElementById('form-forgot-password');
+  const forgotEmailInput = document.getElementById('forgot-email');
+  const forgotEmailError = document.getElementById('forgot-email-error');
+  const forgotSuccessBox = document.getElementById('forgot-success-box');
+  const forgotSuccessText = document.getElementById('forgot-success-text');
+  const forgotDevLinkWrap = document.getElementById('forgot-dev-link-wrap');
+  const forgotDevLink = document.getElementById('forgot-dev-link');
+
+  if (forgotLink && forgotModal) {
+    const openForgotModal = () => {
+      forgotModal.classList.add('is-open');
+      forgotModal.setAttribute('aria-hidden', 'false');
+      if (emailInput && emailInput.value && forgotEmailInput && !forgotEmailInput.value) {
+        forgotEmailInput.value = emailInput.value;
+      }
+      setTimeout(() => forgotEmailInput && forgotEmailInput.focus(), 120);
+    };
+
+    const closeForgotModal = () => {
+      forgotModal.classList.remove('is-open');
+      forgotModal.setAttribute('aria-hidden', 'true');
+    };
+
+    forgotLink.addEventListener('click', (e) => {
+      e.preventDefault();
+      openForgotModal();
+    });
+
+    forgotModal.querySelectorAll('.neo-modal-close, .btn-modal-cancel').forEach(btn => {
+      btn.addEventListener('click', closeForgotModal);
+    });
+
+    forgotModal.addEventListener('click', (e) => {
+      if (e.target === forgotModal) closeForgotModal();
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && forgotModal.classList.contains('is-open')) {
+        closeForgotModal();
+      }
+    });
+
+    if (forgotForm) {
+      forgotForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const emailVal = (forgotEmailInput ? forgotEmailInput.value : '').trim();
+        const emailErr = validateEmail(emailVal);
+        if (emailErr) {
+          setFieldError(forgotEmailInput, forgotEmailError, emailErr);
+          forgotEmailInput.focus();
+          return;
+        }
+        clearFieldError(forgotEmailInput, forgotEmailError);
+
+        const forgotSubmitBtn = forgotForm.querySelector('#btn-submit-forgot');
+        if (forgotSubmitBtn) {
+          forgotSubmitBtn.classList.add('btn--loading');
+          forgotSubmitBtn.disabled = true;
+        }
+
+        try {
+          const res = await requestPasswordReset(emailVal);
+          if (forgotSuccessBox && forgotSuccessText) {
+            forgotSuccessText.textContent = res.message || 'If an account is associated with this email address, password reset instructions have been sent.';
+            forgotSuccessBox.style.display = 'block';
+
+            if (res.reset_url && forgotDevLink && forgotDevLinkWrap) {
+              forgotDevLink.href = res.reset_url;
+              forgotDevLinkWrap.style.display = 'block';
+            }
+          }
+          showToast('Instructions Sent', 'Check your email inbox for password recovery instructions.', 'success', 4500);
+        } catch (err) {
+          showToast('Request Failed', err.message, 'error', 4000);
+          setFieldError(forgotEmailInput, forgotEmailError, err.message);
+        } finally {
+          if (forgotSubmitBtn) {
+            forgotSubmitBtn.classList.remove('btn--loading');
+            forgotSubmitBtn.disabled = false;
+          }
+        }
+      });
+    }
+  }
 }
 
 /**
@@ -612,4 +710,160 @@ export function initDashboardPage() {
       `;
     }
   }
+}
+
+/**
+ * Initializes the Reset Password Page behavior.
+ */
+export async function initResetPasswordForm() {
+  const form = document.getElementById('reset-password-form');
+  const loadingState = document.getElementById('token-loading-state');
+  const invalidState = document.getElementById('token-invalid-state');
+  const invalidDesc = document.getElementById('token-invalid-desc');
+  const successState = document.getElementById('reset-success-state');
+  const generalAlert = document.getElementById('reset-general-alert');
+
+  if (!form && !loadingState) return;
+
+  const urlParams = new URLSearchParams(window.location.search);
+  const token = urlParams.get('token');
+
+  if (!token) {
+    if (loadingState) loadingState.style.display = 'none';
+    if (invalidState) {
+      invalidState.style.display = 'block';
+      if (invalidDesc) {
+        invalidDesc.textContent = 'No password recovery token was found in the link. Please request a new recovery link from the login page.';
+      }
+    }
+    return;
+  }
+
+  // Pre-flight verify token with backend
+  try {
+    const res = await verifyPasswordResetToken(token);
+    if (!res || !res.valid) {
+      throw new Error((res && res.message) || 'This password reset link is invalid or has expired.');
+    }
+
+    if (loadingState) loadingState.style.display = 'none';
+    if (form) form.style.display = 'block';
+
+    const emailDisplay = document.getElementById('reset-user-email');
+    if (emailDisplay) {
+      emailDisplay.textContent = res.masked_email || res.email || 'your account';
+    }
+  } catch (err) {
+    if (loadingState) loadingState.style.display = 'none';
+    if (invalidState) {
+      invalidState.style.display = 'block';
+      if (invalidDesc) {
+        invalidDesc.textContent = err.message || 'This password reset link is invalid or has expired. Please request a new recovery link.';
+      }
+    }
+    return;
+  }
+
+  // Set up inputs and strength meter
+  const passInput = document.getElementById('reset-password');
+  const passError = document.getElementById('reset-password-error');
+  const confirmInput = document.getElementById('reset-confirm');
+  const confirmError = document.getElementById('reset-confirm-error');
+  const submitBtn = document.getElementById('reset-submit-btn');
+  const togglePassBtn = document.getElementById('reset-toggle-password');
+  const toggleConfirmBtn = document.getElementById('reset-toggle-confirm');
+  const strengthMeter = document.getElementById('password-strength-meter');
+
+  setupPasswordToggle(togglePassBtn, passInput);
+  setupPasswordToggle(toggleConfirmBtn, confirmInput);
+
+  if (passInput && strengthMeter) {
+    passInput.addEventListener('input', () => {
+      updateStrengthMeterUI(passInput.value, strengthMeter);
+      if (passInput.getAttribute('aria-invalid') === 'true') {
+        const err = validateSignupPassword(passInput.value);
+        if (!err) clearFieldError(passInput, passError);
+      }
+    });
+
+    passInput.addEventListener('blur', () => {
+      const err = validateSignupPassword(passInput.value);
+      if (err) setFieldError(passInput, passError, err);
+      else clearFieldError(passInput, passError);
+    });
+  }
+
+  if (confirmInput) {
+    confirmInput.addEventListener('input', () => {
+      if (confirmInput.getAttribute('aria-invalid') === 'true') {
+        const err = validateMatch(passInput.value, confirmInput.value, 'Passwords');
+        if (!err) clearFieldError(confirmInput, confirmError);
+      }
+    });
+
+    confirmInput.addEventListener('blur', () => {
+      const err = validateMatch(passInput.value, confirmInput.value, 'Passwords');
+      if (err) setFieldError(confirmInput, confirmError, err);
+      else clearFieldError(confirmInput, confirmError);
+    });
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    if (generalAlert) {
+      generalAlert.textContent = '';
+      generalAlert.classList.remove('is-visible');
+    }
+
+    const passErr = validateSignupPassword(passInput.value);
+    const matchErr = validateMatch(passInput.value, confirmInput.value, 'Passwords');
+
+    let hasErrors = false;
+    if (passErr) {
+      setFieldError(passInput, passError, passErr);
+      hasErrors = true;
+    } else {
+      clearFieldError(passInput, passError);
+    }
+
+    if (matchErr) {
+      setFieldError(confirmInput, confirmError, matchErr);
+      hasErrors = true;
+    } else {
+      clearFieldError(confirmInput, confirmError);
+    }
+
+    if (hasErrors) {
+      if (passErr) passInput.focus();
+      else confirmInput.focus();
+      return;
+    }
+
+    submitBtn.classList.add('btn--loading');
+    submitBtn.disabled = true;
+
+    try {
+      await confirmPasswordReset(token, passInput.value);
+      showToast('Password Updated!', 'Your password was changed successfully. Redirecting to login...', 'success', 3500);
+
+      form.style.display = 'none';
+      const pill = document.getElementById('reset-account-pill');
+      if (pill) pill.style.display = 'none';
+      if (successState) successState.style.display = 'block';
+
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 2200);
+    } catch (err) {
+      submitBtn.classList.remove('btn--loading');
+      submitBtn.disabled = false;
+      showToast('Reset Failed', err.message, 'error', 4500);
+
+      if (generalAlert) {
+        generalAlert.textContent = err.message;
+        generalAlert.classList.add('is-visible');
+      }
+    }
+  });
 }

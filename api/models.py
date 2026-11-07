@@ -267,3 +267,23 @@ class FeedbackReview(models.Model):
     def __str__(self):
         return f"Review by {self.name} ({self.rating} stars): {self.title}"
 
+
+def gen_token_id():
+    return gen_id('rst')
+
+
+class PasswordResetToken(models.Model):
+    id = models.CharField(max_length=64, primary_key=True, default=gen_token_id)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='password_reset_tokens')
+    token_hash = models.CharField(max_length=128, db_index=True)
+    expires_at = models.DateTimeField()
+    is_used = models.BooleanField(default=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
+    def __str__(self):
+        return f"Reset token for {self.user.email} (used={self.is_used})"
+
+

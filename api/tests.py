@@ -3,7 +3,8 @@ from django.test import TestCase, Client
 from django.urls import reverse
 from django.core.management import call_command
 from api.models import (
-    User, Property, Unit, Lease, Payment, MaintenanceTicket, ContactMessage, FeedbackReview
+    User, Property, Unit, Lease, Payment, MaintenanceTicket, ContactMessage, FeedbackReview,
+    PasswordResetToken
 )
 from api.auth_utils import hash_password, generate_jwt_token
 
@@ -122,6 +123,92 @@ class RentRollBackendPhase3Tests(TestCase):
         user = User.objects.get(email='aarav.verma@example.in')
         self.assertEqual(user.name, 'Aarav Verma')
         self.assertNotEqual(user.password_hash, 'SecurePassword123!')
+
+    def test_password_reset_request_flow(self):
+        res = self.client.post('/api/auth/password-reset/request', {
+            'email': 'landlord@rentroll.com'
+        }, content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        token = data.get('token')
+        self.assertIsNotNone(token)
+        self.assertTrue(PasswordResetToken.objects.filter(user=self.landlord, is_used=False).exists())
+
+    def test_password_reset_request_nonexistent_email_prevents_enumeration(self):
+        res = self.client.post('/api/auth/password-reset/request', {
+            'email': 'doesnotexist@nowhere.com'
+        }, content_type='application/json')
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        self.assertNotIn('token', data)
+
+    def test_password_reset_verify_token(self):
+        req_res = self.client.post('/api/auth/password-reset/request', {
+            'email': 'landlord@rentroll.com'
+        }, content_type='application/json')
+        token = req_res.json()['token']
+
+        # Verify with valid token
+        verify_res = self.client.get(f'/api/auth/password-reset/verify?token={token}')
+        self.assertEqual(verify_res.status_code, 200)
+        self.assertTrue(verify_res.json().get('valid'))
+
+        # Verify with bogus token
+        bogus_res = self.client.get('/api/auth/password-reset/verify?token=bogus_token_123')
+        self.assertEqual(bogus_res.status_code, 400)
+        self.assertFalse(bogus_res.json().get('valid'))
+
+    def test_password_reset_confirm_and_login(self):
+        req_res = self.client.post('/api/auth/password-reset/request', {
+            'email': 'tenant@rentroll.com'
+        }, content_type='application/json')
+        token = req_res.json()['token']
+
+        # Confirm new password
+        confirm_res = self.client.post('/api/auth/password-reset/confirm', {
+            'token': token,
+            'new_password': 'MyNewBrandSecretPassword99!'
+        }, content_type='application/json')
+        self.assertEqual(confirm_res.status_code, 200)
+        self.assertTrue(confirm_res.json().get('success'))
+
+        # Old password should no longer work
+        old_login_res = self.client.post('/api/auth/login', {
+            'email': 'tenant@rentroll.com',
+            'password': 'WrongPassword123'
+        }, content_type='application/json')
+        self.assertEqual(old_login_res.status_code, 401)
+
+        # New password should successfully log in
+        new_login_res = self.client.post('/api/auth/login', {
+            'email': 'tenant@rentroll.com',
+            'password': 'MyNewBrandSecretPassword99!'
+        }, content_type='application/json')
+        self.assertEqual(new_login_res.status_code, 200)
+        self.assertIsNotNone(new_login_res.json().get('token'))
+
+    def test_password_reset_cannot_reuse_token(self):
+        req_res = self.client.post('/api/auth/password-reset/request', {
+            'email': 'landlord@rentroll.com'
+        }, content_type='application/json')
+        token = req_res.json()['token']
+
+        # First use
+        confirm_res1 = self.client.post('/api/auth/password-reset/confirm', {
+            'token': token,
+            'new_password': 'FirstNewSecret123!'
+        }, content_type='application/json')
+        self.assertEqual(confirm_res1.status_code, 200)
+
+        # Replay attempt (second use) must fail
+        confirm_res2 = self.client.post('/api/auth/password-reset/confirm', {
+            'token': token,
+            'new_password': 'ReplayAttackPassword123!'
+        }, content_type='application/json')
+        self.assertEqual(confirm_res2.status_code, 400)
+        self.assertFalse(confirm_res2.json().get('success'))
 
     # 3. Dashboard Stats
     def test_dashboard_stats_landlord(self):
@@ -563,6 +650,144 @@ class IndianDemoDataPersistenceTests(TestCase):
 
         unit_obj = Unit.objects.get(id=unit_data['id'])
         self.assertEqual(unit_obj.status, 'occupied')
+
+    # =========================================================================
+    # Phase 4 Tests: Multi-Tenant RBAC, IDOR Protection & UPI Payment Gateway
+    # =========================================================================
+
+    def test_multi_tenant_landlord_property_idor_protection(self):
+        """Landlord B cannot delete or access Landlord A's private property."""
+        pwd_hash = hash_password('Password123!')
+        landlord_b = User.objects.create(
+            id='usr_landlord_b_test',
+            name='Vikramaditya Singhania',
+            email='vikramaditya.singh@example.in',
+            password_hash=pwd_hash,
+            role='landlord'
+        )
+        token_b = generate_jwt_token(landlord_b)
+        gulmohar = Property.objects.get(id='prop_1')
+
+        # Landlord B tries to delete Landlord A's property
+        res_del = self.client.delete(f'/api/properties/{gulmohar.id}', HTTP_AUTHORIZATION=f'Bearer {token_b}')
+        self.assertEqual(res_del.status_code, 403)
+        self.assertTrue(Property.objects.filter(id=gulmohar.id).exists())
+
+        # Landlord B lists properties; Landlord A's property is not in Landlord B's private list
+        res_list = self.client.get('/api/properties', HTTP_AUTHORIZATION=f'Bearer {token_b}')
+        self.assertEqual(res_list.status_code, 200)
+        b_props = res_list.json().get('data', [])
+        self.assertFalse(any(p['id'] == gulmohar.id for p in b_props))
+
+    def test_multi_tenant_landlord_unit_idor_protection(self):
+        """Landlord B cannot create or attach units to Landlord A's property."""
+        pwd_hash = hash_password('Password123!')
+        landlord_b = User.objects.create(
+            id='usr_landlord_b_unit_test',
+            name='Karan Johar',
+            email='karan.johar@example.in',
+            password_hash=pwd_hash,
+            role='landlord'
+        )
+        token_b = generate_jwt_token(landlord_b)
+        gulmohar = Property.objects.get(id='prop_1')
+
+        res_unit = self.client.post('/api/units', {
+            'property_id': gulmohar.id,
+            'unit_number': 'Unauthorized Flat 99',
+            'rent_amount': '50000'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {token_b}')
+
+        self.assertEqual(res_unit.status_code, 403)
+        self.assertFalse(Unit.objects.filter(unit_number='Unauthorized Flat 99').exists())
+
+    def test_multi_tenant_tenant_data_isolation(self):
+        """Tenant B cannot view Tenant A's lease agreement or payments."""
+        pwd_hash = hash_password('Password123!')
+        tenant_b = User.objects.create(
+            id='usr_tenant_b_test',
+            name='Deepika Padukone',
+            email='deepika.p@example.in',
+            password_hash=pwd_hash,
+            role='tenant'
+        )
+        token_b = generate_jwt_token(tenant_b)
+        priya_lease = Lease.objects.filter(tenant=self.tenant_priya).first()
+        self.assertIsNotNone(priya_lease)
+
+        # Tenant B lists leases -> should not contain Priya's lease
+        res_leases = self.client.get('/api/leases', HTTP_AUTHORIZATION=f'Bearer {token_b}')
+        self.assertEqual(res_leases.status_code, 200)
+        leases = res_leases.json().get('data', [])
+        self.assertFalse(any(l['id'] == priya_lease.id for l in leases))
+
+        # Tenant B lists payments -> should not contain Priya's payments
+        res_payments = self.client.get('/api/payments', HTTP_AUTHORIZATION=f'Bearer {token_b}')
+        self.assertEqual(res_payments.status_code, 200)
+        payments = res_payments.json().get('data', [])
+        self.assertEqual(len(payments), 0)
+
+    def test_upi_payment_create_order_success(self):
+        """Generates authentic UPI payment order with Order ID, UPI Intent URL and HMAC signature."""
+        priya_lease = Lease.objects.filter(tenant=self.tenant_priya).first()
+        res = self.client.post('/api/payments/create-order', {
+            'amount': '28500.00',
+            'lease_id': priya_lease.id if priya_lease else None
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.priya_token}')
+
+        self.assertEqual(res.status_code, 201)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        self.assertTrue(data.get('order_id', '').startswith('order_rcpt_'))
+        self.assertEqual(data.get('amount'), 28500.0)
+        self.assertEqual(data.get('currency'), 'INR')
+        self.assertIn('upi://pay', data.get('upi_intent_url', ''))
+        self.assertTrue(len(data.get('signature', '')) > 20)
+
+    def test_upi_payment_webhook_verification_success(self):
+        """Validates UPI settlement and records confirmed payment into ledger."""
+        import hmac, hashlib
+        from django.conf import settings
+
+        order_id = 'order_rcpt_test_998877_abcd'
+        amount = 28500.0
+        secret = getattr(settings, 'SECRET_KEY', 'test-secret')
+        valid_signature = hmac.new(
+            secret.encode('utf-8'),
+            f"{order_id}|{amount:.2f}".encode('utf-8'),
+            hashlib.sha256
+        ).hexdigest()
+
+        priya_lease = Lease.objects.filter(tenant=self.tenant_priya).first()
+        payment_txn_ref = f"TXN-UPI-{int(hashlib.sha256(order_id.encode()).hexdigest()[:8], 16)}"
+        res = self.client.post('/api/payments/verify-webhook', {
+            'order_id': order_id,
+            'payment_id': payment_txn_ref,
+            'amount': amount,
+            'signature': valid_signature,
+            'lease_id': priya_lease.id if priya_lease else None
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.priya_token}')
+
+        self.assertEqual(res.status_code, 201)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        self.assertTrue(Payment.objects.filter(transaction_ref=payment_txn_ref, status='paid').exists())
+
+    def test_upi_payment_webhook_verification_rejects_invalid_signature(self):
+        """Rejects forged or tampered webhook signatures with 400 Bad Request."""
+        priya_lease = Lease.objects.filter(tenant=self.tenant_priya).first()
+        res = self.client.post('/api/payments/verify-webhook', {
+            'order_id': 'order_rcpt_fake_123',
+            'payment_id': 'fake_txn_999',
+            'amount': 28500.0,
+            'signature': 'forged_fake_signature_abc123',
+            'lease_id': priya_lease.id if priya_lease else None
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.priya_token}')
+
+        self.assertEqual(res.status_code, 400)
+        data = res.json()
+        self.assertFalse(data.get('success'))
+        self.assertIn('Invalid payment signature', data.get('message', ''))
 
 
 

@@ -3,7 +3,7 @@
  */
 import { injectNavbar, injectFooter, injectBackgroundBlobs, showToast } from './components.js';
 import { submitContactForm, submitFeedbackReview, getCurrentUser, getFeedbackReviews, upvoteFeedbackReview, getProperties } from './api.js';
-import { initLoginForm, initSignupForm } from './auth.js';
+import { initLoginForm, initSignupForm, initResetPasswordForm } from './auth.js';
 import { initDashboard } from './dashboard.js';
 
 function escapeHtml(str) {
@@ -42,6 +42,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initLoginForm();
   } else if (document.getElementById('signup-form')) {
     initSignupForm();
+  } else if (document.getElementById('reset-password-form') || document.getElementById('token-loading-state')) {
+    initResetPasswordForm();
   } else if (document.getElementById('dashboard-container')) {
     initDashboard();
   }
@@ -561,16 +563,16 @@ function initContactForm() {
   if (copyEmailBtn) {
     copyEmailBtn.addEventListener('click', async () => {
       try {
-        await navigator.clipboard.writeText('support@rentroll.io');
+        await navigator.clipboard.writeText('support@rentroll.in');
         copyEmailBtn.classList.add('is-copied');
         copyEmailBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
-        showToast('Email Copied', 'support@rentroll.io copied to clipboard!', 'info', 2500);
+        showToast('Email Copied', 'support@rentroll.in copied to clipboard!', 'info', 2500);
         setTimeout(() => {
           copyEmailBtn.classList.remove('is-copied');
           copyEmailBtn.innerHTML = `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>`;
         }, 2200);
       } catch (err) {
-        showToast('support@rentroll.io', 'Direct email address ready to copy.', 'info', 3000);
+        showToast('support@rentroll.in', 'Direct email address ready to copy.', 'info', 3000);
       }
     });
   }
