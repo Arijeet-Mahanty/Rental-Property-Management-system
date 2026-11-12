@@ -55,6 +55,25 @@ def serve_directory_asset(request, folder, subpath):
         response['Accept-Ranges'] = 'bytes'
     return response
 
+# Named view handlers for frontend pages (eliminates lambda functions in urlpatterns)
+def index_page_view(request):
+    return serve_frontend_page(request, 'index.html')
+
+def dashboard_page_view(request):
+    return serve_frontend_page(request, 'dashboard.html')
+
+def login_page_view(request):
+    return serve_frontend_page(request, 'login.html')
+
+def signup_page_view(request):
+    return serve_frontend_page(request, 'signup.html')
+
+def reset_password_page_view(request):
+    return serve_frontend_page(request, 'reset-password.html')
+
+def favicon_view(request):
+    return serve_directory_asset(request, 'assets', 'logo.svg')
+
 urlpatterns = [
     # Top-level Health Checks for Cloud Deployment (Render, AWS, GCP, K8s)
     path('health', api_views.health_check_view, name='health_root'),
@@ -70,22 +89,22 @@ urlpatterns = [
     re_path(r'^(?:(?:dashboard|login|signup|reset-password)/)?(?P<folder>css|js|assets|data|videos)/(?P<subpath>.+)$', serve_directory_asset, name='serve_assets'),
 
     # Frontend HTML Pages
-    path('', lambda req: serve_frontend_page(req, 'index.html'), name='root_index'),
-    path('index.html', lambda req: serve_frontend_page(req, 'index.html'), name='page_index'),
-    path('dashboard.html', lambda req: serve_frontend_page(req, 'dashboard.html'), name='page_dashboard'),
-    path('dashboard', lambda req: serve_frontend_page(req, 'dashboard.html')),
-    path('dashboard/', lambda req: serve_frontend_page(req, 'dashboard.html')),
-    path('login.html', lambda req: serve_frontend_page(req, 'login.html'), name='page_login'),
-    path('login', lambda req: serve_frontend_page(req, 'login.html')),
-    path('login/', lambda req: serve_frontend_page(req, 'login.html')),
-    path('signup.html', lambda req: serve_frontend_page(req, 'signup.html'), name='page_signup'),
-    path('signup', lambda req: serve_frontend_page(req, 'signup.html')),
-    path('signup/', lambda req: serve_frontend_page(req, 'signup.html')),
-    path('reset-password.html', lambda req: serve_frontend_page(req, 'reset-password.html'), name='page_reset_password'),
-    path('reset-password', lambda req: serve_frontend_page(req, 'reset-password.html')),
-    path('reset-password/', lambda req: serve_frontend_page(req, 'reset-password.html')),
+    path('', index_page_view, name='root_index'),
+    path('index.html', index_page_view, name='page_index'),
+    path('dashboard.html', dashboard_page_view, name='page_dashboard'),
+    path('dashboard', dashboard_page_view),
+    path('dashboard/', dashboard_page_view),
+    path('login.html', login_page_view, name='page_login'),
+    path('login', login_page_view),
+    path('login/', login_page_view),
+    path('signup.html', signup_page_view, name='page_signup'),
+    path('signup', signup_page_view),
+    path('signup/', signup_page_view),
+    path('reset-password.html', reset_password_page_view, name='page_reset_password'),
+    path('reset-password', reset_password_page_view),
+    path('reset-password/', reset_password_page_view),
 
     # Favicon fallback
-    path('favicon.ico', lambda req: serve_directory_asset(req, 'assets', 'logo.svg')),
+    path('favicon.ico', favicon_view),
 ]
 

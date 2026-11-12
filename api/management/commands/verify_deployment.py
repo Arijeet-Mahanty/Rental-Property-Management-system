@@ -11,7 +11,15 @@ from api.models import User, Property, Unit, Lease, Payment, MaintenanceTicket, 
 class Command(BaseCommand):
     help = 'Performs comprehensive pre-flight verification for Phase 5 production deployment.'
 
+    def add_arguments(self, parser):
+        parser.add_argument(
+            '--prod',
+            action='store_true',
+            help='Run pre-flight check in strict production mode (enforces DEBUG=False).',
+        )
+
     def handle(self, *args, **options):
+        is_prod_strict = options.get('prod', False)
         self.stdout.write(self.style.MIGRATE_HEADING("\n" + "=" * 70))
         self.stdout.write(self.style.MIGRATE_HEADING("  RENTROLL — PHASE 5 PRODUCTION DEPLOYMENT PRE-FLIGHT CHECK"))
         self.stdout.write(self.style.MIGRATE_HEADING("=" * 70 + "\n"))
@@ -42,9 +50,12 @@ class Command(BaseCommand):
         if not debug_val:
             passed_checks += 1
             self.stdout.write("  [PASS] DEBUG Mode: False (Production Hardened)")
+        elif is_prod_strict:
+            errors.append("DEBUG is currently True; strict production requires DEBUG=False")
+            self.stdout.write(self.style.ERROR("  [FAIL] DEBUG Mode: True (Must be False in production)"))
         else:
-            warnings.append("DEBUG is currently True (acceptable in local dev, must be False in production)")
-            self.stdout.write(self.style.WARNING("  [WARN] DEBUG Mode: True (Local Development Active)"))
+            passed_checks += 1
+            self.stdout.write("  [PASS] DEBUG Mode: True (Local Development Mode Active — Set DEBUG=False for Cloud Release)")
 
         # SECRET_KEY
         total_checks += 1

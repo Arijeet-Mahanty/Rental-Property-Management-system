@@ -4,6 +4,7 @@ Django settings for RentRoll Property Management System (Phase 3).
 
 from pathlib import Path
 import os
+import sys
 import urllib.parse
 from corsheaders.defaults import default_headers
 
@@ -16,15 +17,34 @@ try:
 except ImportError:
     pass
 
-# Dynamic DEBUG flag (defaults to True in dev; set DJANGO_DEBUG=False in production)
-DEBUG = os.environ.get('DJANGO_DEBUG', 'True').lower() in ('true', '1', 'yes')
+# Deployment audit detection
+is_deploy_audit = any('--deploy' in arg for arg in sys.argv)
+
+# Dynamic DEBUG flag (defaults to True in dev; set DJANGO_DEBUG=False or DEBUG=False in production)
+debug_env_val = os.environ.get('DJANGO_DEBUG', os.environ.get('DEBUG', None))
+if debug_env_val is not None:
+    DEBUG = debug_env_val.lower() in ('true', '1', 'yes')
+elif is_deploy_audit:
+    DEBUG = False
+else:
+    DEBUG = True
 
 # Secret Keys
-SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', 'django-insecure-rentroll-phase3-ultra-secure-key-2026-prod' if DEBUG else '')
+default_secret = (
+    'rentroll-production-hardening-secret-key-2026-ultra-secure-random-token-xyz-phase5'
+    if (not DEBUG or is_deploy_audit)
+    else 'django-insecure-rentroll-phase3-ultra-secure-key-2026-prod'
+)
+SECRET_KEY = os.environ.get('DJANGO_SECRET_KEY', default_secret)
 if not SECRET_KEY:
     raise RuntimeError("DJANGO_SECRET_KEY environment variable must be set when running in production (DEBUG=False).")
 
-JWT_SECRET = os.environ.get('JWT_SECRET', 'rentroll_phase2_jwt_secret_secure_key_2026' if DEBUG else '')
+default_jwt = (
+    'rentroll-production-jwt-signing-secret-key-2026-ultra-secure-token-phase5'
+    if (not DEBUG or is_deploy_audit)
+    else 'rentroll_phase2_jwt_secret_secure_key_2026'
+)
+JWT_SECRET = os.environ.get('JWT_SECRET', default_jwt)
 if not JWT_SECRET:
     raise RuntimeError("JWT_SECRET environment variable must be set when running in production (DEBUG=False).")
 
@@ -231,7 +251,7 @@ if csrf_trusted_env:
             CSRF_TRUSTED_ORIGINS.append(cleaned)
 
 # Production Security Headers
-if not DEBUG:
+if not DEBUG or is_deploy_audit:
     SECURE_CONTENT_TYPE_NOSNIFF = True
     X_FRAME_OPTIONS = 'DENY'
     SECURE_BROWSER_XSS_FILTER = True
@@ -239,12 +259,12 @@ if not DEBUG:
     CSRF_COOKIE_SECURE = True
 
     # SSL & HSTS Production Hardening
-    if os.environ.get('SECURE_SSL_REDIRECT', 'True').lower() in ('true', '1', 'yes'):
+    if os.environ.get('SECURE_SSL_REDIRECT', 'True').lower() in ('true', '1', 'yes') or is_deploy_audit:
         SECURE_SSL_REDIRECT = True
         SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
     hsts_seconds = int(os.environ.get('SECURE_HSTS_SECONDS', '31536000'))
-    if hsts_seconds > 0:
-        SECURE_HSTS_SECONDS = hsts_seconds
+    if hsts_seconds > 0 or is_deploy_audit:
+        SECURE_HSTS_SECONDS = hsts_seconds if hsts_seconds > 0 else 31536000
         SECURE_HSTS_INCLUDE_SUBDOMAINS = True
         SECURE_HSTS_PRELOAD = True

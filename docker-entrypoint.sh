@@ -22,3 +22,4 @@ fi
 
 # Execute main process (e.g., Gunicorn WSGI server)
 exec "$@"
+
