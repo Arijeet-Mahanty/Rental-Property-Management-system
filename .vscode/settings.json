@@ -1,0 +1,15 @@
+{
+  "python.defaultInterpreterPath": "C:\\Users\\bpm20\\AppData\\Local\\Programs\\Python\\Python310\\python.exe",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}",
+    "${workspaceFolder}/rentroll"
+  ],
+  "python.autoComplete.extraPaths": [
+    "${workspaceFolder}",
+    "${workspaceFolder}/rentroll"
+  ],
+  "python.analysis.typeCheckingMode": "basic",
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingImports": "warning"
+  }
+}

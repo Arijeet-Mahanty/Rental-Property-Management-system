@@ -1,6 +1,5 @@
 import os
 import mimetypes
-from pathlib import Path
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.http import FileResponse, Http404
