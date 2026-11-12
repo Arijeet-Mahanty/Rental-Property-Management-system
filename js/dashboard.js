@@ -313,6 +313,7 @@ function downloadPaymentReceipt(pay) {
     .amt-box { background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: 12px; padding: 20px; text-align: center; margin-bottom: 24px; }
     .amt-val { font-size: 32px; font-weight: 800; color: #4338ca; margin-top: 4px; }
     .footer { border-top: 1px solid #f1f5f9; padding-top: 20px; font-size: 11px; color: #94a3b8; line-height: 1.6; text-align: center; }
+    @media (max-width: 480px) { body { padding: 16px; } .receipt { padding: 20px; } .grid { grid-template-columns: 1fr; gap: 12px; } }
     @media print { body { background: #fff; padding: 0; } .receipt { border: none; box-shadow: none; } }
   </style>
 </head>
@@ -722,7 +723,7 @@ function renderAdminOverviewTab(container, user) {
         </div>
 
         <!-- Mini Gauges: Active Leases & Maintenance SLA -->
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); margin-bottom: var(--space-4);">
+        <div class="dash-mini-gauges">
           <div style="background: rgba(255,255,255,0.7); border: 1px solid rgba(0,0,0,0.06); border-radius: 10px; padding: var(--space-3);">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
               <span style="font-size: 11px; font-weight: 700; color: #4338ca; text-transform: uppercase;">Active Leases</span>
@@ -753,7 +754,7 @@ function renderAdminOverviewTab(container, user) {
     </div>
 
     <!-- Split Grid: Global Transactions & Global Maintenance -->
-    <div style="display: grid; grid-template-columns: 1.4fr 1fr; gap: var(--space-6); margin-bottom: var(--space-8);">
+    <div class="dash-split-grid dash-split-grid--admin">
       <!-- Global Payments Ledger -->
       <div class="glass-card" style="padding: var(--space-6);">
         <div class="dash-section-header" style="margin-bottom: var(--space-4);">
@@ -978,7 +979,7 @@ function renderOverviewTab(container, user, isLandlord) {
       </div>
 
       <!-- Operational Overview Split Grid -->
-      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-6); margin-bottom: var(--space-8);">
+      <div class="dash-split-grid dash-split-grid--landlord">
         <!-- Recent Rent Activity -->
         <div class="glass-card" style="padding: var(--space-6);">
           <div class="dash-section-header" style="margin-bottom: var(--space-4);">
@@ -1135,7 +1136,7 @@ function renderOverviewTab(container, user, isLandlord) {
       </div>
 
       <!-- Quick Action Cards for Tenant -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6); margin-bottom: var(--space-8);">
+      <div class="dash-split-grid dash-split-grid--tenant">
         <div class="glass-card" style="padding: var(--space-6);">
           <div class="dash-section-header" style="margin-bottom: var(--space-4);">
             <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold); color: var(--color-text-main);">Maintenance & Repairs</h3>
@@ -1504,7 +1505,7 @@ function renderInquiriesTab(container, user) {
         </div>
       </div>
 
-      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: var(--space-4);">
+      <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr)); gap: var(--space-4);">
         ${reviews.map(rev => `
           <div class="glass-card" style="padding: var(--space-5); display: flex; flex-direction: column; justify-content: space-between;">
             <div>
@@ -1836,7 +1837,7 @@ function renderPaymentsTab(container, isLandlord, isAdmin) {
     </div>
 
     <!-- Financial KPI Summary Cards -->
-    <div class="dashboard-stats-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: var(--space-6);">
+    <div class="dashboard-stats-grid dashboard-stats-grid--3-col" style="margin-bottom: var(--space-6);">
       <div class="glass-card dash-stat-card">
         <div class="dash-stat-card__title">Total Rent Collected</div>
         <div class="dash-stat-card__val" style="color: var(--color-success);">${formatCurrency(totalPaid)}</div>

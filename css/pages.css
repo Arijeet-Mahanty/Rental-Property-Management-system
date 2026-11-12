@@ -115,6 +115,19 @@
   margin-bottom: var(--space-10);
 }
 
+@media (max-width: 480px) {
+  .hero__cta-group {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+    gap: var(--space-3);
+  }
+  .hero__cta-group .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 .hero__stats {
   display: flex;
   align-items: center;
@@ -540,6 +553,26 @@
   max-width: 600px;
   margin: 0 auto var(--space-8);
   line-height: var(--line-height-relaxed);
+}
+
+.cta-banner__buttons {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 520px) {
+  .cta-banner__buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: var(--space-3);
+  }
+  .cta-banner__buttons .btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* Trust & Compliance Banner */
@@ -1976,6 +2009,13 @@
   box-shadow: 12px 12px 30px rgba(190, 178, 163, 0.55), -12px -12px 30px #ffffff;
 }
 
+@media (max-width: 480px) {
+  .auth-card {
+    padding: var(--space-6) var(--space-4);
+    border-radius: var(--radius-xl);
+  }
+}
+
 .auth-card--wide {
   max-width: 620px;
 }
@@ -2114,6 +2154,48 @@
   box-shadow: var(--neo-shadow-raised);
 }
 
+.dashboard-banner__actions {
+  display: flex;
+  gap: var(--space-3);
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+  .dashboard-banner {
+    padding: var(--space-5);
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+  }
+  .dashboard-banner__actions {
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .dashboard-banner {
+    padding: var(--space-4);
+  }
+  .dashboard-banner__name {
+    font-size: 1.35rem;
+  }
+  .dashboard-banner__avatar {
+    width: 46px;
+    height: 46px;
+    font-size: var(--font-size-xl);
+  }
+  .dashboard-banner__actions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-2);
+  }
+  .dashboard-banner__actions .btn {
+    width: 100%;
+    justify-content: center;
+  }
+}
+
 .dashboard-banner__welcome {
   display: flex;
   align-items: center;
@@ -2164,6 +2246,62 @@
 
 @media (max-width: 540px) {
   .dashboard-stats-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dashboard-stats-grid--3-col {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+@media (max-width: 992px) {
+  .dashboard-stats-grid--3-col {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 540px) {
+  .dashboard-stats-grid--3-col {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Dashboard Split Grids */
+.dash-split-grid {
+  display: grid;
+  gap: var(--space-6);
+  margin-bottom: var(--space-8);
+}
+
+.dash-split-grid--admin {
+  grid-template-columns: 1.4fr 1fr;
+}
+
+.dash-split-grid--landlord {
+  grid-template-columns: 2fr 1fr;
+}
+
+.dash-split-grid--tenant {
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 960px) {
+  .dash-split-grid--admin,
+  .dash-split-grid--landlord,
+  .dash-split-grid--tenant {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dash-mini-gauges {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+@media (max-width: 540px) {
+  .dash-mini-gauges {
     grid-template-columns: 1fr;
   }
 }
@@ -3284,14 +3422,23 @@
 /* Mobile Responsiveness */
 @media (max-width: 480px) {
   .ai-chatbot-widget {
-    bottom: 16px;
-    right: 16px;
+    bottom: 12px;
+    right: 12px;
+    left: 12px;
+    align-items: flex-end;
   }
 
   .ai-chatbot-panel {
-    width: calc(100vw - 32px);
-    height: calc(100vh - 120px);
-    max-height: 480px;
+    width: 100%;
+    max-width: 100%;
+    height: calc(100vh - 100px);
+    max-height: 500px;
+    margin-bottom: 10px;
+  }
+
+  .ai-chatbot-launcher {
+    padding: 9px 16px;
+    font-size: 13px;
   }
 }
 

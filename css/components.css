@@ -207,6 +207,39 @@
   position: relative;
 }
 
+.form-row {
+  display: grid;
+  gap: var(--space-3);
+  margin-bottom: var(--space-1);
+}
+
+.form-row--2-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.form-row--3-col {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr;
+  gap: var(--space-3);
+}
+
+.form-row--3-col-equal {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: var(--space-3);
+}
+
+@media (max-width: 600px) {
+  .form-row--2-col,
+  .form-row--3-col,
+  .form-row--3-col-equal {
+    grid-template-columns: 1fr;
+    gap: var(--space-1);
+  }
+}
+
 .form-group--horizontal {
   display: flex;
   align-items: center;
@@ -1123,6 +1156,8 @@ input[type="number"].form-control {
   margin-bottom: var(--space-8);
   overflow-x: auto;
   scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
 }
 .dash-tabs-nav::-webkit-scrollbar {
   display: none;
@@ -1142,6 +1177,8 @@ input[type="number"].form-control {
   border-radius: var(--radius-lg);
   cursor: pointer;
   white-space: nowrap;
+  flex-shrink: 0;
+  scroll-snap-align: start;
   transition: all var(--transition-fast);
 }
 
@@ -1188,6 +1225,7 @@ input[type="number"].form-control {
 
 .neo-table-container {
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   border-radius: var(--radius-xl);
   background-color: var(--color-bg-surface);
   border: var(--neo-border);
@@ -1196,6 +1234,7 @@ input[type="number"].form-control {
 
 .neo-table {
   width: 100%;
+  min-width: 580px;
   border-collapse: separate;
   border-spacing: 0;
   text-align: left;
@@ -1328,6 +1367,37 @@ input[type="number"].form-control {
   margin-top: var(--space-6);
   padding-top: var(--space-4);
   border-top: 1px solid rgba(220, 208, 194, 0.7);
+}
+
+@media (max-width: 520px) {
+  .neo-modal-backdrop {
+    padding: var(--space-2);
+  }
+
+  .neo-modal-card {
+    padding: var(--space-5) var(--space-4);
+    border-radius: var(--radius-xl);
+    max-height: 94vh;
+  }
+
+  .neo-modal-header {
+    margin-bottom: var(--space-4);
+    padding-bottom: var(--space-3);
+  }
+
+  .neo-modal-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .neo-modal-footer {
+    flex-direction: column-reverse;
+    gap: var(--space-2);
+  }
+
+  .neo-modal-footer .btn {
+    width: 100%;
+    justify-content: center;
+  }
 }
 
 /* ==========================================================================

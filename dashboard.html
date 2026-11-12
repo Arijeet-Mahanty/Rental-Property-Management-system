@@ -38,7 +38,7 @@
           </div>
         </div>
 
-        <div style="display: flex; gap: var(--space-3); align-items: center; flex-wrap: wrap;">
+        <div class="dashboard-banner__actions">
           <a href="index.html?openReview=true#feedback" class="btn btn--secondary btn--sm" id="dash-leave-review-btn">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
             <span>Review Us on Landing Page</span>
@@ -125,7 +125,7 @@
           <label class="form-label" for="prop-address">Street Address *</label>
           <input type="text" id="prop-address" class="form-control" placeholder="e.g. 14th Main, 4th Block, Koramangala" required>
         </div>
-        <div style="display: grid; grid-template-columns: 2fr 1fr 1fr; gap: var(--space-3);">
+        <div class="form-row form-row--3-col">
           <div class="form-group">
             <label class="form-label" for="prop-city">City *</label>
             <input type="text" id="prop-city" class="form-control" placeholder="Bengaluru" required>
@@ -214,7 +214,7 @@
             <option value="prop_4">Cyber Greens Residency</option>
           </select>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+        <div class="form-row form-row--2-col">
           <div class="form-group">
             <label class="form-label" for="unit-number">Unit Number / Name *</label>
             <input type="text" id="unit-number" class="form-control" placeholder="e.g. Flat 3B or Villa 4" required>
@@ -224,7 +224,7 @@
             <input type="number" id="unit-rent" class="form-control" placeholder="28500" min="0" required>
           </div>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--space-3);">
+        <div class="form-row form-row--3-col-equal">
           <div class="form-group">
             <label class="form-label" for="unit-beds">Bedrooms</label>
             <input type="number" id="unit-beds" class="form-control" value="2" min="0">
@@ -277,7 +277,7 @@
             <option value="unit_301">Villa A (North) — Greenfield Heights Duplex</option>
           </select>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+        <div class="form-row form-row--2-col">
           <div class="form-group">
             <label class="form-label" for="lease-tenant-name">Tenant Full Name *</label>
             <input type="text" id="lease-tenant-name" class="form-control" placeholder="e.g. Rohan Deshmukh" required>
@@ -287,7 +287,7 @@
             <input type="email" id="lease-tenant-email" class="form-control" placeholder="rohan.deshmukh@example.com" required>
           </div>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+        <div class="form-row form-row--2-col">
           <div class="form-group">
             <label class="form-label" for="lease-start">Start Date *</label>
             <input type="date" id="lease-start" class="form-control" value="2026-11-01" required>
@@ -297,7 +297,7 @@
             <input type="date" id="lease-end" class="form-control" value="2027-10-31" required>
           </div>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+        <div class="form-row form-row--2-col">
           <div class="form-group">
             <label class="form-label" for="lease-rent">Monthly Rent (₹) *</label>
             <input type="number" id="lease-rent" class="form-control" placeholder="28500" required>
@@ -418,7 +418,7 @@
           <label class="form-label" for="ticket-title">Issue Summary *</label>
           <input type="text" id="ticket-title" class="form-control" placeholder="e.g. Water purifier (RO) filter low flow or geyser MCB trip" required>
         </div>
-        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3);">
+        <div class="form-row form-row--2-col">
           <div class="form-group">
             <label class="form-label" for="ticket-category">Category *</label>
             <select id="ticket-category" class="form-control" required>
