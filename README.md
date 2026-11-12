@@ -251,11 +251,11 @@ In your hosting environment dashboard (e.g. Render Environment settings), set:
 #### Step 3: Cloud Build & Start Commands
 - **Build Command**:
   ```bash
-  pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput && python manage.py seed_indian_data
+  pip install -r requirements.txt && python manage.py collectstatic --noinput
   ```
 - **Start Command**:
   ```bash
-  gunicorn rentroll.wsgi:application --bind 0.0.0.0:$PORT --workers 3
+  python manage.py migrate --noinput && python manage.py seed_indian_data && gunicorn rentroll.wsgi:application --bind 0.0.0.0:$PORT --workers 3
   ```
 
 #### Step 4: Set Platform Administrator Password
