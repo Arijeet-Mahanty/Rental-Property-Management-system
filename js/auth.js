@@ -86,7 +86,7 @@ export function initLoginForm() {
 
   setupPasswordToggle(togglePassBtn, passwordInput);
 
-  // Setup quick demo fill dropdown menu (Tenant & Landlord only for regular users)
+  // Setup quick demo fill dropdown menu (Landlord & Tenant only)
   const demoAccountSelect = document.getElementById('demo-account-select');
   if (demoAccountSelect) {
     demoAccountSelect.addEventListener('change', (e) => {
@@ -96,57 +96,38 @@ export function initLoginForm() {
         passwordInput.value = 'Password123!';
         clearFieldError(emailInput, emailError);
         clearFieldError(passwordInput, passwordError);
-        showToast('Credentials Populated', 'Filled Landlord account (Rajesh Sharma).', 'info', 2500);
+        showToast('Credentials Populated', 'Filled Landlord demo account (Rajesh Sharma).', 'info', 2500);
       } else if (selected === 'tenant') {
         emailInput.value = 'tenant@rentroll.com';
         passwordInput.value = 'Password123!';
         clearFieldError(emailInput, emailError);
         clearFieldError(passwordInput, passwordError);
-        showToast('Credentials Populated', 'Filled Tenant account (Priya Iyer).', 'info', 2500);
-      } else if (selected === 'admin') {
-        fillAdminCredentials();
+        showToast('Credentials Populated', 'Filled Tenant demo account (Priya Iyer).', 'info', 2500);
       }
     });
   }
 
-  // Admin direct sign-in helper
-  function fillAdminCredentials() {
-    emailInput.value = 'admin@rentroll.com';
-    passwordInput.value = 'Password123!';
-    clearFieldError(emailInput, emailError);
-    clearFieldError(passwordInput, passwordError);
-    const badge = document.getElementById('admin-login-badge');
-    if (badge) badge.style.display = 'inline-flex';
-    showToast('Platform Admin Mode', 'Platform Administrator credentials configured (Arjun Singhania).', 'info', 3000);
-  }
-
-  // Check URL parameters for direct admin access (?admin=true or ?role=admin)
-  const loginUrlParams = new URLSearchParams(window.location.search);
-  if (loginUrlParams.get('admin') === 'true' || loginUrlParams.get('role') === 'admin') {
-    fillAdminCredentials();
-  }
-
-  // Platform Admin toggle trigger
-  const toggleAdminBtn = document.getElementById('toggle-admin-login-btn');
-  if (toggleAdminBtn) {
-    toggleAdminBtn.addEventListener('click', (e) => {
-      e.preventDefault();
-      fillAdminCredentials();
-    });
-  }
-
   // Backward-compatibility fallback for fill buttons if present
-  const demoAdminBtn = document.getElementById('fill-demo-admin');
   const demoLandlordBtn = document.getElementById('fill-demo-landlord');
   const demoTenantBtn = document.getElementById('fill-demo-tenant');
 
-  if (demoAdminBtn) {
-    demoAdminBtn.addEventListener('click', () => {
-      emailInput.value = 'admin@rentroll.com';
+  if (demoLandlordBtn) {
+    demoLandlordBtn.addEventListener('click', () => {
+      emailInput.value = 'landlord@rentroll.com';
       passwordInput.value = 'Password123!';
       clearFieldError(emailInput, emailError);
       clearFieldError(passwordInput, passwordError);
-      showToast('Credentials Populated', 'Filled Platform Admin demo account (Arjun Singhania).', 'info', 2500);
+      showToast('Credentials Populated', 'Filled Landlord demo account (Rajesh Sharma).', 'info', 2500);
+    });
+  }
+
+  if (demoTenantBtn) {
+    demoTenantBtn.addEventListener('click', () => {
+      emailInput.value = 'tenant@rentroll.com';
+      passwordInput.value = 'Password123!';
+      clearFieldError(emailInput, emailError);
+      clearFieldError(passwordInput, passwordError);
+      showToast('Credentials Populated', 'Filled Tenant demo account (Priya Iyer).', 'info', 2500);
     });
   }
 
@@ -412,27 +393,12 @@ export function initSignupForm() {
     }
   });
 
-  // Setup quick demo fill dropdown menu in signup
+  // Setup quick demo fill dropdown menu in signup (Landlord & Tenant only)
   const signupDemoSelect = document.getElementById('signup-demo-account-select');
   if (signupDemoSelect) {
     signupDemoSelect.addEventListener('change', (e) => {
       const selected = e.target.value;
-      if (selected === 'admin') {
-        nameInput.value = 'Arjun Singhania';
-        emailInput.value = 'admin@rentroll.com';
-        passwordInput.value = 'Password123!';
-        confirmInput.value = 'Password123!';
-        const roleAdmin = document.getElementById('role-admin');
-        if (roleAdmin) roleAdmin.checked = true;
-        termsCheckbox.checked = true;
-        clearFieldError(nameInput, nameError);
-        clearFieldError(emailInput, emailError);
-        clearFieldError(passwordInput, passwordError);
-        clearFieldError(confirmInput, confirmError);
-        clearFieldError(termsCheckbox, termsError);
-        updateStrengthMeterUI(strengthMeter, passwordInput.value);
-        showToast('Form Populated', 'Pre-filled Admin registration profile (Arjun Singhania).', 'info', 2500);
-      } else if (selected === 'landlord') {
+      if (selected === 'landlord') {
         nameInput.value = 'Rajesh Sharma';
         emailInput.value = 'landlord@rentroll.com';
         passwordInput.value = 'Password123!';
