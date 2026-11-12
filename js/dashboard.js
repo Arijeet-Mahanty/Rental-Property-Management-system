@@ -26,6 +26,7 @@ import {
   getAdminInquiries
 } from './api.js';
 import { showToast } from './components.js';
+import { initChatbot, destroyChatbot } from './chatbot.js';
 
 let activeTab = 'overview';
 let cachedStats = null;
@@ -117,6 +118,7 @@ export async function initDashboard() {
 
   if (logoutBtn) {
     logoutBtn.addEventListener('click', async () => {
+      destroyChatbot();
       await logout();
       showToast('Logged out', 'You have been safely signed out.', 'info', 2000);
       setTimeout(() => window.location.href = 'login.html', 400);
@@ -137,6 +139,11 @@ export async function initDashboard() {
 
   // Setup Modals
   setupModals(user);
+
+  // Initialize Corner AI Chatbot Assistant exclusively for authenticated portal members
+  if (user && (user.role === 'tenant' || user.role === 'landlord' || user.role === 'admin')) {
+    initChatbot(user);
+  }
 
   // Initial Data Load
   await refreshDashboardData(user);
@@ -1572,6 +1579,11 @@ function renderPropertiesTab(container, isLandlord, isAdmin) {
     <div class="properties-grid">
       ${cachedProperties.map(prop => `
         <div class="glass-card property-card">
+          ${prop.image_url ? `
+            <div class="property-card__img-wrap" style="height: 140px; border-radius: var(--radius-md); overflow: hidden; margin-bottom: var(--space-3); border: var(--neo-border-subtle); background: var(--color-bg-inset);">
+              <img src="${escapeHtml(prop.image_url)}" alt="${escapeHtml(prop.name)}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.style.display='none';">
+            </div>
+          ` : ''}
           <div>
             ${isAdmin ? `
               <div style="font-size: 11px; color: #5b21b6; font-weight: var(--font-weight-bold); margin-bottom: var(--space-2); display: flex; align-items: center; gap: 4px;">
@@ -2141,6 +2153,14 @@ function openModal(modalId, preselectId = null) {
   if (firstInput) firstInput.focus();
 }
 
+// Expose openModal globally and via custom event for AI Chatbot and other modules
+window.openModal = openModal;
+document.addEventListener('rentroll:open-modal', (e) => {
+  if (e.detail && e.detail.modalId) {
+    openModal(e.detail.modalId);
+  }
+});
+
 function closeModal(modal) {
   if (!modal) return;
   modal.classList.remove('is-open');
@@ -2199,6 +2219,74 @@ function setupModals(user) {
     }
   });
 
+  // Property Image Handling in Add Property Modal
+  let selectedPropertyImage = '';
+  const propImgFile = document.getElementById('prop-image-file');
+  const propImgUrl = document.getElementById('prop-image-url');
+  const propImgPreviewWrap = document.getElementById('prop-image-preview-wrap');
+  const propImgPreview = document.getElementById('prop-image-preview');
+  const btnClearPropImg = document.getElementById('btn-clear-prop-image');
+
+  function updatePropImagePreview(src) {
+    if (src && src.trim()) {
+      selectedPropertyImage = src.trim();
+      if (propImgPreview) propImgPreview.src = selectedPropertyImage;
+      if (propImgPreviewWrap) propImgPreviewWrap.style.display = 'block';
+    } else {
+      selectedPropertyImage = '';
+      if (propImgPreview) propImgPreview.src = '';
+      if (propImgPreviewWrap) propImgPreviewWrap.style.display = 'none';
+      if (propImgUrl) propImgUrl.value = '';
+      if (propImgFile) propImgFile.value = '';
+    }
+  }
+
+  if (propImgFile) {
+    propImgFile.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if (file) {
+        if (file.size > 5 * 1024 * 1024) {
+          showToast('Image Too Large', 'Please select an image file under 5MB.', 'error', 3000);
+          propImgFile.value = '';
+          return;
+        }
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          updatePropImagePreview(event.target.result);
+          if (propImgUrl) propImgUrl.value = '';
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+  }
+
+  if (propImgUrl) {
+    propImgUrl.addEventListener('input', () => {
+      const val = propImgUrl.value.trim();
+      if (val) {
+        updatePropImagePreview(val);
+      } else if (!propImgFile?.files?.length) {
+        updatePropImagePreview('');
+      }
+    });
+  }
+
+  document.querySelectorAll('.prop-preset-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const imgPath = btn.getAttribute('data-img');
+      if (imgPath) {
+        if (propImgUrl) propImgUrl.value = imgPath;
+        updatePropImagePreview(imgPath);
+      }
+    });
+  });
+
+  if (btnClearPropImg) {
+    btnClearPropImg.addEventListener('click', () => {
+      updatePropImagePreview('');
+    });
+  }
+
   // 1. Add Property Form
   const formAddProp = document.getElementById('form-add-property');
   if (formAddProp) {
@@ -2214,11 +2302,13 @@ function setupModals(user) {
           city: formAddProp.querySelector('#prop-city').value,
           state: formAddProp.querySelector('#prop-state').value,
           zip_code: formAddProp.querySelector('#prop-zip').value,
-          property_type: formAddProp.querySelector('#prop-type').value
+          property_type: formAddProp.querySelector('#prop-type').value,
+          image_url: selectedPropertyImage || formAddProp.querySelector('#prop-image-url')?.value?.trim() || undefined
         });
         showToast('Property Added', `Added "${propName}" to your portfolio.`, 'success', 3000);
         closeModal(document.getElementById('modal-add-property'));
         formAddProp.reset();
+        updatePropImagePreview('');
 
         // Switch active tab to properties so the user immediately sees the newly added property
         activeTab = 'properties';

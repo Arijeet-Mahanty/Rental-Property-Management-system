@@ -509,6 +509,20 @@ export async function getAdminInquiries() {
   return res || { inquiries: [], reviews: [] };
 }
 
+/**
+ * Sends a message to the Context-aware AI Assistant endpoint (/api/chatbot).
+ * @param {string} message
+ * @param {Array} [history=[]]
+ * @returns {Promise<{success: boolean, reply: string, action?: Object, suggestions?: Array<string>}>}
+ */
+export async function sendChatMessage(message, history = []) {
+  const res = await request('/chatbot', {
+    method: 'POST',
+    body: { message, history }
+  });
+  return res;
+}
+
 // ----------------------------------------------------------------------------
 // CLIENT-SIDE OFFLINE FALLBACK ENGINE
 // ----------------------------------------------------------------------------
@@ -961,6 +975,61 @@ async function handleOfflineRequest(endpoint, options = {}) {
         { id: 'rev_in_2', name: 'Priya Iyer', role: 'tenant', rating: 5, property_name: 'Flat 4B, Koramangala', title: 'Instant HRA rent receipts with Landlord PAN', comment: 'No more awkward follow-ups for rent receipts at tax submission time. I pay via Google Pay UPI in 30 seconds and instantly download digitally signed HRA receipts for my company declaration.', verified: true, created_at: '2026-10-22T15:20:00.000Z' },
         { id: 'rev_in_3', name: 'Sunita Kulkarni', role: 'landlord', rating: 5, property_name: 'Koregaon Park Duplexes (6 Flats)', title: 'Photo repair triage saved thousands on contractor visits', comment: 'When a tenant reported a geyser issue on Sunday evening, they submitted a video ticket with sound. We identified the MCB trip remotely without paying emergency electrician charges.', verified: true, created_at: '2026-10-24T09:45:00.000Z' }
       ]
+    };
+  }
+
+  if (endpoint.startsWith('/chatbot')) {
+    const body = typeof options.body === 'string' ? JSON.parse(options.body) : (options.body || {});
+    const msg = (body.message || '').toLowerCase();
+    const user = getCurrentUser() || { name: 'Resident', role: 'tenant' };
+
+    let reply = `Hello ${user.name}! I am your RentRoll AI Assistant. How can I help you today?`;
+    let action = null;
+    let suggestions = ['How to pay rent via UPI?', 'Download HRA rent receipt', 'Submit maintenance ticket'];
+
+    if (user.role === 'tenant') {
+      if (msg.includes('pay') || msg.includes('rent') || msg.includes('upi') || msg.includes('due')) {
+        reply = `Hello ${user.name}! Your monthly rent is ₹28,500, due on the 1st of every month via UPI AutoPay or eNACH.\n\nWould you like to authorize this payment now?`;
+        action = { type: 'open_modal', target: 'modal-pay-rent', label: '💳 Authorize ₹28,500 Payment' };
+        suggestions = ['Download HRA rent receipt', 'Submit maintenance ticket', 'When does my lease expire?'];
+      } else if (msg.includes('hra') || msg.includes('tax') || msg.includes('receipt')) {
+        reply = `RentRoll automatically generates digitally signed HRA rent receipts with Landlord PAN (mandatory under Section 10(13A) of the Income Tax Act if rent exceeds ₹1,00,000/yr). You can download them anytime from your Rent Ledger.`;
+        action = { type: 'switch_tab', target: 'payments', label: '📄 Go to Rent Ledger & Receipts' };
+        suggestions = ['How to pay rent via UPI?', 'Submit maintenance ticket', 'Notice period rules'];
+      } else if (msg.includes('repair') || msg.includes('maintenance') || msg.includes('ticket') || msg.includes('fix')) {
+        reply = `Under the Model Tenancy framework, structural and plumbing/electrical issues are coordinated by the landlord. You can submit a repair request for rapid technician dispatch.`;
+        action = { type: 'open_modal', target: 'modal-create-ticket', label: '🔧 Submit Repair Request' };
+        suggestions = ['How to pay rent via UPI?', 'Download HRA rent receipt', 'What are tenant responsibilities?'];
+      } else if (msg.includes('lease') || msg.includes('notice') || msg.includes('terms') || msg.includes('deposit')) {
+        reply = `Your active 11-month lease is registered on RentRoll. Standard notice periods are 30 days, and security deposits are refundable within 7-15 days after inspection.`;
+        action = { type: 'switch_tab', target: 'leases', label: '📑 View My Lease Details' };
+        suggestions = ['How to pay rent via UPI?', 'Download HRA rent receipt', 'Report a maintenance issue'];
+      }
+    } else {
+      if (msg.includes('cashflow') || msg.includes('yield') || msg.includes('rent roll') || msg.includes('revenue')) {
+        reply = `Hello ${user.name}! Your contracted monthly rent roll is ₹11,71,500 with a 94.4% occupancy rate across your properties. You can export complete ledger reports anytime.`;
+        action = { type: 'switch_tab', target: 'payments', label: '📊 Open Rent Ledger & Export CSV' };
+        suggestions = ['Check vacant units', 'Pending maintenance tickets', 'Create new lease'];
+      } else if (msg.includes('unit') || msg.includes('occupancy') || msg.includes('vacan') || msg.includes('door')) {
+        reply = `You have 18 total doors across your properties with 1 vacancy (Flat 6C at Gulmohar Residency). Would you like to add a new door or register a lease?`;
+        action = { type: 'open_modal', target: 'modal-add-unit', label: '🏠 Add New Door / Unit' };
+        suggestions = ['Create new lease agreement', 'Portfolio cashflow & yield', 'Pending maintenance tickets'];
+      } else if (msg.includes('lease') || msg.includes('stamp') || msg.includes('agreement')) {
+        reply = `Residential agreements in India follow the 11-month tenure norm with digital e-Stamping (Karnataka, Maharashtra, Delhi-NCR) and 5-10% standard escalation.`;
+        action = { type: 'open_modal', target: 'modal-create-lease', label: '📑 Create New Lease Agreement' };
+        suggestions = ['Portfolio cashflow & yield', 'Check vacant units', 'Maintenance work orders'];
+      } else if (msg.includes('repair') || msg.includes('maintenance') || msg.includes('ticket')) {
+        reply = `You have active maintenance work orders in triage. Emergency tickets are prioritized for same-day resolution.`;
+        action = { type: 'switch_tab', target: 'maintenance', label: '🔧 Open Maintenance Triage' };
+        suggestions = ['Portfolio cashflow & yield', 'Check vacant units', 'Record rent payment'];
+      }
+    }
+
+    return {
+      success: true,
+      reply,
+      action,
+      suggestions
     };
   }
 

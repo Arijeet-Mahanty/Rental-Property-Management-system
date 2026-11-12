@@ -127,6 +127,7 @@ Rental Property Management system/
 │   ├── api.js                # Fullstack REST API client targeting Django backend (/api/*)
 │   ├── auth.js               # Form validations, demo autofill, and login/signup event handlers
 │   ├── dashboard.js          # Command Center controller (tabs, state, tables, modals)
+│   ├── chatbot.js            # Corner AI Assistant floating widget for tenants & landlords
 │   ├── components.js         # Shared navbar, mobile drawer, footer, and toast notification engine
 │   ├── validation.js         # RFC email regex, strength meter, and ARIA DOM helpers
 │   └── main.js               # Core application initializer and anchor scroll controller
@@ -218,6 +219,7 @@ Available at `http://localhost:3000`.
 | `POST` | `/api/feedback` | Authenticated | Submit customer review (Landlords & Tenants) |
 | `GET` | `/api/admin/users` | Admin | List all registered platform users, roles, phone, and unit counts |
 | `GET` | `/api/admin/inquiries` | Admin | Retrieve landing page contact inquiries and customer reviews |
+| `POST` | `/api/chatbot` | Authenticated (Tenant/Landlord) | Context-aware AI Assistant with Indian Tenancy guidance & direct actions |
 
 ---
 
@@ -237,6 +239,12 @@ Available at `http://localhost:3000`.
 ---
 
 ## 9. Changelog
+
+### Phase 4 & Final Feature — Real-Time Corner AI Assistant & Cloud Deployment
+- **Corner AI Assistant Widget**: Integrated a floating bottom-right AI Chatbot widget (`js/chatbot.js`) built with cream neomorphism tokens. Strictly initialized exclusively after portal authentication for Tenants and Landlords (completely hidden on public landing, login, and signup pages).
+- **Context-Aware Backend Engine (`POST /api/chatbot`)**: Multi-tenant isolated AI assistant with live database awareness (active lease rent, due dates, Landlord PAN requirements, 11-month e-Stamp legal guidelines, occupancy rates, and open repair work orders).
+- **Interactive Direct Action Triggers**: Bot responses embed 1-click modal triggers (e.g. "💳 Authorize ₹28,500 Payment" opening `#modal-pay-rent`, "🔧 Submit Repair Request" opening `#modal-create-ticket`, "🏠 Add New Door" opening `#modal-add-unit`, and tab navigation to the Rent Ledger or Leases view).
+- **Automated Verification**: Added 9 new Django unit tests bringing total test coverage to **50/50 automated unit tests passing** (`Ran 50 tests in 8.037s. OK`).
 
 ### Phase 3 — Production Django Backend Launch & Platform Admin Command Center
 - **Platform Admin Profile & Dashboard Integration**: Added third first-class user profile `admin` (Arjun Singhania, `admin@rentroll.com` / `Password123!`), featuring an Executive Command Center with global financial metrics (Gross Monthly Rent Roll ₹11,04,500 across 18 doors, total users breakdown, live health beacon), a searchable and filterable Users Directory tab, and an Inquiries & Reviews audit center, retaining the identical French Cream Neomorphic styling.

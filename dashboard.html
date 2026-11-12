@@ -150,6 +150,39 @@
             <option value="Condo">Gated Society Flat</option>
           </select>
         </div>
+        <div class="form-group">
+          <label class="form-label">Property Architectural Photo (Optional)</label>
+          <div style="background-color: var(--color-bg-inset); padding: var(--space-3); border-radius: var(--radius-md); border: var(--neo-border-inset); box-shadow: var(--neo-shadow-pressed-sm);">
+            <!-- Image Live Preview Box -->
+            <div id="prop-image-preview-wrap" style="display: none; margin-bottom: var(--space-3); position: relative; border-radius: var(--radius-sm); overflow: hidden; height: 130px; border: var(--neo-border-subtle); background: var(--color-bg-surface);">
+              <img id="prop-image-preview" src="" alt="Property Preview" style="width: 100%; height: 100%; object-fit: cover;">
+              <button type="button" id="btn-clear-prop-image" style="position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,0.65); color: #fff; border: none; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 14px;" title="Remove Photo">&times;</button>
+            </div>
+
+            <!-- Upload File or Enter URL Inputs -->
+            <div style="display: flex; gap: var(--space-2); align-items: center; margin-bottom: var(--space-2); flex-wrap: wrap;">
+              <label for="prop-image-file" class="btn btn--sm btn--outline" style="cursor: pointer; display: inline-flex; align-items: center; gap: 6px; margin: 0;">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                <span>Upload Image File</span>
+                <input type="file" id="prop-image-file" accept="image/png, image/jpeg, image/webp, image/gif" style="display: none;">
+              </label>
+              <span style="font-size: var(--font-size-xs); color: var(--color-text-subtle);">or enter image URL below</span>
+            </div>
+
+            <input type="url" id="prop-image-url" class="form-control" placeholder="https://example.com/property.jpg or assets/indian_modern_villa.jpg" style="font-size: var(--font-size-xs); margin-bottom: var(--space-2);">
+
+            <!-- Quick Preset Architecture Chips -->
+            <div>
+              <div style="font-size: 11px; font-weight: var(--font-weight-bold); color: var(--color-text-subtle); margin-bottom: 6px;">Or pick from curated Indian architectural presets:</div>
+              <div style="display: flex; gap: 6px; flex-wrap: wrap;" id="prop-image-presets">
+                <button type="button" class="btn btn--xs btn--outline prop-preset-btn" data-img="assets/indian_modern_villa.jpg">🏛️ Modern Villa</button>
+                <button type="button" class="btn btn--xs btn--outline prop-preset-btn" data-img="assets/indian_luxury_apartment.jpg">🏢 Luxury High-Rise</button>
+                <button type="button" class="btn btn--xs btn--outline prop-preset-btn" data-img="assets/urban_brownstone.jpg">🏡 Builder Floor</button>
+                <button type="button" class="btn btn--xs btn--outline prop-preset-btn" data-img="assets/tenant_apartment.jpg">🏙️ Metro Duplex</button>
+              </div>
+            </div>
+          </div>
+        </div>
         <div class="neo-modal-footer">
           <button type="button" class="btn btn--ghost btn--sm btn-modal-cancel">Cancel</button>
           <button type="submit" class="btn btn--primary btn--sm">

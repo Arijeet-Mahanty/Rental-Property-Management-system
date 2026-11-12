@@ -827,6 +827,30 @@ def property_detail_view(request, property_id):
         data['units'] = [serialize_unit(u) for u in prop.units.all()]
         return JsonResponse({'success': True, 'data': data})
 
+    elif request.method == 'PUT':
+        if not user or (prop.landlord_id != user.id and user.role != 'admin'):
+            return JsonResponse({'success': False, 'message': 'Unauthorized to edit this property.'}, status=403)
+        try:
+            body = json.loads(request.body)
+        except Exception:
+            body = request.POST
+        if 'name' in body and body['name'].strip():
+            prop.name = body['name'].strip()
+        if 'address' in body:
+            prop.address = body['address'].strip()
+        if 'city' in body:
+            prop.city = body['city'].strip()
+        if 'state' in body:
+            prop.state = body['state'].strip()
+        if 'zip_code' in body:
+            prop.zip_code = body['zip_code'].strip()
+        if 'property_type' in body:
+            prop.property_type = body['property_type']
+        if 'image_url' in body:
+            prop.image_url = body['image_url'].strip()
+        prop.save()
+        return JsonResponse({'success': True, 'data': serialize_property(prop)})
+
     elif request.method == 'DELETE':
         if not user or (prop.landlord_id != user.id and user.role != 'admin'):
             return JsonResponse({'success': False, 'message': 'Unauthorized to delete this property.'}, status=403)
@@ -1662,5 +1686,276 @@ def admin_inquiries_view(request):
             'created_at': m.created_at.isoformat() if m.created_at else None
         } for m in inquiries],
         'reviews': [serialize_review(r) for r in reviews]
+    })
+
+
+@csrf_exempt
+def chatbot_view(request):
+    """
+    POST /api/chatbot
+    Context-aware AI Assistant endpoint for authenticated Tenants and Landlords.
+    Provides guidance on rent payments (UPI/eNACH), HRA receipts (Sec 10(13A)),
+    maintenance triage, lease agreements, security deposits, and real-time portfolio metrics.
+    """
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'error': 'Method not allowed. Only POST supported.'}, status=405)
+
+    user = get_authenticated_user(request)
+    if not user:
+        return JsonResponse({'success': False, 'error': 'Authentication required. Please sign in to access the AI assistant.'}, status=401)
+
+    if user.role not in ('tenant', 'landlord', 'admin'):
+        return JsonResponse({'success': False, 'error': 'Access restricted to tenants and landlords.'}, status=403)
+
+    try:
+        body = json.loads(request.body.decode('utf-8')) if request.body else {}
+    except Exception:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON body.'}, status=400)
+
+    raw_message = body.get('message', '').strip()
+    if not raw_message:
+        return JsonResponse({'success': False, 'error': 'Message content cannot be empty.'}, status=400)
+
+    message = raw_message[:1000]
+    msg_lower = message.lower()
+
+    role = user.role
+    reply = ""
+    action = None
+    suggestions = []
+
+    # 1. Tenant contextual query processing
+    if role == 'tenant':
+        active_lease = Lease.objects.filter(tenant=user, status='active').select_related('unit', 'unit__property', 'landlord').first()
+        open_tickets = MaintenanceTicket.objects.filter(tenant=user, status__in=['open', 'in_progress']).order_by('-created_at')
+
+        # Pay rent / UPI / due date queries
+        if any(w in msg_lower for w in ['pay', 'payment', 'upi', 'enach', 'rent due', 'how to pay', 'pending rent', 'autopay', 'due date']):
+            if active_lease:
+                rent_formatted = f"₹{active_lease.rent_amount:,.0f}"
+                unit_label = f"{active_lease.unit.unit_number} ({active_lease.unit.property.name})"
+                reply = (
+                    f"Hello {user.name}! Your monthly rent for {unit_label} is **{rent_formatted}**, "
+                    f"due on the 1st of every month.\n\n"
+                    f"You can pay instantly using:\n"
+                    f"• **UPI AutoPay** (Google Pay, PhonePe, Paytm, BHIM) — Zero transaction fees & instant verification.\n"
+                    f"• **eNACH / NPCI Mandate** — Direct bank auto-debit on rent day.\n"
+                    f"• **NetBanking / IMPS / Debit Card**.\n\n"
+                    f"Would you like to complete your rent payment now?"
+                )
+                action = {'type': 'open_modal', 'target': 'modal-pay-rent', 'label': f'💳 Authorize {rent_formatted} Payment'}
+            else:
+                reply = (
+                    f"Hello {user.name}! You do not currently have an active lease linked to your account. "
+                    f"Once your landlord registers your 11-month agreement, you will be able to pay via UPI or eNACH directly here."
+                )
+            suggestions = ["How to download HRA rent receipt?", "Report a maintenance issue", "When does my lease expire?"]
+
+        # HRA rent receipt / tax exemption / Section 10(13A) queries
+        elif any(w in msg_lower for w in ['hra', 'tax', 'receipt', '80gg', '10(13a)', 'form 16', 'pan', 'voucher', 'receipts']):
+            landlord_pan_info = "Landlord PAN is mandatory on rent receipts if your annual rent exceeds ₹1,00,000 (Section 10(13A) of the Income Tax Act)."
+            if active_lease:
+                unit_label = f"{active_lease.unit.unit_number}, {active_lease.unit.property.name}"
+                reply = (
+                    f"Yes {user.name}, RentRoll automatically generates **digitally signed, HRA-compliant rent receipts** "
+                    f"for all payments made through the platform!\n\n"
+                    f"**HRA Receipt Checklist:**\n"
+                    f"• Property: {unit_label}\n"
+                    f"• Monthly Rent: ₹{active_lease.rent_amount:,.0f}\n"
+                    f"• Landlord: {active_lease.landlord.name}\n"
+                    f"• {landlord_pan_info}\n\n"
+                    f"You can download your official rent receipt vouchers anytime from the **Rent Ledger** tab with 1 click."
+                )
+            else:
+                reply = (
+                    f"RentRoll generates official HRA-compliant rent receipts eligible under Section 10(13A) of the Income Tax Act. "
+                    f"{landlord_pan_info} You can view and download all past receipts from your Rent Ledger tab."
+                )
+            action = {'type': 'switch_tab', 'target': 'payments', 'label': '📄 Go to Rent Ledger & Receipts'}
+            suggestions = ["How to pay rent via UPI?", "Report a maintenance issue", "Notice period rules"]
+
+        # Maintenance / Repairs / Tickets queries
+        elif any(w in msg_lower for w in ['repair', 'maintenance', 'fix', 'leak', 'geyser', 'ro', 'filter', 'water', 'plumber', 'electrician', 'ac', 'fan', 'switch', 'damage', 'ticket', 'repairs']):
+            open_count = open_tickets.count()
+            status_text = f"You currently have **{open_count} open maintenance request(s)**." if open_count > 0 else "You currently have no open repair tickets."
+            reply = (
+                f"Under the Indian Model Tenancy framework, structural and major appliance maintenance "
+                f"(such as water supply pipelines, geyser wiring, and external seepage) is handled by the landlord, "
+                f"while day-to-day consumable repairs are tenant-coordinated.\n\n"
+                f"{status_text}\n\n"
+                f"To request a technician visit, submit a ticket with a description and priority level. "
+                f"Emergency tickets (e.g. major water leak or MCB failure) receive priority 2-hour contractor dispatch."
+            )
+            action = {'type': 'open_modal', 'target': 'modal-create-ticket', 'label': '🔧 Submit Repair Request'}
+            suggestions = ["How to pay rent via UPI?", "Download HRA rent receipt", "What are tenant responsibilities?"]
+
+        # Lease terms / Agreement / Notice period / Deposit refund
+        elif any(w in msg_lower for w in ['lease', 'agreement', 'terms', 'notice', 'deposit', 'vacate', 'refund', 'stamp', 'period', 'escalation', 'expire']):
+            if active_lease:
+                start_str = active_lease.start_date.strftime('%d %b %Y')
+                end_str = active_lease.end_date.strftime('%d %b %Y')
+                deposit_formatted = f"₹{active_lease.deposit_amount:,.0f}" if active_lease.deposit_amount else "N/A"
+                terms_notes = active_lease.terms or "Standard 11-month registered agreement with UPI autopay."
+                reply = (
+                    f"Here are the key details of your active rental agreement:\n\n"
+                    f"• **Unit**: {active_lease.unit.unit_number} ({active_lease.unit.property.name})\n"
+                    f"• **Term**: {start_str} to {end_str}\n"
+                    f"• **Monthly Rent**: ₹{active_lease.rent_amount:,.0f}\n"
+                    f"• **Security Deposit**: {deposit_formatted}\n"
+                    f"• **Terms**: {terms_notes}\n\n"
+                    f"**Notice Period & Move-Out Norms:**\n"
+                    f"Standard rental agreements in India typically specify a **30-day notice period**. "
+                    f"Upon key handover, your security deposit is refundable within 7 to 15 days, "
+                    f"subject to final utility bill settlement and excluding normal wear and tear."
+                )
+            else:
+                reply = (
+                    f"In India, residential rental agreements are typically drawn for 11 months to comply with the Registration Act. "
+                    f"Security deposits generally range from 2 to 3 months' rent in North India and 5 to 10 months in Bengaluru/Mumbai. "
+                    f"Notice periods are usually 30 days before moving out."
+                )
+            action = {'type': 'switch_tab', 'target': 'leases', 'label': '📑 View My Lease Details'}
+            suggestions = ["How to pay rent via UPI?", "Download HRA rent receipt", "Report a maintenance issue"]
+
+        # General greetings or fallback
+        elif any(w in msg_lower for w in ['hi', 'hello', 'hey', 'namaste', 'help', 'who are you', 'what can you do', 'good morning', 'good afternoon', 'start']):
+            unit_info = f"Flat {active_lease.unit.unit_number}" if active_lease else "your home"
+            reply = (
+                f"Namaste {user.name}! 🙏 I am your **RentRoll Resident AI Assistant**, here to assist with {unit_info}.\n\n"
+                f"I can help you with:\n"
+                f"• **Rent Payments** — Checking dues & UPI/eNACH AutoPay setup.\n"
+                f"• **HRA Rent Receipts** — Downloading digitally signed receipts for Section 10(13A) tax exemption.\n"
+                f"• **Maintenance Requests** — Submitting plumbing, electrical, or appliance repair tickets.\n"
+                f"• **Lease Agreement** — Checking dates, notice periods, and security deposit terms.\n\n"
+                f"What would you like assistance with today?"
+            )
+            suggestions = ["💳 Pay upcoming rent", "📄 Download HRA receipt", "🔧 Report repair issue", "📑 Check lease terms"]
+
+        else:
+            reply = (
+                f"Thank you for reaching out, {user.name}. As your RentRoll Resident Assistant, "
+                f"I can help you pay rent online via UPI, download official HRA tax receipts, "
+                f"file maintenance tickets for prompt technician dispatch, or check your 11-month lease terms.\n\n"
+                f"Could you please specify which of these topics you'd like guidance on?"
+            )
+            suggestions = ["How to pay rent via UPI?", "Download HRA rent receipt", "Submit a maintenance ticket", "Notice period rules"]
+
+    # 2. Landlord contextual query processing
+    elif role == 'landlord':
+        props = Property.objects.filter(landlord=user)
+        props_count = props.count()
+        units = Unit.objects.filter(property__landlord=user)
+        total_doors = units.count()
+        occupied_doors = units.filter(status='occupied').count()
+        vacant_doors = units.filter(status='vacant').count()
+        occupancy_pct = round((occupied_doors / total_doors * 100), 1) if total_doors > 0 else 0
+        leases = Lease.objects.filter(landlord=user, status='active')
+        active_leases_count = leases.count()
+        monthly_roll = sum(clean_decimal(l.rent_amount) for l in leases)
+        open_tickets = MaintenanceTicket.objects.filter(landlord=user, status__in=['open', 'in_progress'])
+
+        # Rent roll / cashflow / collections / payments
+        if any(w in msg_lower for w in ['cashflow', 'rent roll', 'collection', 'revenue', 'collected', 'income', 'yield', 'arrears', 'ledger']):
+            reply = (
+                f"Hello {user.name}! Here is your current portfolio financial overview:\n\n"
+                f"• **Contracted Monthly Rent Roll**: ₹{monthly_roll:,.0f}\n"
+                f"• **Active Leases**: {active_leases_count} across {total_doors} doors\n"
+                f"• **Occupancy Rate**: {occupancy_pct}% ({occupied_doors} occupied, {vacant_doors} vacant)\n"
+                f"• **Payment Channels Active**: UPI AutoPay, eNACH NPCI Mandates, and Direct NetBanking.\n\n"
+                f"You can export your complete audit ledger for your Chartered Accountant (CA) from the **Rent Ledger** tab."
+            )
+            action = {'type': 'switch_tab', 'target': 'payments', 'label': '📊 Open Rent Ledger & Export CSV'}
+            suggestions = ["Check vacant units", "Pending maintenance tickets", "Create a new lease"]
+
+        # Occupancy / Vacancy / Units / Add Unit
+        elif any(w in msg_lower for w in ['occupancy', 'vacant', 'vacancy', 'units', 'doors', 'add unit', 'new unit', 'available']):
+            vacant_units = units.filter(status='vacant')
+            vacant_list = ", ".join(f"{u.unit_number} ({u.property.name})" for u in vacant_units[:4]) if vacant_units.exists() else "None (100% occupied!)"
+            reply = (
+                f"Your portfolio currently spans **{props_count} properties** and **{total_doors} total doors**:\n\n"
+                f"• **Occupied Doors**: {occupied_doors} ({occupancy_pct}% occupancy)\n"
+                f"• **Vacant Doors**: {vacant_doors}\n"
+                f"• **Current Vacancies**: {vacant_list}\n\n"
+                f"Would you like to add a new door or register a lease for an incoming tenant?"
+            )
+            action = {'type': 'open_modal', 'target': 'modal-add-unit', 'label': '🏠 Add New Door / Unit'}
+            suggestions = ["Create new lease agreement", "Portfolio cashflow & yield", "Pending maintenance tickets"]
+
+        # Leases / New Lease / Agreement / e-Stamp / Escalation
+        elif any(w in msg_lower for w in ['lease', 'agreement', 'new lease', 'e-stamp', 'stamp duty', 'escalation', 'tenant screening', 'contract']):
+            reply = (
+                f"Under the Model Tenancy Act and Indian state registration laws (such as Karnataka and Maharashtra Stamp Acts):\n\n"
+                f"• **11-Month Agreements**: Standard residential tenure avoiding mandatory sub-registrar registration charges.\n"
+                f"• **e-Stamping**: Karnataka (e-Stamping portal), Maharashtra (IGR Gras), and Delhi-NCR support 100% digital stamp duty.\n"
+                f"• **Escalation**: Standard escalation is 5% to 10% per year.\n"
+                f"• **Active Leases in RentRoll**: You have **{active_leases_count} active registered lease(s)**.\n\n"
+                f"Ready to bind a new tenant agreement?"
+            )
+            action = {'type': 'open_modal', 'target': 'modal-create-lease', 'label': '📑 Create New Lease Agreement'}
+            suggestions = ["Portfolio cashflow & yield", "Check vacant units", "Maintenance work orders"]
+
+        # Maintenance / Repairs / Work orders
+        elif any(w in msg_lower for w in ['repair', 'maintenance', 'tickets', 'triage', 'plumber', 'electrician', 'technician', 'work order']):
+            open_count = open_tickets.count()
+            high_count = open_tickets.filter(priority='high').count()
+            reply = (
+                f"You have **{open_count} open maintenance ticket(s)** across your properties "
+                f"({high_count} marked high urgency).\n\n"
+                f"RentRoll provides real-time contractor dispatch triage with photo repair logs. "
+                f"Technicians can be scheduled through local verified providers (such as Urban Company or society maintenance teams)."
+            )
+            action = {'type': 'switch_tab', 'target': 'maintenance', 'label': '🔧 Open Maintenance Triage'}
+            suggestions = ["Portfolio cashflow & yield", "Check vacant units", "Record offline rent payment"]
+
+        # Record payment
+        elif any(w in msg_lower for w in ['record payment', 'offline payment', 'cash payment', 'cheque', 'received rent']):
+            reply = (
+                f"When a tenant pays via direct bank transfer, cheque, or cash counterfoil outside UPI AutoPay, "
+                f"you can record the transaction manually to keep your rent roll synchronized and instantly issue an HRA receipt."
+            )
+            action = {'type': 'open_modal', 'target': 'modal-record-payment', 'label': '💳 Record Rent Payment'}
+            suggestions = ["Portfolio cashflow & yield", "Check vacant units", "Create new lease agreement"]
+
+        # Greetings & overview
+        elif any(w in msg_lower for w in ['hi', 'hello', 'hey', 'namaste', 'help', 'who are you', 'what can you do', 'good morning', 'good afternoon', 'start']):
+            reply = (
+                f"Namaste {user.name}! 🙏 I am your **RentRoll Portfolio AI Advisor**.\n\n"
+                f"I monitor your **{props_count} properties** and **{total_doors} doors** in real-time. I can help you with:\n"
+                f"• **Rent Roll & Cashflow** — Monthly yield, collection rates, and UPI AutoPay settlement.\n"
+                f"• **Door & Unit Inventory** — Vacancy alerts, adding doors, and unit rent rates.\n"
+                f"• **Lease Management** — 11-month e-Stamp agreements, escalation, and tenant onboarding.\n"
+                f"• **Maintenance Dispatch** — Prioritizing urgent repair tickets and tracking contractor expenses.\n\n"
+                f"What would you like to review right now?"
+            )
+            suggestions = ["📊 Monthly rent roll", "🏠 Check vacant units", "📑 Create new lease", "🔧 Open repair triage"]
+
+        else:
+            reply = (
+                f"Hello {user.name}! As your RentRoll Landlord Advisor, I can analyze your portfolio cashflow, "
+                f"verify tenant payment status, guide you on 11-month e-Stamp legal clauses, "
+                f"or help dispatch maintenance contractors across your {total_doors} units.\n\n"
+                f"How can I assist your property operations today?"
+            )
+            suggestions = ["📊 Monthly rent roll", "🏠 Check vacant units", "📑 Create new lease", "🔧 Open repair triage"]
+
+    # 3. Admin processing
+    else:
+        total_users = User.objects.count()
+        total_props = Property.objects.count()
+        total_units = Unit.objects.count()
+        reply = (
+            f"Hello Admin {user.name}! You are in the Platform Command Center.\n\n"
+            f"• **Registered Users**: {total_users}\n"
+            f"• **Total Properties**: {total_props}\n"
+            f"• **Total Doors**: {total_units}\n\n"
+            f"How can I assist your platform operations?"
+        )
+        suggestions = ["Manage users directory", "View system health", "Check active leases"]
+
+    return JsonResponse({
+        'success': True,
+        'reply': reply,
+        'action': action,
+        'suggestions': suggestions
     })
 

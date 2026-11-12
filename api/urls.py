@@ -47,5 +47,8 @@ urlpatterns = [
     # Admin Command Center endpoints
     re_path(r'^admin/users/?$', views.admin_users_view, name='api_admin_users'),
     re_path(r'^admin/inquiries/?$', views.admin_inquiries_view, name='api_admin_inquiries'),
+
+    # Context-aware AI Assistant
+    re_path(r'^chatbot/?$', views.chatbot_view, name='api_chatbot'),
 ]
 

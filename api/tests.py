@@ -623,6 +623,53 @@ class IndianDemoDataPersistenceTests(TestCase):
         self.assertFalse(Property.objects.filter(id=prop_id).exists())
         self.assertFalse(Unit.objects.filter(id=unit_id).exists())
 
+    def test_landlord_creates_property_with_custom_image_url(self):
+        """Landlord can add a new property with a custom image URL."""
+        custom_img = 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00'
+        res = self.client.post('/api/properties', {
+            'name': 'Prestige Golfshire Luxury Villas',
+            'address': 'Nandi Hills Road',
+            'city': 'Bengaluru',
+            'state': 'KA',
+            'zip_code': '562164',
+            'property_type': 'Independent Villa/Duplex',
+            'image_url': custom_img
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+
+        self.assertEqual(res.status_code, 201)
+        prop_id = res.json().get('data', {}).get('id')
+        prop = Property.objects.get(id=prop_id)
+        self.assertEqual(prop.image_url, custom_img)
+
+    def test_admin_creates_property_with_uploaded_data_url_image(self):
+        """Platform Admin can add a new property with an uploaded image data URL."""
+        data_url_img = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg=='
+        res = self.client.post('/api/properties', {
+            'name': 'Hiranandani Fortune City',
+            'address': 'Panvel Highway',
+            'city': 'Mumbai',
+            'state': 'MH',
+            'zip_code': '410206',
+            'property_type': 'Apartment Society',
+            'image_url': data_url_img
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.admin_token}')
+
+        self.assertEqual(res.status_code, 201)
+        prop_id = res.json().get('data', {}).get('id')
+        prop = Property.objects.get(id=prop_id)
+        self.assertEqual(prop.image_url, data_url_img)
+
+    def test_update_property_image_via_put(self):
+        """Landlord can update property image via PUT /api/properties/<id>."""
+        new_img = 'assets/indian_luxury_apartment.jpg'
+        res = self.client.put('/api/properties/prop_1', {
+            'image_url': new_img
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+
+        self.assertEqual(res.status_code, 200)
+        prop = Property.objects.get(id='prop_1')
+        self.assertEqual(prop.image_url, new_img)
+
     def test_robust_fallback_add_unit_and_lease_creation(self):
         # Unit creation without explicit property falls back to landlord's existing property
         res_unit = self.client.post('/api/units', {
@@ -788,6 +835,117 @@ class IndianDemoDataPersistenceTests(TestCase):
         data = res.json()
         self.assertFalse(data.get('success'))
         self.assertIn('Invalid payment signature', data.get('message', ''))
+
+    # -------------------------------------------------------------------------
+    # AI ASSISTANT CHATBOT INTEGRATION TESTS
+    # -------------------------------------------------------------------------
+
+    def test_chatbot_unauthenticated_rejected(self):
+        """Unauthenticated requests to AI chatbot endpoint are rejected with 401."""
+        res = self.client.post('/api/chatbot', {'message': 'Hello'}, content_type='application/json')
+        self.assertEqual(res.status_code, 401)
+        self.assertFalse(res.json().get('success'))
+
+    def test_chatbot_invalid_empty_message_rejected(self):
+        """Empty or whitespace-only messages are rejected with 400."""
+        res = self.client.post('/api/chatbot', {'message': '   '}, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.priya_token}')
+        self.assertEqual(res.status_code, 400)
+        self.assertFalse(res.json().get('success'))
+
+    def test_chatbot_method_not_allowed_for_get(self):
+        """GET request to chatbot endpoint returns 405 Method Not Allowed."""
+        res = self.client.get('/api/chatbot', HTTP_AUTHORIZATION=f'Bearer {self.priya_token}')
+        self.assertEqual(res.status_code, 405)
+
+    def test_chatbot_tenant_rent_payment_query(self):
+        """Tenant asking about rent payment receives active lease details and Pay Rent modal trigger."""
+        res = self.client.post('/api/chatbot', {
+            'message': 'How do I pay my rent and when is it due?'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.priya_token}')
+
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        reply = data.get('reply', '')
+        self.assertIn('₹28,500', reply)
+        self.assertIn('Flat 4B', reply)
+        self.assertIn('UPI AutoPay', reply)
+        self.assertIsNotNone(data.get('action'))
+        self.assertEqual(data.get('action', {}).get('type'), 'open_modal')
+        self.assertEqual(data.get('action', {}).get('target'), 'modal-pay-rent')
+
+    def test_chatbot_tenant_hra_receipt_query(self):
+        """Tenant asking about HRA receipt receives Sec 10(13A) PAN compliance and ledger trigger."""
+        res = self.client.post('/api/chatbot', {
+            'message': 'How can I download my HRA rent receipt for tax saving?'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.priya_token}')
+
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        reply = data.get('reply', '')
+        self.assertIn('HRA', reply)
+        self.assertIn('10(13A)', reply)
+        self.assertIn('PAN', reply)
+        self.assertEqual(data.get('action', {}).get('type'), 'switch_tab')
+        self.assertEqual(data.get('action', {}).get('target'), 'payments')
+
+    def test_chatbot_tenant_maintenance_ticket_query(self):
+        """Tenant reporting repair issue receives maintenance triage guidance and ticket modal action."""
+        res = self.client.post('/api/chatbot', {
+            'message': 'Water purifier filter leaking in kitchen, need a plumber'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.priya_token}')
+
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        self.assertEqual(data.get('action', {}).get('type'), 'open_modal')
+        self.assertEqual(data.get('action', {}).get('target'), 'modal-create-ticket')
+
+    def test_chatbot_landlord_cashflow_query(self):
+        """Landlord asking about cashflow receives contracted rent roll metrics and ledger CSV trigger."""
+        res = self.client.post('/api/chatbot', {
+            'message': 'Show my portfolio cashflow and monthly rent roll yield'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        reply = data.get('reply', '')
+        self.assertIn('Contracted Monthly Rent Roll', reply)
+        self.assertIn('Active Leases', reply)
+        self.assertEqual(data.get('action', {}).get('type'), 'switch_tab')
+        self.assertEqual(data.get('action', {}).get('target'), 'payments')
+
+    def test_chatbot_landlord_occupancy_query(self):
+        """Landlord checking vacancy receives occupancy breakdown and Add Unit action."""
+        res = self.client.post('/api/chatbot', {
+            'message': 'What is my current occupancy and do I have vacant units?'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        reply = data.get('reply', '')
+        self.assertIn('Occupied Doors', reply)
+        self.assertEqual(data.get('action', {}).get('type'), 'open_modal')
+        self.assertEqual(data.get('action', {}).get('target'), 'modal-add-unit')
+
+    def test_chatbot_landlord_lease_agreement_query(self):
+        """Landlord inquiring about agreements receives 11-month e-Stamp rules and lease creation action."""
+        res = self.client.post('/api/chatbot', {
+            'message': 'How does digital e-Stamp agreement signing work for new tenants?'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        reply = data.get('reply', '')
+        self.assertIn('11-Month Agreements', reply)
+        self.assertIn('e-Stamping', reply)
+        self.assertEqual(data.get('action', {}).get('type'), 'open_modal')
+        self.assertEqual(data.get('action', {}).get('target'), 'modal-create-lease')
+
 
 
 
