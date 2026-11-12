@@ -53,8 +53,12 @@ if not JWT_SECRET:
     raise RuntimeError("JWT_SECRET environment variable must be set when running in production (DEBUG=False).")
 
 # Allowed Hosts
-allowed_hosts_raw = os.environ.get('DJANGO_ALLOWED_HOSTS', '*' if DEBUG else 'localhost,127.0.0.1')
+allowed_hosts_raw = os.environ.get('DJANGO_ALLOWED_HOSTS', '*' if DEBUG else '.onrender.com,localhost,127.0.0.1,rentroll-zkee.onrender.com')
 ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_raw.split(',') if h.strip()]
+if '.onrender.com' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('.onrender.com')
+if 'rentroll-zkee.onrender.com' not in ALLOWED_HOSTS:
+    ALLOWED_HOSTS.append('rentroll-zkee.onrender.com')
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -277,6 +281,8 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:3000',
     'http://localhost:5500',
     'http://127.0.0.1:5500',
+    'https://rentroll-zkee.onrender.com',
+    'https://*.onrender.com',
 ]
 
 csrf_trusted_env = os.environ.get('CSRF_TRUSTED_ORIGINS')

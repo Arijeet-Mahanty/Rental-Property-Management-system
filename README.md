@@ -1,6 +1,12 @@
 # RentRoll — Property Management for Independent Landlords
 
-> A high-performance, cream neomorphic property management web application designed specifically for independent landlords managing 1 to 50 units and their tenants.
+[![Live Production](https://img.shields.io/badge/Live%20Website-rentroll--zkee.onrender.com-4338ca?style=for-the-badge&logo=render&logoColor=white)](https://rentroll-zkee.onrender.com/)
+[![Backend](https://img.shields.io/badge/Backend-Django%205.2%20REST-092E20?style=for-the-badge&logo=django&logoColor=white)](https://rentroll-zkee.onrender.com/)
+[![Database](https://img.shields.io/badge/Database-Neon%20Serverless%20Postgres-00e599?style=for-the-badge&logo=postgresql&logoColor=black)](https://rentroll-zkee.onrender.com/)
+[![Tests](https://img.shields.io/badge/Tests-61%2F61%20Passing-success?style=for-the-badge)](https://rentroll-zkee.onrender.com/)
+
+> 🌐 **Live Website**: [https://rentroll-zkee.onrender.com/](https://rentroll-zkee.onrender.com/)  
+> A high-performance, cream neomorphic property management web application designed specifically for independent landlords managing 1 to 50 units and their tenants. Powered by Django 5.2, Django REST Framework, Neon Serverless PostgreSQL, and hosted live on Render.
 
 ---
 
@@ -182,7 +188,25 @@ Rental Property Management system/
 
 ---
 
-## 6. How to Run Locally
+## 6. Live Production Deployment & Quick Links
+
+RentRoll is deployed and running live in production on Render powered by a cloud-managed Neon Serverless PostgreSQL database:
+
+- 🚀 **Live Production Website**: [https://rentroll-zkee.onrender.com/](https://rentroll-zkee.onrender.com/)
+- 🏠 **Landing Page**: [https://rentroll-zkee.onrender.com/index.html](https://rentroll-zkee.onrender.com/index.html)
+- 🔐 **Authentication Portal**: [https://rentroll-zkee.onrender.com/login.html](https://rentroll-zkee.onrender.com/login.html)
+- 📊 **Unified Command Center**: [https://rentroll-zkee.onrender.com/dashboard.html](https://rentroll-zkee.onrender.com/dashboard.html)
+- ⚙️ **Django Administration**: [https://rentroll-zkee.onrender.com/admin](https://rentroll-zkee.onrender.com/admin)
+- 🩺 **Cloud Health Check**: [https://rentroll-zkee.onrender.com/health](https://rentroll-zkee.onrender.com/health) (JSON diagnostics: [`/api/health`](https://rentroll-zkee.onrender.com/api/health))
+
+### Pre-Configured Demo Accounts (1-Click Login on Live Site)
+- **Admin**: `admin@rentroll.com` / `Password123!` (Arjun Singhania — Platform Administrator)
+- **Landlord**: `landlord@rentroll.com` / `Password123!` (Rajesh Sharma — Multi-Property Owner)
+- **Tenant**: `tenant@rentroll.com` / `Password123!` (Priya Iyer — Resident)
+
+---
+
+## 7. How to Run Locally
 
 ### Option A: Django Fullstack Server (Recommended)
 
@@ -271,7 +295,7 @@ python manage.py set_admin_password "YourSecretPasswordHere"
 
 ---
 
-## 7. REST API Endpoints Specification
+## 8. REST API Endpoints Specification
 
 | Method | Endpoint | Access | Purpose |
 |---|---|---|---|
@@ -308,7 +332,7 @@ python manage.py set_admin_password "YourSecretPasswordHere"
 
 ---
 
-## 8. Design System Notes (Cream Neomorphism Edition)
+## 9. Design System Notes (Cream Neomorphism Edition)
 
 - **Canvas Base**: `#f5efe6` (Warm French Cream / Linen).
 - **Surface Elevation (Extruded)**: `#f8f3ec` &rarr; `#faf6f0`.
@@ -323,9 +347,10 @@ python manage.py set_admin_password "YourSecretPasswordHere"
 
 ---
 
-## 9. Changelog
+## 10. Changelog
 
 ### Phase 5 — Production Launch, Universal Responsiveness & Deployment Hardening
+- **Production Cloud Release on Render**: Successfully deployed RentRoll live at [https://rentroll-zkee.onrender.com/](https://rentroll-zkee.onrender.com/) with automatic Neon Serverless PostgreSQL connectivity, WhiteNoise cache-manifest asset delivery, and sub-10ms health monitoring.
 - **Universal Multi-Device Responsiveness**:
   - Mobile Phones (320px–480px): Redesigned modal forms with `.form-row--2-col`, `.form-row--3-col`, and `.form-row--3-col-equal` so inputs collapse into full-width touch-friendly layouts. Touch-friendly modal padding and footer buttons.
   - Tablets & Phablets (481px–768px): Replaced hardcoded inline grids with `.dash-split-grid` across Admin, Landlord, and Tenant views, ensuring automatic stacking without column squishing.
