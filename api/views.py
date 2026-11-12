@@ -327,20 +327,40 @@ def health_check_view(request):
     engine = connection.settings_dict.get('ENGINE', '').split('.')[-1]
 
     db_ok = True
+    conn_ok = True
+    conn_error = None
+    query_error = None
+
+    try:
+        connection.ensure_connection()
+    except Exception as e:
+        conn_ok = False
+        conn_error = str(e)
+
     try:
         User.objects.exists()
-    except Exception:
+    except Exception as e:
         db_ok = False
+        query_error = str(e)
 
-    return JsonResponse({
-        'status': 'healthy' if db_ok else 'degraded',
+    payload = {
+        'status': 'healthy' if (db_ok and conn_ok) else 'degraded',
         'application': 'RentRoll Property Management System',
         'phase': 'Phase 5 (Production Release & Cloud Deployment)',
         'database': f"{engine} (relational)",
         'database_status': 'connected' if db_ok else 'unreachable',
         'region': 'India (INR)',
         'timestamp': timezone.now().isoformat()
-    }, status=200 if db_ok else 503)
+    }
+
+    if not db_ok or not conn_ok:
+        payload['diagnostics'] = {
+            'connection_ok': conn_ok,
+            'connection_error': conn_error,
+            'query_error': query_error,
+        }
+
+    return JsonResponse(payload, status=200 if db_ok else 503)
 
 
 @csrf_exempt
