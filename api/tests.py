@@ -86,7 +86,14 @@ class RentRollBackendPhase3Tests(TestCase):
         self.assertEqual(res.status_code, 200)
         data = res.json()
         self.assertEqual(data.get('status'), 'healthy')
-        self.assertIn('Phase 3', data.get('phase'))
+        self.assertIn('Phase 5', data.get('phase'))
+        self.assertEqual(data.get('database_status'), 'connected')
+
+    def test_cloud_health_probes(self):
+        res_root = self.client.get('/health')
+        self.assertEqual(res_root.status_code, 200)
+        res_z = self.client.get('/healthz')
+        self.assertEqual(res_z.status_code, 200)
 
     # 2. Authentication
     def test_landlord_login_success(self):
@@ -313,12 +320,12 @@ class RentRollBackendPhase3Tests(TestCase):
 
     # 10. Frontend HTML & Asset Serving
     def test_frontend_serving(self):
-        for route in ['/', '/index.html', '/dashboard.html', '/login.html', '/signup.html']:
+        for route in ['/', '/index.html', '/dashboard.html', '/login.html', '/signup.html', '/reset-password.html', '/reset-password']:
             res = self.client.get(route)
             self.assertEqual(res.status_code, 200)
             self.assertIn('text/html', res.headers.get('Content-Type'))
 
-        for asset in ['/css/variables.css', '/js/api.js', '/assets/logo.svg']:
+        for asset in ['/css/variables.css', '/js/api.js', '/assets/logo.svg', '/dashboard/css/variables.css']:
             res = self.client.get(asset)
             self.assertEqual(res.status_code, 200)
 
@@ -943,6 +950,78 @@ class IndianDemoDataPersistenceTests(TestCase):
         reply = data.get('reply', '')
         self.assertIn('11-Month Agreements', reply)
         self.assertIn('e-Stamping', reply)
+        self.assertEqual(data.get('action', {}).get('type'), 'open_modal')
+        self.assertEqual(data.get('action', {}).get('target'), 'modal-create-lease')
+
+    def test_chatbot_tenant_landlord_contact_query(self):
+        """Tenant asking about landlord retrieves landlord name, phone, email, and property."""
+        res = self.client.post('/api/chatbot', {
+            'message': 'Who is my landlord and what is their phone number?'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.priya_token}')
+
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        reply = data.get('reply', '')
+        self.assertIn('Rajesh Sharma', reply)
+        self.assertIn('landlord@rentroll.com', reply)
+        self.assertIn('Gulmohar Residency', reply)
+
+    def test_chatbot_tenant_premise_address_query(self):
+        """Tenant asking where they live retrieves flat number, building name, and street address."""
+        res = self.client.post('/api/chatbot', {
+            'message': 'Where do I live and what is my flat address?'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.priya_token}')
+
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        reply = data.get('reply', '')
+        self.assertIn('Flat 4B', reply)
+        self.assertIn('Gulmohar Residency', reply)
+        self.assertIn('Bengaluru', reply)
+
+    def test_chatbot_tenant_payment_history_query(self):
+        """Tenant asking about payment history retrieves ledger records and ledger action button."""
+        res = self.client.post('/api/chatbot', {
+            'message': 'Show my payment history and recent transactions'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.priya_token}')
+
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        reply = data.get('reply', '')
+        self.assertIn('Successful Payments', reply)
+        self.assertIn('PAID', reply)
+        self.assertEqual(data.get('action', {}).get('type'), 'switch_tab')
+        self.assertEqual(data.get('action', {}).get('target'), 'payments')
+
+    def test_chatbot_landlord_properties_list_query(self):
+        """Landlord asking to list properties retrieves full portfolio breakdown with door counts."""
+        res = self.client.post('/api/chatbot', {
+            'message': 'What properties do I own in my portfolio?'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        reply = data.get('reply', '')
+        self.assertIn('Gulmohar Residency', reply)
+        self.assertIn('total doors', reply)
+        self.assertEqual(data.get('action', {}).get('type'), 'open_modal')
+        self.assertEqual(data.get('action', {}).get('target'), 'modal-add-property')
+
+    def test_chatbot_landlord_tenants_directory_query(self):
+        """Landlord asking who their tenants are retrieves tenant directory with door numbers and rents."""
+        res = self.client.post('/api/chatbot', {
+            'message': 'Who are my tenants and what are their contacts?'
+        }, content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}')
+
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        reply = data.get('reply', '')
+        self.assertIn('active tenants', reply)
         self.assertEqual(data.get('action', {}).get('type'), 'open_modal')
         self.assertEqual(data.get('action', {}).get('target'), 'modal-create-lease')
 

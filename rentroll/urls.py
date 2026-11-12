@@ -5,6 +5,7 @@ from django.contrib import admin
 from django.urls import path, include, re_path
 from django.http import FileResponse, Http404
 from django.conf import settings
+from api import views as api_views
 
 def serve_frontend_page(request, filename='index.html'):
     """Serves root HTML files strictly from an allowed whitelist."""
@@ -55,14 +56,18 @@ def serve_directory_asset(request, folder, subpath):
     return response
 
 urlpatterns = [
+    # Top-level Health Checks for Cloud Deployment (Render, AWS, GCP, K8s)
+    path('health', api_views.health_check_view, name='health_root'),
+    path('healthz', api_views.health_check_view, name='healthz_root'),
+
     # Admin Interface
     path('admin/', admin.site.urls),
 
     # REST API endpoints
     path('api/', include('api.urls')),
 
-    # Direct Static Asset Serving for CSS, JS, Assets, Data, Videos
-    re_path(r'^(?P<folder>css|js|assets|data|videos)/(?P<subpath>.+)$', serve_directory_asset, name='serve_assets'),
+    # Direct Static Asset Serving for CSS, JS, Assets, Data, Videos (supports root & page-prefix requests)
+    re_path(r'^(?:(?:dashboard|login|signup|reset-password)/)?(?P<folder>css|js|assets|data|videos)/(?P<subpath>.+)$', serve_directory_asset, name='serve_assets'),
 
     # Frontend HTML Pages
     path('', lambda req: serve_frontend_page(req, 'index.html'), name='root_index'),
@@ -76,6 +81,9 @@ urlpatterns = [
     path('signup.html', lambda req: serve_frontend_page(req, 'signup.html'), name='page_signup'),
     path('signup', lambda req: serve_frontend_page(req, 'signup.html')),
     path('signup/', lambda req: serve_frontend_page(req, 'signup.html')),
+    path('reset-password.html', lambda req: serve_frontend_page(req, 'reset-password.html'), name='page_reset_password'),
+    path('reset-password', lambda req: serve_frontend_page(req, 'reset-password.html')),
+    path('reset-password/', lambda req: serve_frontend_page(req, 'reset-password.html')),
 
     # Favicon fallback
     path('favicon.ico', lambda req: serve_directory_asset(req, 'assets', 'logo.svg')),

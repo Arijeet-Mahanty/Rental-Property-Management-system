@@ -51,8 +51,10 @@ RUN pip install --no-cache /wheels/* && rm -rf /wheels
 # Copy application source code
 COPY --chown=rentroll:rentroll . /app
 
-# Ensure staticfiles directory exists and has appropriate permissions
-RUN mkdir -p /app/staticfiles && chown -R rentroll:rentroll /app
+# Ensure entrypoint is executable and staticfiles directory exists
+RUN chmod +x /app/docker-entrypoint.sh && \
+    mkdir -p /app/staticfiles && \
+    chown -R rentroll:rentroll /app
 
 # Switch to unprivileged user
 USER rentroll
@@ -66,9 +68,11 @@ RUN DJANGO_SECRET_KEY=build-time-secret-key-1234567890 \
 # Expose production port
 EXPOSE 8000
 
-# Health check
+# Health check (targets cloud-native health endpoint)
 HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
-    CMD curl -f http://localhost:8000/api/health || exit 1
+    CMD curl -f http://localhost:8000/health || exit 1
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
 # Production WSGI startup via Gunicorn
 CMD ["gunicorn", "rentroll.wsgi:application", "--bind", "0.0.0.0:8000", "--workers", "3", "--timeout", "60", "--access-logfile", "-", "--error-logfile", "-"]

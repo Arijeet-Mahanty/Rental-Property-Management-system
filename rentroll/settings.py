@@ -76,25 +76,75 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'rentroll.wsgi.application'
 
-# Database: SQLite for local dev, PostgreSQL for production via DATABASE_URL
+# Database: Cloud Managed PostgreSQL (Render, Neon, Supabase, AWS RDS, Docker) or Persistent SQLite
 db_url = os.environ.get('DATABASE_URL')
+pg_db = os.environ.get('POSTGRES_DB') or os.environ.get('PGDATABASE')
+
 if db_url and db_url.startswith(('postgres://', 'postgresql://')):
     url = urllib.parse.urlparse(db_url)
+    db_name = url.path.lstrip('/')
+    if '?' in db_name:
+        db_name = db_name.split('?')[0]
+
+    user = urllib.parse.unquote(url.username or '')
+    password = urllib.parse.unquote(url.password or '')
+    host = url.hostname or 'localhost'
+    port = url.port or 5432
+
+    options = {}
+    if url.query:
+        q = urllib.parse.parse_qs(url.query)
+        if 'sslmode' in q:
+            options['sslmode'] = q['sslmode'][0]
+
+    # Enforce SSL requirement for remote cloud managed hosts
+    if 'sslmode' not in options and host not in ('localhost', '127.0.0.1', 'db', 'postgres') and not DEBUG:
+        options['sslmode'] = os.environ.get('DB_SSL_MODE', 'require')
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql',
-            'NAME': url.path[1:],
-            'USER': url.username,
-            'PASSWORD': url.password,
-            'HOST': url.hostname,
-            'PORT': url.port or 5432,
+            'NAME': db_name,
+            'USER': user,
+            'PASSWORD': password,
+            'HOST': host,
+            'PORT': port,
+            'CONN_MAX_AGE': int(os.environ.get('DB_CONN_MAX_AGE', '600')),
+            'OPTIONS': options,
+        }
+    }
+elif pg_db:
+    # Discrete PostgreSQL environment variables (AWS ECS, Kubernetes, Docker)
+    pg_host = os.environ.get('POSTGRES_HOST') or os.environ.get('PGHOST', 'localhost')
+    options = {}
+    if pg_host not in ('localhost', '127.0.0.1', 'db', 'postgres') and not DEBUG:
+        options['sslmode'] = os.environ.get('DB_SSL_MODE', 'require')
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': pg_db,
+            'USER': os.environ.get('POSTGRES_USER') or os.environ.get('PGUSER', 'postgres'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD') or os.environ.get('PGPASSWORD', ''),
+            'HOST': pg_host,
+            'PORT': int(os.environ.get('POSTGRES_PORT') or os.environ.get('PGPORT', '5432')),
+            'CONN_MAX_AGE': int(os.environ.get('DB_CONN_MAX_AGE', '600')),
+            'OPTIONS': options,
         }
     }
 else:
+    # SQLite local development or cloud persistent volume fallback
+    persistent_data_dir = os.environ.get('PERSISTENT_DATA_DIR') or os.environ.get('DATA_DIR')
+    if persistent_data_dir:
+        db_path = Path(persistent_data_dir) / 'db.sqlite3'
+        db_path.parent.mkdir(parents=True, exist_ok=True)
+    else:
+        db_path = BASE_DIR / 'db.sqlite3'
+
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
+            'NAME': db_path,
         }
     }
 
@@ -173,6 +223,13 @@ CSRF_TRUSTED_ORIGINS = [
     'http://127.0.0.1:5500',
 ]
 
+csrf_trusted_env = os.environ.get('CSRF_TRUSTED_ORIGINS')
+if csrf_trusted_env:
+    for origin in csrf_trusted_env.split(','):
+        cleaned = origin.strip()
+        if cleaned and cleaned not in CSRF_TRUSTED_ORIGINS:
+            CSRF_TRUSTED_ORIGINS.append(cleaned)
+
 # Production Security Headers
 if not DEBUG:
     SECURE_CONTENT_TYPE_NOSNIFF = True
@@ -180,3 +237,14 @@ if not DEBUG:
     SECURE_BROWSER_XSS_FILTER = True
     SESSION_COOKIE_SECURE = True
     CSRF_COOKIE_SECURE = True
+
+    # SSL & HSTS Production Hardening
+    if os.environ.get('SECURE_SSL_REDIRECT', 'True').lower() in ('true', '1', 'yes'):
+        SECURE_SSL_REDIRECT = True
+        SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+    hsts_seconds = int(os.environ.get('SECURE_HSTS_SECONDS', '31536000'))
+    if hsts_seconds > 0:
+        SECURE_HSTS_SECONDS = hsts_seconds
+        SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+        SECURE_HSTS_PRELOAD = True
