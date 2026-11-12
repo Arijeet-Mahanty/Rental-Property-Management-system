@@ -42,7 +42,7 @@ The project is structured into five iterative milestones, all of which are compl
   - **Pre-Flight Verification CLI**: Custom administrative utility (`python manage.py verify_deployment`) auditing 12 system indicators (Python runtime, secrets, database latency, seed counts, WhiteNoise compiled assets, URL routing, and deployment security).
   - **Zero Security Blockers**: 100% pass rate on `python manage.py check --deploy` with 0 issues silenced, enforcing strict production HSTS, proxy SSL headers, secure cookies, and dynamic CSRF trusted origins.
   - **Live Backend AI Assistant**: Context-aware chatbot answering queries from real-time database records (tenant agreements, landlord portfolio metrics, payment ledgers, and maintenance triage) with direct 1-click modal triggers.
-  - **Cloud Database Ready**: Dual-engine architecture supporting zero-dependency local SQLite Relational Persistence and automatic PostgreSQL cloud activation via `DATABASE_URL`.
+  - **Neon Serverless Cloud Database**: Native integration with Neon PostgreSQL (`neon.tech`) with auto-detected connection pooling (`-pooler`), transaction-safe cursors, and serverless keep-alive health checks via `DATABASE_URL`, alongside zero-dependency local SQLite persistence.
   - **Admin Access Revocation Authority**: Real-time permission control allowing Platform Administrator to revoke or restore Landlord and Tenant access instantly with immediate session token invalidation.
   - **Two-Role Public Authentication**: Public portals strictly present Landlord and Tenant onboarding, protecting administrative access.
   - **100% Test Coverage**: 61 automated unit and integration tests passing (`Ran 61 tests. OK`).
@@ -100,12 +100,12 @@ The project is structured into five iterative milestones, all of which are compl
 
 ## 4. Tech Stack & Architecture
 
-- **Backend**: Python 3.10+, Django 5.2+, Django REST Framework 3.18+, `django-cors-headers`, `pyjwt`, `bcrypt`.
+- **Backend**: Python 3.10+, Django 5.2+, Django REST Framework 3.18+, `django-cors-headers`, `pyjwt`, `bcrypt`, `dj-database-url`.
 - **WSGI / Static Assets**: Gunicorn WSGI runtime, WhiteNoise static compression and cache manifest pipeline.
 - **Cloud & Containerization**: Docker multi-stage build, Docker Compose, Render (`render.yaml`), Railway / Heroku (`Procfile`).
 - **Database**:
   - **Local Development**: SQLite 3 (`db.sqlite3`) for instant zero-dependency relational local persistence.
-  - **Production Cloud**: PostgreSQL (supported natively via `DATABASE_URL` environment variable).
+  - **Production Cloud**: Neon Serverless PostgreSQL (`neon.tech`) / PostgreSQL (configured natively via `dj-database-url` and `DATABASE_URL` with automatic PgBouncer pooler detection, `conn_health_checks=True`, and `DISABLE_SERVER_SIDE_CURSORS=True`).
 - **Legacy Server**: Node.js v24+, Express 5, `cookie-parser`, `cors`, `jsonwebtoken`, `bcryptjs`, `dotenv`, `pg` (maintained in `server/`).
 - **Frontend Markup**: Pure Semantic HTML5 (`<nav>`, `<main>`, `<section>`, `<header>`, `<footer>`, `<dialog>`, `<form>`).
 - **Styling**: Vanilla CSS3 design tokens (`css/variables.css`, `css/components.css`, `css/pages.css`). Soft Tactile Cream Neomorphism edition. Fully responsive across viewports.
@@ -230,6 +230,45 @@ npm run start:node
 ```
 Available at `http://localhost:3000`.
 
+### Option D: Cloud Deployment with Neon Serverless Postgres (Neonbase)
+
+RentRoll is pre-configured for instant zero-friction deployment to cloud platforms (Render, Railway, Fly.io, AWS, or Docker/Linux) powered by a managed **Neon Serverless PostgreSQL** database:
+
+#### Step 1: Create a Free Neon Database
+1. Sign up at [neon.tech](https://neon.tech) and create a project (e.g. `rentroll`).
+2. Copy your connection string from the dashboard (choose either pooled or direct).
+   - Example pooled format:
+     `postgresql://<user>:<password>@ep-<project>-pooler.<region>.aws.neon.tech/neondb?sslmode=require`
+
+#### Step 2: Configure Environment Variables on Your Cloud Platform
+In your hosting environment dashboard (e.g. Render Environment settings), set:
+- `DATABASE_URL`: Your full Neon connection string.
+- `DJANGO_DEBUG`: `False`
+- `DJANGO_SECRET_KEY`: A cryptographically secure 50+ character string.
+- `JWT_SECRET`: A secure signing string for JWT authentication tokens.
+- `DJANGO_ALLOWED_HOSTS`: `.onrender.com,localhost` (or your domain name).
+
+#### Step 3: Cloud Build & Start Commands
+- **Build Command**:
+  ```bash
+  pip install -r requirements.txt && python manage.py collectstatic --noinput && python manage.py migrate --noinput && python manage.py seed_indian_data
+  ```
+- **Start Command**:
+  ```bash
+  gunicorn rentroll.wsgi:application --bind 0.0.0.0:$PORT --workers 3
+  ```
+
+#### Step 4: Set Platform Administrator Password
+After first deployment, run the administrative password command in the cloud shell/console:
+```bash
+python manage.py set_admin_password "YourSecretPasswordHere"
+```
+
+#### Automatic Cloud Optimizations Handled by RentRoll
+- **Serverless Resilience**: `CONN_HEALTH_CHECKS = True` automatically validates connection health before queries, ensuring seamless execution when Neon wakes from auto-suspend.
+- **PgBouncer Cursor Compatibility**: When `-pooler` is detected, `DISABLE_SERVER_SIDE_CURSORS = True` prevents named-cursor errors in transaction pooling mode.
+- **Enforced SSL**: `sslmode=require` is verified on all remote database connections.
+
 ---
 
 ## 7. REST API Endpoints Specification
@@ -306,6 +345,7 @@ Available at `http://localhost:3000`.
   - Fixed trailing slash nested asset loading (e.g. `/dashboard/css/variables.css`) to ensure consistent styling regardless of URL formatting.
   - Hardened static file delivery with WhiteNoise compressed manifest cache handling.
   - Replaced anonymous lambda expressions in URL routing with explicit named view functions.
+- **Neon Serverless PostgreSQL Integration**: Integrated `dj-database-url` with automated detection for Neon (`neon.tech`), automatically enabling `DISABLE_SERVER_SIDE_CURSORS` for `-pooler` PgBouncer transaction pooling endpoints, configuring `CONN_HEALTH_CHECKS` for graceful compute spin-up, and verifying `sslmode=require`.
 - **Administrator Access Revocation & Restitution**: Added real-time user lifecycle management in the Admin Users Directory (`POST /api/admin/users/<id>/toggle-status/`), empowering Platform Admin to revoke or restore Landlord and Tenant access with instant session invalidation and login locking.
 - **Two-Role Public Authentication Policy**: Streamlined public login and registration interfaces exclusively to Landlord and Tenant personas, securing administrative sign-in through direct credentials or private administrator route.
 - **Automated Verification**: Expanded test suite to **61/61 automated tests passing** (`Ran 61 tests. OK`) including access revocation and token invalidation coverage, with upgraded CI pipeline (`.github/workflows/ci.yml`).

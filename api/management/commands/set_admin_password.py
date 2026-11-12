@@ -38,3 +38,4 @@ class Command(BaseCommand):
             admin.is_active = True
             admin.save()
             self.stdout.write(self.style.SUCCESS(f"Successfully updated secret password for Administrator {admin.email}."))
+

@@ -98,13 +98,17 @@ class Command(BaseCommand):
 
         db_url_env = os.environ.get('DATABASE_URL')
         if db_url_env:
-            self.stdout.write("  [PASS] Cloud Database: Managed PostgreSQL configured via DATABASE_URL")
+            if 'neon.tech' in db_url_env:
+                pooler_str = " (PgBouncer Pooled Endpoint)" if "-pooler" in db_url_env else " (Direct Compute Endpoint)"
+                self.stdout.write(f"  [PASS] Cloud Database: Neon Serverless PostgreSQL{pooler_str} configured via DATABASE_URL")
+            else:
+                self.stdout.write("  [PASS] Cloud Database: Managed PostgreSQL configured via DATABASE_URL")
         elif os.environ.get('POSTGRES_DB') or os.environ.get('PGDATABASE'):
             self.stdout.write("  [PASS] Cloud Database: PostgreSQL configured via discrete environment variables")
         elif os.environ.get('PERSISTENT_DATA_DIR') or os.environ.get('DATA_DIR'):
             self.stdout.write("  [PASS] Cloud Database: Persistent Cloud Volume storage active for SQLite")
         else:
-            self.stdout.write("  [INFO] Database Engine: Local Relational SQLite (Cloud PostgreSQL activates automatically on DATABASE_URL)")
+            self.stdout.write("  [INFO] Database Engine: Local Relational SQLite (Neon / PostgreSQL activates automatically via DATABASE_URL)")
 
         try:
             start_t = time.time()

@@ -17,12 +17,17 @@ services:
         generateValue: true
       - key: DJANGO_ALLOWED_HOSTS
         value: ".onrender.com,localhost,127.0.0.1"
+      # Cloud Database: Provide Neon Serverless Postgres (neon.tech) connection string,
+      # or let Render provision the default attached database below.
+      # Neon (neonbase) Pooled URI format:
+      # postgresql://<user>:<pass>@<endpoint>-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require
       - key: DATABASE_URL
         fromDatabase:
           name: rentroll-postgres
           property: connectionString
 
 databases:
+  # Optional: Render managed database (replace with Neon connection string above for permanent free tier)
   - name: rentroll-postgres
     region: oregon
     plan: free

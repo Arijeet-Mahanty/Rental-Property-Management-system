@@ -6,6 +6,10 @@ from pathlib import Path
 import os
 import sys
 import urllib.parse
+try:
+    import dj_database_url
+except ImportError:
+    dj_database_url = None
 from corsheaders.defaults import default_headers
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -96,43 +100,74 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'rentroll.wsgi.application'
 
-# Database: Cloud Managed PostgreSQL (Render, Neon, Supabase, AWS RDS, Docker) or Persistent SQLite
+# Database: Cloud Managed PostgreSQL (Neon Serverless, Render, Supabase, AWS RDS, Docker) or Persistent SQLite
 db_url = os.environ.get('DATABASE_URL')
 pg_db = os.environ.get('POSTGRES_DB') or os.environ.get('PGDATABASE')
 
 if db_url and db_url.startswith(('postgres://', 'postgresql://')):
-    url = urllib.parse.urlparse(db_url)
-    db_name = url.path.lstrip('/')
-    if '?' in db_name:
-        db_name = db_name.split('?')[0]
+    # Neon Serverless Postgres & PgBouncer connection pooler detection
+    is_neon = 'neon.tech' in db_url
+    is_pooled = '-pooler' in db_url or os.environ.get('DISABLE_SERVER_SIDE_CURSORS', '').lower() in ('true', '1', 'yes')
 
-    user = urllib.parse.unquote(url.username or '')
-    password = urllib.parse.unquote(url.password or '')
-    host = url.hostname or 'localhost'
-    port = url.port or 5432
+    # When connecting via Neon's connection pooler (PgBouncer), PgBouncer manages pooling,
+    # so conn_max_age can be 0 or small to avoid holding connections across serverless scales.
+    # For direct endpoints, default to 600s.
+    default_conn_max_age = 0 if is_pooled else 600
+    conn_max_age = int(os.environ.get('DB_CONN_MAX_AGE', str(default_conn_max_age)))
 
-    options = {}
-    if url.query:
-        q = urllib.parse.parse_qs(url.query)
-        if 'sslmode' in q:
-            options['sslmode'] = q['sslmode'][0]
-
-    # Enforce SSL requirement for remote cloud managed hosts
-    if 'sslmode' not in options and host not in ('localhost', '127.0.0.1', 'db', 'postgres') and not DEBUG:
-        options['sslmode'] = os.environ.get('DB_SSL_MODE', 'require')
-
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': db_name,
-            'USER': user,
-            'PASSWORD': password,
-            'HOST': host,
-            'PORT': port,
-            'CONN_MAX_AGE': int(os.environ.get('DB_CONN_MAX_AGE', '600')),
-            'OPTIONS': options,
+    if dj_database_url:
+        DATABASES = {
+            'default': dj_database_url.config(
+                default=db_url,
+                conn_max_age=conn_max_age,
+                conn_health_checks=True,
+                ssl_require=True,
+            )
         }
-    }
+        if 'OPTIONS' not in DATABASES['default']:
+            DATABASES['default']['OPTIONS'] = {}
+        if 'sslmode' not in DATABASES['default']['OPTIONS']:
+            host = DATABASES['default'].get('HOST', '')
+            if host not in ('localhost', '127.0.0.1', 'db', 'postgres'):
+                DATABASES['default']['OPTIONS']['sslmode'] = os.environ.get('DB_SSL_MODE', 'require')
+    else:
+        url = urllib.parse.urlparse(db_url)
+        db_name = url.path.lstrip('/')
+        if '?' in db_name:
+            db_name = db_name.split('?')[0]
+
+        user = urllib.parse.unquote(url.username or '')
+        password = urllib.parse.unquote(url.password or '')
+        host = url.hostname or 'localhost'
+        port = url.port or 5432
+
+        options = {}
+        if url.query:
+            q = urllib.parse.parse_qs(url.query)
+            if 'sslmode' in q:
+                options['sslmode'] = q['sslmode'][0]
+
+        if 'sslmode' not in options and host not in ('localhost', '127.0.0.1', 'db', 'postgres') and not DEBUG:
+            options['sslmode'] = os.environ.get('DB_SSL_MODE', 'require')
+
+        DATABASES = {
+            'default': {
+                'ENGINE': 'django.db.backends.postgresql',
+                'NAME': db_name,
+                'USER': user,
+                'PASSWORD': password,
+                'HOST': host,
+                'PORT': port,
+                'CONN_MAX_AGE': conn_max_age,
+                'CONN_HEALTH_CHECKS': True,
+                'OPTIONS': options,
+            }
+        }
+
+    # Neon Serverless Postgres & PgBouncer transaction pooling optimization:
+    # Transaction pooling mode does not support PostgreSQL named server-side cursors.
+    if is_pooled:
+        DATABASES['default']['DISABLE_SERVER_SIDE_CURSORS'] = True
 elif pg_db:
     # Discrete PostgreSQL environment variables (AWS ECS, Kubernetes, Docker)
     pg_host = os.environ.get('POSTGRES_HOST') or os.environ.get('PGHOST', 'localhost')
@@ -149,6 +184,7 @@ elif pg_db:
             'HOST': pg_host,
             'PORT': int(os.environ.get('POSTGRES_PORT') or os.environ.get('PGPORT', '5432')),
             'CONN_MAX_AGE': int(os.environ.get('DB_CONN_MAX_AGE', '600')),
+            'CONN_HEALTH_CHECKS': True,
             'OPTIONS': options,
         }
     }
