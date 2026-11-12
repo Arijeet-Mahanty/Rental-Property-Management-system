@@ -46,6 +46,7 @@ urlpatterns = [
 
     # Admin Command Center endpoints
     re_path(r'^admin/users/?$', views.admin_users_view, name='api_admin_users'),
+    re_path(r'^admin/users/(?P<user_id>[^/]+)/toggle-status/?$', views.admin_toggle_user_status_view, name='api_admin_toggle_user_status'),
     re_path(r'^admin/inquiries/?$', views.admin_inquiries_view, name='api_admin_inquiries'),
 
     # Context-aware AI Assistant

@@ -86,30 +86,52 @@ export function initLoginForm() {
 
   setupPasswordToggle(togglePassBtn, passwordInput);
 
-  // Setup quick demo fill dropdown menu
+  // Setup quick demo fill dropdown menu (Tenant & Landlord only for regular users)
   const demoAccountSelect = document.getElementById('demo-account-select');
   if (demoAccountSelect) {
     demoAccountSelect.addEventListener('change', (e) => {
       const selected = e.target.value;
-      if (selected === 'admin') {
-        emailInput.value = 'admin@rentroll.com';
-        passwordInput.value = 'Password123!';
-        clearFieldError(emailInput, emailError);
-        clearFieldError(passwordInput, passwordError);
-        showToast('Credentials Populated', 'Filled Platform Admin demo account (Arjun Singhania).', 'info', 2500);
-      } else if (selected === 'landlord') {
+      if (selected === 'landlord') {
         emailInput.value = 'landlord@rentroll.com';
         passwordInput.value = 'Password123!';
         clearFieldError(emailInput, emailError);
         clearFieldError(passwordInput, passwordError);
-        showToast('Credentials Populated', 'Filled Landlord demo account (Rajesh Sharma).', 'info', 2500);
+        showToast('Credentials Populated', 'Filled Landlord account (Rajesh Sharma).', 'info', 2500);
       } else if (selected === 'tenant') {
         emailInput.value = 'tenant@rentroll.com';
         passwordInput.value = 'Password123!';
         clearFieldError(emailInput, emailError);
         clearFieldError(passwordInput, passwordError);
-        showToast('Credentials Populated', 'Filled Tenant demo account (Priya Iyer).', 'info', 2500);
+        showToast('Credentials Populated', 'Filled Tenant account (Priya Iyer).', 'info', 2500);
+      } else if (selected === 'admin') {
+        fillAdminCredentials();
       }
+    });
+  }
+
+  // Admin direct sign-in helper
+  function fillAdminCredentials() {
+    emailInput.value = 'admin@rentroll.com';
+    passwordInput.value = 'Password123!';
+    clearFieldError(emailInput, emailError);
+    clearFieldError(passwordInput, passwordError);
+    const badge = document.getElementById('admin-login-badge');
+    if (badge) badge.style.display = 'inline-flex';
+    showToast('Platform Admin Mode', 'Platform Administrator credentials configured (Arjun Singhania).', 'info', 3000);
+  }
+
+  // Check URL parameters for direct admin access (?admin=true or ?role=admin)
+  const loginUrlParams = new URLSearchParams(window.location.search);
+  if (loginUrlParams.get('admin') === 'true' || loginUrlParams.get('role') === 'admin') {
+    fillAdminCredentials();
+  }
+
+  // Platform Admin toggle trigger
+  const toggleAdminBtn = document.getElementById('toggle-admin-login-btn');
+  if (toggleAdminBtn) {
+    toggleAdminBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      fillAdminCredentials();
     });
   }
 

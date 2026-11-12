@@ -99,20 +99,28 @@ def get_authenticated_user(request):
         if user_id:
             user = User.objects.filter(id=user_id).first()
             if user:
+                if not getattr(user, 'is_active', True):
+                    return None
                 return user
         if user_email:
             user = User.objects.filter(email__iexact=user_email).first()
             if user:
+                if not getattr(user, 'is_active', True):
+                    return None
                 return user
         return None
     except Exception:
         # Fallback for mock tokens (testing or offline transition)
         if token and token.startswith('mock_jwt_'):
+            user = None
             if 'admin' in token:
-                return User.objects.filter(role='admin').first() or User.objects.filter(email='admin@rentroll.com').first()
+                user = User.objects.filter(role='admin').first() or User.objects.filter(email='admin@rentroll.com').first()
             elif 'landlord' in token:
-                return User.objects.filter(role='landlord').first()
+                user = User.objects.filter(role='landlord').first()
             elif 'tenant' in token:
-                return User.objects.filter(role='tenant').first()
+                user = User.objects.filter(role='tenant').first()
+            if user and not getattr(user, 'is_active', True):
+                return None
+            return user
         return None
 

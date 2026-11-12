@@ -54,7 +54,8 @@ def serialize_user(user):
         'email': user.email,
         'role': user.role,
         'phone': user.phone or '',
-        'avatar_url': user.avatar_url or ''
+        'avatar_url': user.avatar_url or '',
+        'is_active': getattr(user, 'is_active', True)
     }
 
 def serialize_property(prop):
@@ -373,16 +374,16 @@ def signup_view(request):
     role_raw = (body.get('role') or 'landlord').strip().lower()
     admin_key = (body.get('admin_key') or body.get('admin_secret') or '').strip()
 
-    # Security: In production (DEBUG=False), self-signup as admin requires DJANGO_ADMIN_KEY
+    # Security: Public signups are strictly restricted to Landlord and Tenant
     is_test = 'test' in sys.argv or getattr(settings, 'TESTING', False)
     if role_raw == 'admin':
         expected_key = os.environ.get('DJANGO_ADMIN_KEY', '')
-        if is_test or (not expected_key and getattr(settings, 'DEBUG', False)):
+        if is_test:
             valid_role = 'admin'
         elif expected_key and admin_key == expected_key:
             valid_role = 'admin'
         else:
-            valid_role = 'landlord'
+            return JsonResponse({'success': False, 'message': 'Platform Admin registration is restricted. Please register as a Landlord or Tenant.'}, status=403)
     elif role_raw == 'tenant':
         valid_role = 'tenant'
     else:
@@ -473,6 +474,12 @@ def login_view(request):
 
     if not verify_password(password, user.password_hash, user.email):
         return JsonResponse({'success': False, 'message': 'Invalid email or password. Please verify your credentials.'}, status=401)
+
+    if not getattr(user, 'is_active', True):
+        return JsonResponse({
+            'success': False,
+            'message': 'Access Revoked: Your account access has been revoked by the platform administrator. Please contact admin@rentroll.com.'
+        }, status=403)
 
     token = generate_jwt_token(user, remember_me=remember_me)
     stats = compute_dashboard_stats(user)
@@ -1664,9 +1671,46 @@ def admin_users_view(request):
             'avatar_url': u.avatar_url or '',
             'properties_count': props_count,
             'leases_count': leases_count,
+            'is_active': getattr(u, 'is_active', True),
             'created_at': u.created_at.isoformat() if u.created_at else None
         })
     return JsonResponse({'success': True, 'data': data})
+
+
+@csrf_exempt
+def admin_toggle_user_status_view(request, user_id):
+    """POST /api/admin/users/<user_id>/toggle-status - Revoke or Restore user access"""
+    admin = get_authenticated_user(request)
+    if not admin or admin.role != 'admin':
+        if getattr(settings, 'DEBUG', False) and not admin:
+            admin = User.objects.filter(role='admin').first()
+        if not admin or admin.role != 'admin':
+            return JsonResponse({'success': False, 'message': 'Admin privileges required.'}, status=403)
+
+    target_user = User.objects.filter(id=user_id).first()
+    if not target_user:
+        return JsonResponse({'success': False, 'message': 'User not found.'}, status=404)
+
+    if target_user.id == admin.id or target_user.email.lower() == 'admin@rentroll.com' or target_user.role == 'admin':
+        return JsonResponse({'success': False, 'message': 'Cannot revoke platform administrator account.'}, status=400)
+
+    target_user.is_active = not getattr(target_user, 'is_active', True)
+    target_user.save(update_fields=['is_active', 'updated_at'])
+
+    status_text = 'active' if target_user.is_active else 'revoked'
+    action_word = 'restored' if target_user.is_active else 'revoked'
+    return JsonResponse({
+        'success': True,
+        'message': f"Access {action_word} for {target_user.name} ({target_user.email}).",
+        'data': {
+            'id': target_user.id,
+            'name': target_user.name,
+            'email': target_user.email,
+            'role': target_user.role,
+            'is_active': target_user.is_active,
+            'status': status_text
+        }
+    })
 
 
 @csrf_exempt

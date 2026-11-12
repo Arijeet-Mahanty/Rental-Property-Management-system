@@ -502,6 +502,14 @@ export async function getAdminUsers() {
 }
 
 /**
+ * Toggles a user's access status (Revoke / Restore) - Platform Admin only
+ * @param {string} userId
+ */
+export async function adminToggleUserStatus(userId) {
+  return await request(`/admin/users/${userId}/toggle-status`, { method: 'POST' });
+}
+
+/**
  * Fetches contact inquiries and reviews (Admin Command Center)
  */
 export async function getAdminInquiries() {

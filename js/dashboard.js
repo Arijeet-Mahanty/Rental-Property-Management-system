@@ -23,6 +23,7 @@ import {
   createMaintenanceTicket,
   updateMaintenanceTicket,
   getAdminUsers,
+  adminToggleUserStatus,
   getAdminInquiries
 } from './api.js';
 import { showToast } from './components.js';
@@ -1294,12 +1295,23 @@ function renderUsersDirectoryTab(container, user) {
           </td>
           <td style="font-size: var(--font-size-xs);">${portfolioSummary}</td>
           <td style="font-size: var(--font-size-xs); color: var(--color-text-muted);">${formatDate(u.created_at)}</td>
-          <td><span class="badge badge--paid">Active</span></td>
+          <td>${u.is_active !== false 
+            ? '<span class="badge badge--paid">Active</span>' 
+            : '<span class="badge" style="background: #fee2e2; color: #991b1b; border: 1px solid #f87171;">Revoked</span>'}</td>
           <td>
-            <button type="button" class="btn btn--ghost btn--sm btn-copy-user-email" data-email="${escapeHtml(u.email)}" title="Copy Email">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
-              <span>Copy</span>
-            </button>
+            <div style="display: flex; gap: var(--space-2); align-items: center; flex-wrap: wrap;">
+              <button type="button" class="btn btn--ghost btn--xs btn-copy-user-email" data-email="${escapeHtml(u.email)}" title="Copy Email">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copy</span>
+              </button>
+              ${u.role !== 'admin' && (u.email || '').toLowerCase() !== 'admin@rentroll.com' ? `
+                <button type="button" class="btn ${u.is_active !== false ? 'btn--danger' : 'btn--outline'} btn--xs btn-toggle-user-access" data-user-id="${escapeHtml(u.id)}" data-user-name="${escapeHtml(u.name)}" data-active="${u.is_active !== false ? 'true' : 'false'}" style="${u.is_active === false ? 'color: #059669; border-color: #059669;' : ''}">
+                  ${u.is_active !== false ? 'Revoke Access' : 'Restore Access'}
+                </button>
+              ` : `
+                <span style="font-size: 10px; font-weight: 700; color: #7c3aed; padding: 2px 7px; background: rgba(124, 58, 237, 0.1); border-radius: 4px; border: 1px solid rgba(124, 58, 237, 0.2);">Admin Protected</span>
+              `}
+            </div>
           </td>
         </tr>
       `;
@@ -1310,6 +1322,46 @@ function renderUsersDirectoryTab(container, user) {
         const em = btn.getAttribute('data-email');
         navigator.clipboard?.writeText(em).catch(() => {});
         showToast('Copied', `Copied ${em} to clipboard.`, 'info', 2000);
+      });
+    });
+
+    tbody.querySelectorAll('.btn-toggle-user-access').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        const uId = btn.getAttribute('data-user-id');
+        const uName = btn.getAttribute('data-user-name');
+        const isCurrentlyActive = btn.getAttribute('data-active') === 'true';
+        const actionVerb = isCurrentlyActive ? 'revoke access for' : 'restore access for';
+
+        const confirmed = window.confirm(`Are you sure you want to ${actionVerb} "${uName}"?\n\n${isCurrentlyActive ? 'This user will be immediately blocked from logging in or making any portal requests.' : 'This user will immediately regain access to log in and manage their portal.'}`);
+        if (!confirmed) return;
+
+        btn.disabled = true;
+        btn.textContent = isCurrentlyActive ? 'Revoking...' : 'Restoring...';
+
+        try {
+          const res = await adminToggleUserStatus(uId);
+          if (res && res.success) {
+            const target = cachedUsers.find(x => x.id === uId);
+            if (target) {
+              target.is_active = res.data.is_active;
+            }
+            showToast(
+              isCurrentlyActive ? 'Access Revoked' : 'Access Restored',
+              res.message || `Access status updated for ${uName}.`,
+              isCurrentlyActive ? 'warning' : 'success',
+              3500
+            );
+            renderTableRows();
+          } else {
+            showToast('Action Failed', res?.message || 'Could not update user access.', 'error');
+            btn.disabled = false;
+            btn.textContent = isCurrentlyActive ? 'Revoke Access' : 'Restore Access';
+          }
+        } catch (err) {
+          showToast('Error', err.message || 'Failed to update user status.', 'error');
+          btn.disabled = false;
+          btn.textContent = isCurrentlyActive ? 'Revoke Access' : 'Restore Access';
+        }
       });
     });
   }

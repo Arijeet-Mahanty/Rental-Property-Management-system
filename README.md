@@ -43,7 +43,9 @@ The project is structured into five iterative milestones, all of which are compl
   - **Zero Security Blockers**: 100% pass rate on `python manage.py check --deploy` with 0 issues silenced, enforcing strict production HSTS, proxy SSL headers, secure cookies, and dynamic CSRF trusted origins.
   - **Live Backend AI Assistant**: Context-aware chatbot answering queries from real-time database records (tenant agreements, landlord portfolio metrics, payment ledgers, and maintenance triage) with direct 1-click modal triggers.
   - **Cloud Database Ready**: Dual-engine architecture supporting zero-dependency local SQLite Relational Persistence and automatic PostgreSQL cloud activation via `DATABASE_URL`.
-  - **100% Test Coverage**: 59 automated unit and integration tests passing (`Ran 59 tests. OK`).
+  - **Admin Access Revocation Authority**: Real-time permission control allowing Platform Administrator to revoke or restore Landlord and Tenant access instantly with immediate session token invalidation.
+  - **Two-Role Public Authentication**: Public portals strictly present Landlord and Tenant onboarding, protecting administrative access.
+  - **100% Test Coverage**: 61 automated unit and integration tests passing (`Ran 61 tests. OK`).
 
 ---
 
@@ -85,10 +87,14 @@ The project is structured into five iterative milestones, all of which are compl
   - [x] 4 interactive SVG charts replacing static cards (Monthly Rent Roll, Portfolio Occupancy Donut, Payment Inflow Channels, Tenancy Health Gauge).
   - [x] Pure CSS keyframe animations (`@keyframes barRise`, `@keyframes progressGrow`, `@keyframes liveDotPulse`, `@keyframes glowPulse`).
   - [x] Official Section 10(13A) HRA rent receipt downloads and complete ledger CSV export.
+- [x] **Platform Administrator Access Control & Revocation Authority (Phase 5)**
+  - [x] Real-time permission revocation (`POST /api/admin/users/<id>/toggle-status`) with immediate token invalidation and login blocking.
+  - [x] Public registration and login streamlined strictly to Landlord and Tenant roles.
+  - [x] Self-revocation protection ensuring Administrator account access cannot be disabled.
 - [x] **Production Django REST Framework Backend & Relational Models (Phase 3)**
   - [x] Relational ORM models with cascading relationships and auto-generated prefixed primary keys.
   - [x] 100% Indian personas and profiles seeded across Bengaluru, Mumbai, and Gurugram.
-  - [x] End-to-end data persistence with 59 passing automated tests.
+  - [x] End-to-end data persistence with 61 passing automated tests.
 
 ---
 
@@ -134,7 +140,7 @@ Rental Property Management system/
 │   ├── views.py              # REST API controllers (auth, dashboard, properties, units, payments, chatbot)
 │   ├── urls.py               # API route definitions (/api/*)
 │   ├── admin.py              # Django Admin interface registrations
-│   ├── tests.py              # Automated test suite (59 unit and integration tests)
+│   ├── tests.py              # Automated test suite (61 unit and integration tests)
 │   ├── migrations/           # Database migration files
 │   └── management/
 │       └── commands/
@@ -257,6 +263,7 @@ Available at `http://localhost:3000`.
 | `GET` | `/api/feedback` | Public | Retrieve verified customer feedback reviews |
 | `POST` | `/api/feedback` | Authenticated | Submit customer review (Landlords & Tenants) |
 | `GET` | `/api/admin/users` | Admin | List all registered platform users, roles, phone, and unit counts |
+| `POST` | `/api/admin/users/:id/toggle-status` | Admin | Revoke or restore user platform access at any time |
 | `GET` | `/api/admin/inquiries` | Admin | Retrieve landing page contact inquiries and customer reviews |
 | `POST` | `/api/chatbot` | Authenticated (Tenant/Landlord) | Context-aware AI Assistant with live DB metrics & direct actions |
 
@@ -299,7 +306,9 @@ Available at `http://localhost:3000`.
   - Fixed trailing slash nested asset loading (e.g. `/dashboard/css/variables.css`) to ensure consistent styling regardless of URL formatting.
   - Hardened static file delivery with WhiteNoise compressed manifest cache handling.
   - Replaced anonymous lambda expressions in URL routing with explicit named view functions.
-- **Automated Verification**: Expanded test suite to **59/59 automated tests passing** (`Ran 59 tests. OK`) and upgraded CI pipeline (`.github/workflows/ci.yml`) to test across Python 3.10, 3.11, and 3.12.
+- **Administrator Access Revocation & Restitution**: Added real-time user lifecycle management in the Admin Users Directory (`POST /api/admin/users/<id>/toggle-status/`), empowering Platform Admin to revoke or restore Landlord and Tenant access with instant session invalidation and login locking.
+- **Two-Role Public Authentication Policy**: Streamlined public login and registration interfaces exclusively to Landlord and Tenant personas, securing administrative sign-in through direct credentials or private administrator route.
+- **Automated Verification**: Expanded test suite to **61/61 automated tests passing** (`Ran 61 tests. OK`) including access revocation and token invalidation coverage, with upgraded CI pipeline (`.github/workflows/ci.yml`).
 
 ### Phase 4 — Real-Time Corner AI Assistant & Payment Gateway Rails
 - **Corner AI Assistant Widget**: Integrated a floating bottom-right AI Chatbot widget (`js/chatbot.js`) built with cream neomorphism tokens. Strictly initialized exclusively after portal authentication for Tenants and Landlords (completely hidden on public landing, login, and signup pages).

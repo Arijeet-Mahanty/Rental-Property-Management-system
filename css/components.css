@@ -477,7 +477,7 @@ input[type="number"].form-control {
 
 .role-selector {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr;
   gap: var(--space-3);
   margin-bottom: var(--space-5);
 }

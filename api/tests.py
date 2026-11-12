@@ -1025,6 +1025,57 @@ class IndianDemoDataPersistenceTests(TestCase):
         self.assertEqual(data.get('action', {}).get('type'), 'open_modal')
         self.assertEqual(data.get('action', {}).get('target'), 'modal-create-lease')
 
+    def test_admin_can_revoke_and_restore_user_access(self):
+        """Admin can revoke user access; revoked user is immediately blocked from logging in or calling APIs."""
+        priya = User.objects.get(email='tenant@rentroll.com')
+        self.assertTrue(priya.is_active)
+
+        # 1. Admin revokes Priya's access
+        res = self.client.post(f'/api/admin/users/{priya.id}/toggle-status/', content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.admin_token}')
+        self.assertEqual(res.status_code, 200)
+        data = res.json()
+        self.assertTrue(data.get('success'))
+        self.assertFalse(data.get('data', {}).get('is_active'))
+
+        priya.refresh_from_db()
+        self.assertFalse(priya.is_active)
+
+        # 2. Revoked user attempts to log in -> 403 Forbidden
+        login_res = self.client.post('/api/auth/login', {
+            'email': 'tenant@rentroll.com',
+            'password': 'Password123!'
+        }, content_type='application/json')
+        self.assertEqual(login_res.status_code, 403)
+        self.assertIn('Access Revoked', login_res.json().get('message', ''))
+
+        # 3. Revoked user attempts authenticated API request with existing token -> 401 Unauthorized
+        me_res = self.client.get('/api/auth/me', HTTP_AUTHORIZATION=f'Bearer {self.priya_token}')
+        self.assertEqual(me_res.status_code, 401)
+
+        # 4. Admin restores Priya's access
+        restore_res = self.client.post(f'/api/admin/users/{priya.id}/toggle-status/', content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.admin_token}')
+        self.assertEqual(restore_res.status_code, 200)
+        self.assertTrue(restore_res.json().get('data', {}).get('is_active'))
+
+        priya.refresh_from_db()
+        self.assertTrue(priya.is_active)
+
+        # 5. Restored user can now log in successfully
+        login_ok_res = self.client.post('/api/auth/login', {
+            'email': 'tenant@rentroll.com',
+            'password': 'Password123!'
+        }, content_type='application/json')
+        self.assertEqual(login_ok_res.status_code, 200)
+        self.assertTrue(login_ok_res.json().get('success'))
+
+    def test_admin_cannot_revoke_own_account(self):
+        """Admin cannot revoke their own administrator access."""
+        admin = User.objects.get(email='admin@rentroll.com')
+        res = self.client.post(f'/api/admin/users/{admin.id}/toggle-status/', content_type='application/json', HTTP_AUTHORIZATION=f'Bearer {self.admin_token}')
+        self.assertEqual(res.status_code, 400)
+        self.assertIn('Cannot revoke platform administrator', res.json().get('message', ''))
+
+
 
 
 
