@@ -105,10 +105,18 @@ TEMPLATES = [
 WSGI_APPLICATION = 'rentroll.wsgi.application'
 
 # Database: Cloud Managed PostgreSQL (Neon Serverless, Render, Supabase, AWS RDS, Docker) or Persistent SQLite
+is_testing = 'test' in sys.argv
 db_url = os.environ.get('DATABASE_URL')
 pg_db = os.environ.get('POSTGRES_DB') or os.environ.get('PGDATABASE')
 
-if db_url and db_url.startswith(('postgres://', 'postgresql://')):
+if is_testing:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': ':memory:',
+        }
+    }
+elif db_url and db_url.startswith(('postgres://', 'postgresql://')):
     # Neon Serverless Postgres & PgBouncer connection pooler detection
     is_neon = 'neon.tech' in db_url
     is_pooled = '-pooler' in db_url or os.environ.get('DISABLE_SERVER_SIDE_CURSORS', '').lower() in ('true', '1', 'yes')

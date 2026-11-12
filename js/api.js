@@ -209,6 +209,9 @@ export async function signup(data) {
  */
 export async function logout() {
   try {
+    clearStoredToken();
+  } catch (_) {}
+  try {
     await request('/auth/logout', { method: 'POST' });
   } catch {
     // ignore server logout errors
@@ -372,6 +375,28 @@ export async function createLease(leaseData) {
     body: leaseData
   });
   return res.data;
+}
+
+/**
+ * Submits a rental application for a property.
+ */
+export async function applyForProperty(propertyId, applicationData) {
+  const res = await request(`/properties/${propertyId}/apply/`, {
+    method: 'POST',
+    body: applicationData
+  });
+  return res;
+}
+
+/**
+ * Updates a lease application action (approve or decline).
+ */
+export async function updateLeaseStatus(leaseId, action) {
+  const res = await request(`/leases/${leaseId}/action/`, {
+    method: 'POST',
+    body: { action }
+  });
+  return res;
 }
 
 /**

@@ -608,12 +608,17 @@ export function initDashboardPage() {
   }
 
   if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      await logout();
-      showToast('Logged out', 'You have been safely signed out.', 'info', 2000);
+    logoutBtn.addEventListener('click', async (e) => {
+      if (e) e.preventDefault();
+      try {
+        localStorage.clear();
+        sessionStorage.clear();
+      } catch (_) {}
+      try { logout().catch(() => {}); } catch (_) {}
+      showToast('Logged out', 'You have been safely signed out.', 'info', 1200);
       setTimeout(() => {
         window.location.href = 'login.html';
-      }, 400);
+      }, 150);
     });
   }
 

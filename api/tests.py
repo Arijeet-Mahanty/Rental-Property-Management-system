@@ -1075,6 +1075,72 @@ class IndianDemoDataPersistenceTests(TestCase):
         self.assertEqual(res.status_code, 400)
         self.assertIn('Cannot revoke platform administrator', res.json().get('message', ''))
 
+    def test_tenant_can_view_all_properties_and_apply(self):
+        """Tenants can view all landlord properties and submit a rental application."""
+        # 1. Tenant views properties
+        res = self.client.get('/api/properties', HTTP_AUTHORIZATION=f'Bearer {self.priya_token}')
+        self.assertEqual(res.status_code, 200)
+        props = res.json().get('data', [])
+        self.assertTrue(len(props) > 0)
+        target_prop = Property.objects.filter(landlord=self.landlord_rajesh).first()
+
+        # 2. Tenant applies for the property
+        apply_res = self.client.post(
+            f'/api/properties/{target_prop.id}/apply/',
+            data=json.dumps({
+                'occupation': 'Senior Software Engineer',
+                'income': '150000',
+                'notes': 'Looking for immediate occupancy.'
+            }),
+            content_type='application/json',
+            HTTP_AUTHORIZATION=f'Bearer {self.priya_token}'
+        )
+        self.assertEqual(apply_res.status_code, 201)
+        lease_data = apply_res.json().get('lease', {})
+        self.assertEqual(lease_data.get('status'), 'pending')
+        lease_id = lease_data.get('id')
+
+        # 3. Landlord reviews and approves the application
+        approve_res = self.client.post(
+            f'/api/leases/{lease_id}/action/',
+            data=json.dumps({'action': 'approve'}),
+            content_type='application/json',
+            HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}'
+        )
+        self.assertEqual(approve_res.status_code, 200)
+        updated_lease = approve_res.json().get('lease', {})
+        self.assertEqual(updated_lease.get('status'), 'active')
+
+        # 4. Verify lease is now active in database
+        lease_obj = Lease.objects.get(id=lease_id)
+        self.assertEqual(lease_obj.status, 'active')
+        self.assertEqual(lease_obj.unit.status, 'occupied')
+
+    def test_landlord_can_decline_application(self):
+        """Landlord can decline an application."""
+        prop = Property.objects.filter(landlord=self.landlord_rajesh).first()
+        apply_res = self.client.post(
+            f'/api/properties/{prop.id}/apply/',
+            data=json.dumps({
+                'occupation': 'Consultant',
+                'income': '90000'
+            }),
+            content_type='application/json',
+            HTTP_AUTHORIZATION=f'Bearer {self.priya_token}'
+        )
+        self.assertEqual(apply_res.status_code, 201)
+        lease_id = apply_res.json().get('lease', {}).get('id')
+
+        decline_res = self.client.post(
+            f'/api/leases/{lease_id}/action/',
+            data=json.dumps({'action': 'decline'}),
+            content_type='application/json',
+            HTTP_AUTHORIZATION=f'Bearer {self.rajesh_token}'
+        )
+        self.assertEqual(decline_res.status_code, 200)
+        self.assertEqual(decline_res.json().get('lease', {}).get('status'), 'terminated')
+
+
 
 
 

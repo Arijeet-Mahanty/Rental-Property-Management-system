@@ -296,13 +296,18 @@ export function injectNavbar() {
     }
   });
 
-  // Attach Logout Handlers
-  const handleLogout = async () => {
-    await logout();
-    showToast('Logged out', 'You have been securely signed out.', 'info', 2000);
+  // Attach Logout Handlers (handles navbar logout and dashboard red logout button)
+  const handleLogout = async (e) => {
+    if (e) e.preventDefault();
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch (_) {}
+    try { logout().catch(() => {}); } catch (_) {}
+    showToast('Logged out', 'You have been safely signed out.', 'info', 1200);
     setTimeout(() => {
       window.location.href = 'login.html';
-    }, 400);
+    }, 150);
   };
 
   const logoutBtn = document.getElementById('nav-logout-btn');
@@ -313,6 +318,11 @@ export function injectNavbar() {
   const mobileLogoutBtn = document.getElementById('mobile-nav-logout-btn');
   if (mobileLogoutBtn) {
     mobileLogoutBtn.addEventListener('click', handleLogout);
+  }
+
+  const dashLogoutBtn = document.getElementById('dash-logout-btn');
+  if (dashLogoutBtn) {
+    dashLogoutBtn.addEventListener('click', handleLogout);
   }
 }
 

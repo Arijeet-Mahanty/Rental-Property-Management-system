@@ -15,6 +15,8 @@ import {
   createUnit,
   getLeases,
   createLease,
+  applyForProperty,
+  updateLeaseStatus,
   getPayments,
   createPayment,
   createUpiPaymentOrder,
@@ -74,6 +76,28 @@ function escapeHtml(str) {
  * Initializes the entire Phase 3 dashboard.
  */
 export async function initDashboard() {
+  // Synchronous immediate logout binding (zero delay, immune to any network or session timeouts)
+  const handleImmediateLogout = (e) => {
+    if (e) e.preventDefault();
+    try { destroyChatbot(); } catch (_) {}
+    try {
+      localStorage.clear();
+      sessionStorage.clear();
+    } catch (_) {}
+    try { logout().catch(() => {}); } catch (_) {}
+    window.location.replace('login.html');
+  };
+
+  const logoutBtn = document.getElementById('dash-logout-btn');
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', handleImmediateLogout);
+  }
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.closest('#dash-logout-btn')) {
+      handleImmediateLogout(e);
+    }
+  });
+
   let user = getCurrentUser();
   if (!user) {
     window.location.replace('login.html');
@@ -97,7 +121,6 @@ export async function initDashboard() {
   const nameEl = document.getElementById('dash-user-name');
   const emailEl = document.getElementById('dash-user-email');
   const avatarEl = document.getElementById('dash-user-avatar');
-  const logoutBtn = document.getElementById('dash-logout-btn');
 
   if (nameEl) nameEl.textContent = `Welcome back, ${user.name}!`;
   if (emailEl) emailEl.textContent = user.email;
@@ -115,15 +138,6 @@ export async function initDashboard() {
   const tabTextOverview = document.getElementById('tab-text-overview');
   if (tabTextOverview && isAdmin) {
     tabTextOverview.textContent = 'Admin Command Center';
-  }
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      destroyChatbot();
-      await logout();
-      showToast('Logged out', 'You have been safely signed out.', 'info', 2000);
-      setTimeout(() => window.location.href = 'login.html', 400);
-    });
   }
 
   // Bind tab switching
@@ -165,7 +179,7 @@ async function refreshDashboardData(user) {
 
     const [stats, properties, units, leases, payments, tickets, adminUsers, adminInquiries] = await Promise.all([
       getDashboardStats().catch(() => null),
-      (isLandlord || isAdmin) ? getProperties().catch(() => []) : Promise.resolve([]),
+      getProperties().catch(() => []),
       getUnits().catch(() => []),
       getLeases().catch(() => []),
       getPayments().catch(() => []),
@@ -420,37 +434,30 @@ function downloadLedgerCsv(payments) {
 // ============================================================================
 function renderAdminOverviewTab(container, user) {
   const stats = cachedStats || {};
-  const totalUsers = stats.totalUsers || cachedUsers.length || 7;
-  const landlords = stats.totalLandlords || 2;
-  const tenants = stats.totalTenants || 4;
-  const totalProps = stats.totalProperties || cachedProperties.length || 6;
-  const totalUnits = stats.totalUnits || cachedUnits.length || 20;
-  const occupiedUnits = stats.occupiedUnits !== undefined ? stats.occupiedUnits : 18;
-  const occupancyRate = stats.occupancyRate !== undefined ? stats.occupancyRate : 90;
-  const monthlyRoll = stats.monthlyRentRoll || 1171500;
-  const paidTotal = stats.paidRentThisMonth || stats.paidRentTotal || 291589;
-  const pendingTotal = stats.pendingRent || stats.pendingRentTotal || 28500;
-  const openTickets = stats.openMaintenanceCount !== undefined ? stats.openMaintenanceCount : 4;
-  const activeLeases = stats.activeLeasesCount || cachedLeases.length || 4;
+  const totalUsers = (stats.totalUsers !== undefined) ? stats.totalUsers : cachedUsers.length;
+  const landlords = (stats.totalLandlords !== undefined) ? stats.totalLandlords : 0;
+  const tenants = (stats.totalTenants !== undefined) ? stats.totalTenants : 0;
+  const totalProps = (stats.totalProperties !== undefined) ? stats.totalProperties : cachedProperties.length;
+  const totalUnits = (stats.totalUnits !== undefined) ? stats.totalUnits : cachedUnits.length;
+  const occupiedUnits = stats.occupiedUnits !== undefined ? stats.occupiedUnits : 0;
+  const occupancyRate = stats.occupancyRate !== undefined ? stats.occupancyRate : 0;
+  const monthlyRoll = (stats.monthlyRentRoll !== undefined) ? stats.monthlyRentRoll : 0;
+  const paidTotal = (stats.paidRentThisMonth !== undefined) ? stats.paidRentThisMonth : ((stats.paidRentTotal !== undefined) ? stats.paidRentTotal : 0);
+  const pendingTotal = (stats.pendingRent !== undefined) ? stats.pendingRent : ((stats.pendingRentTotal !== undefined) ? stats.pendingRentTotal : 0);
+  const openTickets = stats.openMaintenanceCount !== undefined ? stats.openMaintenanceCount : 0;
+  const activeLeases = (stats.activeLeasesCount !== undefined) ? stats.activeLeasesCount : cachedLeases.length;
   const inquiriesCount = stats.inquiriesCount !== undefined ? stats.inquiriesCount : cachedInquiries.length;
   const reviewsCount = stats.reviewsCount !== undefined ? stats.reviewsCount : cachedReviews.length;
 
   // Compute property metrics for Chart 1
   const propsForChart = (cachedProperties && cachedProperties.length > 0)
     ? [...cachedProperties].sort((a, b) => (Number(b.monthly_rent_total) || 0) - (Number(a.monthly_rent_total) || 0))
-    : [
-        { name: 'Skyline Palms', monthly_rent_total: 443000, units_count: 5 },
-        { name: 'Cyber Greens', monthly_rent_total: 339000, units_count: 5 },
-        { name: 'Gulmohar Res.', monthly_rent_total: 202500, units_count: 6 },
-        { name: 'Greenfield Hts', monthly_rent_total: 120000, units_count: 2 },
-        { name: 'Sobha Casa', monthly_rent_total: 42000, units_count: 1 },
-        { name: 'Raja Mahal', monthly_rent_total: 25000, units_count: 1 }
-      ];
+    : [];
 
-  const maxPropRent = Math.max(...propsForChart.map(p => Number(p.monthly_rent_total) || 0), 450000);
+  const maxPropRent = Math.max(...propsForChart.map(p => Number(p.monthly_rent_total) || 0), 10000);
   const chartHeight = 115;
   const chartWidth = 580;
-  const numBars = propsForChart.length;
+  const numBars = Math.max(propsForChart.length, 1);
   const spacing = Math.round(chartWidth / (numBars + 1));
 
   const barData = propsForChart.map((p, i) => {
@@ -470,13 +477,13 @@ function renderAdminOverviewTab(container, user) {
   const linePath = barData.length > 0 ? `M ${curvePoints}` : '';
 
   // Payment channel distribution for Chart 3
-  const upiTotal = cachedPayments.filter(p => (p.payment_method || '').toLowerCase() === 'upi').reduce((s, p) => s + (Number(p.amount) || 0), 0) || 220089;
-  const netbankingTotal = cachedPayments.filter(p => ['netbanking', 'imps'].includes((p.payment_method || '').toLowerCase())).reduce((s, p) => s + (Number(p.amount) || 0), 0) || 65000;
-  const enachTotal = cachedPayments.filter(p => (p.payment_method || '').toLowerCase() === 'enach').reduce((s, p) => s + (Number(p.amount) || 0), 0) || 35000;
+  const upiTotal = cachedPayments.filter(p => (p.payment_method || '').toLowerCase() === 'upi').reduce((s, p) => s + (Number(p.amount) || 0), 0);
+  const netbankingTotal = cachedPayments.filter(p => ['netbanking', 'imps'].includes((p.payment_method || '').toLowerCase())).reduce((s, p) => s + (Number(p.amount) || 0), 0);
+  const enachTotal = cachedPayments.filter(p => (p.payment_method || '').toLowerCase() === 'enach').reduce((s, p) => s + (Number(p.amount) || 0), 0);
   const channelsSum = upiTotal + netbankingTotal + enachTotal || 1;
-  const upiPct = Math.round((upiTotal / channelsSum) * 100);
-  const netbankingPct = Math.round((netbankingTotal / channelsSum) * 100);
-  const enachPct = Math.max(1, 100 - upiPct - netbankingPct);
+  const upiPct = channelsSum > 1 ? Math.round((upiTotal / channelsSum) * 100) : 0;
+  const netbankingPct = channelsSum > 1 ? Math.round((netbankingTotal / channelsSum) * 100) : 0;
+  const enachPct = channelsSum > 1 ? Math.max(0, 100 - upiPct - netbankingPct) : 0;
 
   // User profile distribution for Chart 4
   const tenantPct = Math.round((tenants / (totalUsers || 1)) * 100);
@@ -909,14 +916,14 @@ function renderOverviewTab(container, user, isLandlord) {
   const stats = cachedStats || {};
 
   if (isLandlord) {
-    const totalProps = stats.totalProperties || cachedProperties.length || 4;
-    const totalUnits = stats.totalUnits || cachedUnits.length || 18;
-    const occupiedUnits = stats.occupiedUnits !== undefined ? stats.occupiedUnits : 17;
-    const occupancyRate = stats.occupancyRate !== undefined ? stats.occupancyRate : 94;
-    const monthlyRoll = stats.monthlyRentRoll || 43450;
-    const paidMonth = stats.paidRentThisMonth || 9000;
-    const pendingRent = stats.pendingRent || 1650;
-    const openTickets = stats.openMaintenanceCount !== undefined ? stats.openMaintenanceCount : 2;
+    const totalProps = (stats.totalProperties !== undefined) ? stats.totalProperties : cachedProperties.length;
+    const totalUnits = (stats.totalUnits !== undefined) ? stats.totalUnits : cachedUnits.length;
+    const occupiedUnits = (stats.occupiedUnits !== undefined) ? stats.occupiedUnits : 0;
+    const occupancyRate = (stats.occupancyRate !== undefined) ? stats.occupancyRate : 0;
+    const monthlyRoll = (stats.monthlyRentRoll !== undefined) ? stats.monthlyRentRoll : 0;
+    const paidMonth = (stats.paidRentThisMonth !== undefined) ? stats.paidRentThisMonth : 0;
+    const pendingRent = (stats.pendingRent !== undefined) ? stats.pendingRent : 0;
+    const openTickets = (stats.openMaintenanceCount !== undefined) ? stats.openMaintenanceCount : 0;
 
     container.innerHTML = `
       <!-- Quick Actions Toolbar -->
@@ -975,7 +982,7 @@ function renderOverviewTab(container, user, isLandlord) {
             <span class="badge ${openTickets > 0 ? 'badge--high' : 'badge--low'}">${openTickets} Open</span>
           </div>
           <div class="dash-stat-card__val">${openTickets} Tickets</div>
-          <div class="dash-stat-card__sub" style="color: var(--color-accent);">&bull; 1 High priority hot water issue</div>
+          <div class="dash-stat-card__sub" style="color: ${openTickets > 0 ? 'var(--color-accent)' : 'var(--color-success)'};">&bull; ${openTickets > 0 ? `${openTickets} pending triage` : 'All units operating normally'}</div>
         </div>
       </div>
 
@@ -1002,15 +1009,21 @@ function renderOverviewTab(container, user, isLandlord) {
                 </tr>
               </thead>
               <tbody>
-                ${cachedPayments.slice(0, 4).map(p => `
+                ${cachedPayments.length > 0 ? cachedPayments.slice(0, 4).map(p => `
                   <tr>
-                    <td style="font-weight: var(--font-weight-semibold);">${escapeHtml(p.tenant_name || 'Priya Iyer')}</td>
-                    <td>${escapeHtml(p.unit_number || 'Flat 4B')}</td>
+                    <td style="font-weight: var(--font-weight-semibold);">${escapeHtml(p.tenant_name || 'Resident')}</td>
+                    <td>${escapeHtml(p.unit_number || 'Unit')}</td>
                     <td style="font-weight: var(--font-weight-bold);">${formatCurrency(p.amount)}</td>
                     <td style="font-size: var(--font-size-xs); color: var(--color-text-muted);">${formatDate(p.due_date)}</td>
                     <td><span class="badge badge--${escapeHtml(p.status)}">${escapeHtml(p.status)}</span></td>
                   </tr>
-                `).join('')}
+                `).join('') : `
+                  <tr>
+                    <td colspan="5" style="text-align: center; color: var(--color-text-muted); padding: var(--space-6);">
+                      No recent rent transactions recorded yet.
+                    </td>
+                  </tr>
+                `}
               </tbody>
             </table>
           </div>
@@ -1049,7 +1062,7 @@ function renderOverviewTab(container, user, isLandlord) {
                   </div>
                   <h4 style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold); color: var(--color-text-main); margin-bottom: var(--space-2);">Units Operating Normally</h4>
                   <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); line-height: var(--line-height-relaxed); margin-bottom: var(--space-4);">
-                    There are no open or urgent maintenance tickets across your managed properties. All repair orders are currently resolved.
+                    There are no open maintenance tickets across your managed properties. All repair orders are currently resolved.
                   </p>
                 </div>
                 <button type="button" class="btn btn--outline btn--sm" id="btn-view-ticket-triage" style="width: 100%;">
@@ -1071,23 +1084,31 @@ function renderOverviewTab(container, user, isLandlord) {
           </div>
           <button type="button" class="btn btn--ghost btn--sm" id="btn-view-all-props">View All Properties &rarr;</button>
         </div>
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-4);">
-          ${cachedProperties.slice(0, 3).map(p => `
-            <div style="background: rgba(255,255,255,0.6); border-radius: var(--border-radius-md); padding: var(--space-4); border: 1px solid rgba(0,0,0,0.06);">
-              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-2);">
-                <h4 style="font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); margin: 0; color: var(--color-primary);">${escapeHtml(p.name)}</h4>
-                <span class="badge badge--landlord">${p.units_count || 0} Doors</span>
+        ${cachedProperties.length > 0 ? `
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: var(--space-4);">
+            ${cachedProperties.slice(0, 3).map(p => `
+              <div style="background: rgba(255,255,255,0.6); border-radius: var(--border-radius-md); padding: var(--space-4); border: 1px solid rgba(0,0,0,0.06);">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: var(--space-2);">
+                  <h4 style="font-size: var(--font-size-sm); font-weight: var(--font-weight-bold); margin: 0; color: var(--color-primary);">${escapeHtml(p.name)}</h4>
+                  <span class="badge badge--landlord">${p.units_count || 0} Doors</span>
+                </div>
+                <div style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin-bottom: var(--space-2);">
+                  ${escapeHtml(p.address)}, ${escapeHtml(p.city)}
+                </div>
+                <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-subtle);">
+                  <span>${p.occupancy_rate || 0}% Occupied</span>
+                  <span style="font-weight: var(--font-weight-bold); color: var(--color-text-main);">${formatCurrency(p.monthly_rent_total || 0)}/mo</span>
+                </div>
               </div>
-              <div style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin-bottom: var(--space-2);">
-                ${escapeHtml(p.address)}, ${escapeHtml(p.city)}
-              </div>
-              <div style="display: flex; justify-content: space-between; font-size: 11px; color: var(--color-text-subtle);">
-                <span>${p.occupancy_rate || 0}% Occupied</span>
-                <span style="font-weight: var(--font-weight-bold); color: var(--color-text-main);">${formatCurrency(p.monthly_rent_total || 0)}/mo</span>
-              </div>
-            </div>
-          `).join('')}
-        </div>
+            `).join('')}
+          </div>
+        ` : `
+          <div style="text-align: center; padding: var(--space-8); background: rgba(255,255,255,0.5); border-radius: var(--border-radius-md); border: 2px dashed rgba(0,0,0,0.1);">
+            <p style="font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-main); margin-bottom: var(--space-2);">No properties added yet</p>
+            <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin-bottom: var(--space-4);">Add your first rental building to manage units, generate leases, and track rent collection.</p>
+            <button type="button" class="btn btn--primary btn--sm" id="btn-overview-empty-add-prop">+ Add Your First Property</button>
+          </div>
+        `}
       </div>
     `;
 
@@ -1102,38 +1123,74 @@ function renderOverviewTab(container, user, isLandlord) {
     const leaseTerm = (lease.startDate && lease.endDate)
       ? `${formatDate(lease.startDate)} – ${formatDate(lease.endDate)}`
       : 'Active 11-Month Term';
-    const depositFormatted = formatCurrency(lease.depositAmount || (monthlyRent * 2));
+    const depositFormatted = formatCurrency(lease.depositAmount || 0);
+    const pendingApp = cachedLeases.find(l => l.status === 'pending');
 
     container.innerHTML = `
       <!-- Tenant Home Spotlight Banner -->
       <div class="glass-card tenant-spotlight-card">
-        <div class="tenant-spotlight-grid">
-          <div>
-            <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
-              <span class="badge badge--tenant" style="border-radius: 6px;">Active Resident</span>
-              <span class="badge badge--paid" style="border-radius: 6px;">Autopay Active</span>
+        ${hasLease ? `
+          <div class="tenant-spotlight-grid">
+            <div>
+              <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+                <span class="badge badge--tenant" style="border-radius: 6px;">Active Resident</span>
+                <span class="badge badge--paid" style="border-radius: 6px;">Autopay Active</span>
+              </div>
+              <h2 style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-extrabold); color: var(--color-text-main); margin-bottom: var(--space-1);">
+                ${escapeHtml(lease.unitName || 'Unit')} — ${escapeHtml(lease.propertyName || 'Property')}
+              </h2>
+              <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--space-4);">
+                ${escapeHtml(lease.address || 'Resident address on file')}
+              </p>
+              <div style="display: flex; gap: var(--space-6); font-size: var(--font-size-xs); color: var(--color-text-muted);">
+                <div><strong style="color: var(--color-text-main);">Lease Term:</strong> ${leaseTerm}</div>
+                <div><strong style="color: var(--color-text-main);">Deposit:</strong> ${depositFormatted}</div>
+              </div>
             </div>
-            <h2 style="font-size: var(--font-size-2xl); font-weight: var(--font-weight-extrabold); color: var(--color-text-main); margin-bottom: var(--space-1);">
-              ${escapeHtml(lease.unitName || 'Flat 4B')} — ${escapeHtml(lease.propertyName || 'Gulmohar Residency')}
+
+            <div class="tenant-due-panel">
+              <span style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); color: var(--color-text-muted); text-transform: uppercase;">Next Payment Due</span>
+              <div class="tenant-due-amount">${formatCurrency(monthlyRent)}</div>
+              <p style="font-size: var(--font-size-xs); color: var(--color-text-subtle); margin-bottom: var(--space-4);">${nextDue ? 'Due on ' + formatDate(nextDue) + ' via UPI / eNACH' : 'Scheduled on 1st of every month'}</p>
+              <button type="button" class="btn btn--primary btn--sm" id="btn-tenant-pay-rent" style="width: 100%;">
+                <span>Pay Rent Now</span>
+              </button>
+            </div>
+          </div>
+        ` : pendingApp ? `
+          <div style="padding: var(--space-2);">
+            <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+              <span class="badge badge--pending" style="border-radius: 6px;">Application Pending</span>
+              <span class="badge badge--tenant" style="border-radius: 6px;">Prospective Resident</span>
+            </div>
+            <h2 style="font-size: var(--font-size-xl); font-weight: var(--font-weight-extrabold); color: var(--color-text-main); margin-bottom: var(--space-1);">
+              Rental Application Under Review
             </h2>
             <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--space-4);">
-              ${escapeHtml(lease.address || '14th Main, 4th Block, Koramangala, Bengaluru, KA 560034')}
+              You have submitted an application for <strong>${escapeHtml(pendingApp.unit_number || 'Unit')}</strong> at <strong>${escapeHtml(pendingApp.property_name || 'Property')}</strong>. The landlord has been notified and is reviewing your application.
             </p>
-            <div style="display: flex; gap: var(--space-6); font-size: var(--font-size-xs); color: var(--color-text-muted);">
-              <div><strong style="color: var(--color-text-main);">Lease Term:</strong> ${leaseTerm}</div>
-              <div><strong style="color: var(--color-text-main);">Deposit:</strong> ${depositFormatted}</div>
+            <div style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
+              <button type="button" class="btn btn--primary btn--sm" id="btn-tenant-view-leases">Check Application Status</button>
+              <button type="button" class="btn btn--outline btn--sm" id="btn-tenant-browse-rentals">Explore More Properties</button>
             </div>
           </div>
-
-          <div class="tenant-due-panel">
-            <span style="font-size: var(--font-size-xs); font-weight: var(--font-weight-bold); color: var(--color-text-muted); text-transform: uppercase;">Next Payment Due</span>
-            <div class="tenant-due-amount">${formatCurrency(monthlyRent > 0 ? monthlyRent : 28500)}</div>
-            <p style="font-size: var(--font-size-xs); color: var(--color-text-subtle); margin-bottom: var(--space-4);">${nextDue ? 'Due on ' + formatDate(nextDue) + ' via UPI / eNACH' : 'Autopay scheduled on 1st of every month'}</p>
-            <button type="button" class="btn btn--primary btn--sm" id="btn-tenant-pay-rent" style="width: 100%;">
-              <span>Pay Rent Now</span>
+        ` : `
+          <div style="padding: var(--space-2);">
+            <div style="display: flex; gap: var(--space-2); margin-bottom: var(--space-2);">
+              <span class="badge badge--tenant" style="border-radius: 6px;">New Resident</span>
+              <span class="badge badge--paid" style="border-radius: 6px;">Portal Ready</span>
+            </div>
+            <h2 style="font-size: var(--font-size-xl); font-weight: var(--font-weight-extrabold); color: var(--color-text-main); margin-bottom: var(--space-1);">
+              Browse Listed Properties &amp; Apply
+            </h2>
+            <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--space-4);">
+              Find verified rental properties listed by landlords across top locations. Select a property, choose your unit, and submit your rental application online!
+            </p>
+            <button type="button" class="btn btn--primary btn--sm" id="btn-tenant-browse-rentals">
+              <span>Browse Available Properties (${cachedProperties.length})</span>
             </button>
           </div>
-        </div>
+        `}
       </div>
 
       <!-- Quick Action Cards for Tenant -->
@@ -1156,13 +1213,19 @@ function renderOverviewTab(container, user, isLandlord) {
                 </tr>
               </thead>
               <tbody>
-                ${cachedTickets.filter(t => t.unit_id === 'unit_104' || t.tenant_id === 'usr_tenant_demo').map(t => `
+                ${cachedTickets.length > 0 ? cachedTickets.map(t => `
                   <tr>
                     <td style="font-weight: var(--font-weight-semibold);">${escapeHtml(t.title)}</td>
                     <td><span class="badge badge--${escapeHtml(t.priority)}">${escapeHtml(t.priority)}</span></td>
                     <td><span class="badge badge--${escapeHtml(t.status)}">${escapeHtml(t.status)}</span></td>
                   </tr>
-                `).join('')}
+                `).join('') : `
+                  <tr>
+                    <td colspan="3" style="text-align: center; color: var(--color-text-muted); padding: var(--space-4);">
+                      No maintenance tickets submitted.
+                    </td>
+                  </tr>
+                `}
               </tbody>
             </table>
           </div>
@@ -1184,14 +1247,20 @@ function renderOverviewTab(container, user, isLandlord) {
                 </tr>
               </thead>
               <tbody>
-                ${cachedPayments.filter(p => p.status === 'paid').slice(0, 3).map(p => `
+                ${cachedPayments.filter(p => p.status === 'paid').length > 0 ? cachedPayments.filter(p => p.status === 'paid').slice(0, 3).map(p => `
                   <tr>
                     <td style="font-size: var(--font-size-xs);">${formatDate(p.due_date)}</td>
                     <td style="font-weight: var(--font-weight-bold);">${formatCurrency(p.amount)}</td>
                     <td style="text-transform: uppercase; font-size: 11px;">${escapeHtml(p.payment_method)}</td>
                     <td><span class="badge badge--paid">Paid</span></td>
                   </tr>
-                `).join('')}
+                `).join('') : `
+                  <tr>
+                    <td colspan="4" style="text-align: center; color: var(--color-text-muted); padding: var(--space-4);">
+                      No payment receipts on file yet.
+                    </td>
+                  </tr>
+                `}
               </tbody>
             </table>
           </div>
@@ -1203,6 +1272,12 @@ function renderOverviewTab(container, user, isLandlord) {
     document.getElementById('btn-tenant-report-issue')?.addEventListener('click', () => openModal('modal-create-ticket'));
     document.getElementById('btn-tenant-view-ledger')?.addEventListener('click', () => {
       document.querySelector('[data-tab="payments"]')?.click();
+    });
+    document.getElementById('btn-tenant-browse-rentals')?.addEventListener('click', () => {
+      document.querySelector('[data-tab="properties"]')?.click();
+    });
+    document.getElementById('btn-tenant-view-leases')?.addEventListener('click', () => {
+      document.querySelector('[data-tab="leases"]')?.click();
     });
   }
 }
@@ -1614,11 +1689,16 @@ function renderInquiriesTab(container, user) {
 // ============================================================================
 function renderPropertiesTab(container, isLandlord, isAdmin) {
   const canManage = isLandlord || isAdmin;
+  const propsTitle = canManage ? 'Rental Properties & Units' : 'Available Rental Properties';
+  const propsSubtitle = canManage
+    ? 'Portfolio doors, floorplans, occupancy rates, and unit inventories'
+    : 'Browse properties listed by verified landlords and apply for vacant units';
+
   container.innerHTML = `
     <div class="dash-section-header">
       <div>
-        <h2 class="dash-section-header__title">Rental Properties & Units</h2>
-        <p class="dash-section-header__sub">Portfolio doors, floorplans, occupancy rates, and unit inventories</p>
+        <h2 class="dash-section-header__title">${propsTitle}</h2>
+        <p class="dash-section-header__sub">${propsSubtitle}</p>
       </div>
       ${canManage ? `
         <div style="display: flex; gap: var(--space-3);">
@@ -1630,70 +1710,94 @@ function renderPropertiesTab(container, isLandlord, isAdmin) {
 
     <!-- Properties Card Grid -->
     <div class="properties-grid">
-      ${cachedProperties.map(prop => `
-        <div class="glass-card property-card">
-          ${prop.image_url ? `
-            <div class="property-card__img-wrap" style="height: 140px; border-radius: var(--radius-md); overflow: hidden; margin-bottom: var(--space-3); border: var(--neo-border-subtle); background: var(--color-bg-inset);">
-              <img src="${escapeHtml(prop.image_url)}" alt="${escapeHtml(prop.name)}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.style.display='none';">
-            </div>
-          ` : ''}
-          <div>
-            ${isAdmin ? `
-              <div style="font-size: 11px; color: #5b21b6; font-weight: var(--font-weight-bold); margin-bottom: var(--space-2); display: flex; align-items: center; gap: 4px;">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-                <span>Owner: ${escapeHtml(prop.landlord_name || 'Platform')} (${escapeHtml(prop.landlord_email || '')})</span>
+      ${cachedProperties.length > 0 ? cachedProperties.map(prop => {
+        const userLease = cachedLeases.find(l => l.property_id === prop.id);
+        return `
+          <div class="glass-card property-card">
+            ${prop.image_url ? `
+              <div class="property-card__img-wrap" style="height: 140px; border-radius: var(--radius-md); overflow: hidden; margin-bottom: var(--space-3); border: var(--neo-border-subtle); background: var(--color-bg-inset);">
+                <img src="${escapeHtml(prop.image_url)}" alt="${escapeHtml(prop.name)}" style="width: 100%; height: 100%; object-fit: cover;" onerror="this.parentElement.style.display='none';">
               </div>
             ` : ''}
-            <div class="property-card__header">
-              <div>
-                <h3 class="property-card__title">${escapeHtml(prop.name)}</h3>
-                <div class="property-card__address">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-                  <span>${escapeHtml(prop.address)}, ${escapeHtml(prop.city)}, ${escapeHtml(prop.state)} ${escapeHtml(prop.zip_code)}</span>
+            <div>
+              ${isAdmin ? `
+                <div style="font-size: 11px; color: #5b21b6; font-weight: var(--font-weight-bold); margin-bottom: var(--space-2); display: flex; align-items: center; gap: 4px;">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  <span>Owner: ${escapeHtml(prop.landlord_name || 'Platform')} (${escapeHtml(prop.landlord_email || '')})</span>
+                </div>
+              ` : (!canManage && prop.landlord_name) ? `
+                <div style="font-size: 11px; color: var(--color-primary); font-weight: var(--font-weight-bold); margin-bottom: var(--space-2); display: flex; align-items: center; gap: 4px;">
+                  <span>Verified Landlord: ${escapeHtml(prop.landlord_name)}</span>
+                </div>
+              ` : ''}
+              <div class="property-card__header">
+                <div>
+                  <h3 class="property-card__title">${escapeHtml(prop.name)}</h3>
+                  <div class="property-card__address">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                    <span>${escapeHtml(prop.address)}, ${escapeHtml(prop.city)}, ${escapeHtml(prop.state)} ${escapeHtml(prop.zip_code)}</span>
+                  </div>
+                </div>
+                <span class="badge badge--landlord">${escapeHtml(prop.property_type || 'Residential')}</span>
+              </div>
+
+              <div class="property-card__kpis">
+                <div>
+                  <div class="property-card__kpi-val">${prop.units_count || 0}</div>
+                  <div class="property-card__kpi-lbl">Total Doors</div>
+                </div>
+                <div>
+                  <div class="property-card__kpi-val" style="color: var(--color-success);">${prop.occupancy_rate || 0}%</div>
+                  <div class="property-card__kpi-lbl">Occupancy</div>
+                </div>
+                <div>
+                  <div class="property-card__kpi-val">${formatCurrency(prop.monthly_rent_total || 0)}</div>
+                  <div class="property-card__kpi-lbl">${canManage ? 'Rent Roll' : 'Total Rent Roll'}</div>
                 </div>
               </div>
-              <span class="badge badge--landlord">${escapeHtml(prop.property_type || 'Multi-Family')}</span>
             </div>
 
-            <div class="property-card__kpis">
-              <div>
-                <div class="property-card__kpi-val">${prop.units_count || 0}</div>
-                <div class="property-card__kpi-lbl">Total Doors</div>
-              </div>
-              <div>
-                <div class="property-card__kpi-val" style="color: var(--color-success);">${prop.occupancy_rate || 0}%</div>
-                <div class="property-card__kpi-lbl">Occupancy</div>
-              </div>
-              <div>
-                <div class="property-card__kpi-val">${formatCurrency(prop.monthly_rent_total || 0)}</div>
-                <div class="property-card__kpi-lbl">Rent Roll</div>
-              </div>
+            <div class="property-card__footer">
+              <span style="font-size: var(--font-size-xs); color: var(--color-text-subtle);">${prop.occupied_units_count || 0} Leased Units</span>
+              ${canManage ? `
+                <div style="display: flex; gap: var(--space-2); align-items: center;">
+                  <button type="button" class="btn btn--outline btn--sm btn-card-add-unit" data-prop-id="${escapeHtml(prop.id)}" title="Add Door to this Property">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    <span>+ Door</span>
+                  </button>
+                  <button type="button" class="btn btn--ghost btn--sm btn-delete-prop" data-prop-id="${escapeHtml(prop.id)}" title="Delete Property">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                  </button>
+                </div>
+              ` : `
+                ${userLease && userLease.status === 'active' ? `
+                  <span class="badge badge--paid">Current Home (Active)</span>
+                ` : userLease && userLease.status === 'pending' ? `
+                  <span class="badge badge--pending">Application Pending Review</span>
+                ` : `
+                  <button type="button" class="btn btn--primary btn--sm btn-apply-rental-action" data-prop-id="${escapeHtml(prop.id)}">
+                    <span>Apply Now &rarr;</span>
+                  </button>
+                `}
+              `}
             </div>
           </div>
-
-          <div class="property-card__footer">
-            <span style="font-size: var(--font-size-xs); color: var(--color-text-subtle);">${prop.occupied_units_count || 0} Leased Units</span>
-            ${canManage ? `
-              <div style="display: flex; gap: var(--space-2); align-items: center;">
-                <button type="button" class="btn btn--outline btn--sm btn-card-add-unit" data-prop-id="${escapeHtml(prop.id)}" title="Add Door to this Property">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
-                  <span>+ Door</span>
-                </button>
-                <button type="button" class="btn btn--ghost btn--sm btn-delete-prop" data-prop-id="${escapeHtml(prop.id)}" title="Delete Property">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
-                </button>
-              </div>
-            ` : ''}
-          </div>
+        `;
+      }).join('') : `
+        <div style="grid-column: 1 / -1; text-align: center; padding: var(--space-8); background: rgba(255,255,255,0.6); border-radius: var(--border-radius-md); border: 2px dashed rgba(0,0,0,0.1);">
+          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto var(--space-3); color: var(--color-text-muted);"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <h4 style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold); margin-bottom: var(--space-1);">${canManage ? 'No Properties Listed Yet' : 'No Properties Currently Listed'}</h4>
+          <p style="font-size: var(--font-size-xs); color: var(--color-text-muted); margin-bottom: var(--space-4);">${canManage ? 'Add your first rental property to begin managing doors, leases, and rent roll.' : 'Landlords have not listed any properties yet. Please check back shortly.'}</p>
+          ${canManage ? `<button type="button" class="btn btn--primary btn--sm" id="btn-empty-properties-add">+ Add Your First Property</button>` : ''}
         </div>
-      `).join('')}
+      `}
     </div>
 
     <!-- Units Inventory Table -->
     <div class="dash-section-header" style="margin-top: var(--space-10);">
       <div>
-        <h3 class="dash-section-header__title" style="font-size: var(--font-size-lg);">All Unit Doors (${cachedUnits.length})</h3>
-        <p class="dash-section-header__sub">Individual door specifications, rent pricing, and current occupants</p>
+        <h3 class="dash-section-header__title" style="font-size: var(--font-size-lg);">${canManage ? 'All Unit Doors' : 'Available Doors for Rent'} (${cachedUnits.length})</h3>
+        <p class="dash-section-header__sub">${canManage ? 'Individual door specifications, rent pricing, and current occupants' : 'Select a vacant unit to submit your rental application'}</p>
       </div>
     </div>
 
@@ -1707,39 +1811,73 @@ function renderPropertiesTab(container, isLandlord, isAdmin) {
             <th>Sq Ft</th>
             <th>Monthly Rent</th>
             <th>Status</th>
-            <th>Resident</th>
+            <th>${canManage ? 'Resident' : 'Application'}</th>
           </tr>
         </thead>
         <tbody>
-          ${cachedUnits.map(unit => `
+          ${cachedUnits.length > 0 ? cachedUnits.map(unit => `
             <tr>
               <td style="font-weight: var(--font-weight-bold); color: var(--color-primary);">${escapeHtml(unit.unit_number)}</td>
-              <td>${escapeHtml(unit.property_name || 'Gulmohar Residency')}</td>
+              <td>${escapeHtml(unit.property_name || 'Property')}</td>
               <td>${unit.bedrooms} bd / ${unit.bathrooms} ba</td>
               <td>${unit.square_feet ? unit.square_feet + ' sq ft' : '—'}</td>
               <td style="font-weight: var(--font-weight-bold);">${formatCurrency(unit.rent_amount)}</td>
               <td><span class="badge badge--${escapeHtml(unit.status)}">${escapeHtml(unit.status)}</span></td>
               <td style="color: var(--color-text-muted); font-size: var(--font-size-xs);">
-                ${unit.current_tenant ? escapeHtml(unit.current_tenant.name) : `
+                ${canManage ? (unit.current_tenant ? escapeHtml(unit.current_tenant.name) : `
                   <div style="display: flex; align-items: center; justify-content: space-between; gap: var(--space-2);">
                     <span style="color: var(--color-text-subtle);">Vacant — Ready to Lease</span>
-                    ${canManage ? `
-                      <button type="button" class="btn btn--primary btn--xs btn-unit-create-lease" data-unit-id="${escapeHtml(unit.id)}" style="font-size: 11px; padding: 2px 8px;">
-                        + New Lease
-                      </button>
-                    ` : ''}
+                    <button type="button" class="btn btn--primary btn--xs btn-unit-create-lease" data-unit-id="${escapeHtml(unit.id)}" style="font-size: 11px; padding: 2px 8px;">
+                      + New Lease
+                    </button>
                   </div>
-                `}
+                `) : (unit.status === 'vacant' ? `
+                  <button type="button" class="btn btn--primary btn--xs btn-unit-apply-action" data-prop-id="${escapeHtml(unit.property_id)}" data-unit-id="${escapeHtml(unit.id)}" style="font-size: 11px; padding: 2px 8px;">
+                    Apply for Door
+                  </button>
+                ` : `<span class="badge badge--paid">Occupied</span>`)}
               </td>
             </tr>
-          `).join('')}
+          `).join('') : `
+            <tr>
+              <td colspan="7" style="text-align: center; padding: var(--space-6); color: var(--color-text-muted);">
+                ${canManage ? 'No units configured yet. Click "+ Add Unit" to add your first door.' : 'No units currently available.'}
+              </td>
+            </tr>
+          `}
         </tbody>
       </table>
     </div>
   `;
 
   document.getElementById('btn-tab-add-property')?.addEventListener('click', () => openModal('modal-add-property'));
+  document.getElementById('btn-empty-properties-add')?.addEventListener('click', () => openModal('modal-add-property'));
   document.getElementById('btn-tab-add-unit')?.addEventListener('click', () => openModal('modal-add-unit'));
+
+  // Tenant "Apply Now" button click on property card
+  container.querySelectorAll('.btn-apply-rental-action').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const propId = btn.getAttribute('data-prop-id');
+      openModal('modal-apply-rental', propId);
+    });
+  });
+
+  // Tenant "Apply for Door" click on unit table
+  container.querySelectorAll('.btn-unit-apply-action').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const propId = btn.getAttribute('data-prop-id');
+      const unitId = btn.getAttribute('data-unit-id');
+      openModal('modal-apply-rental', propId);
+      setTimeout(() => {
+        const unitSelect = document.getElementById('apply-unit-select');
+        if (unitSelect && unitId) {
+          unitSelect.value = unitId;
+        }
+      }, 350);
+    });
+  });
 
   // Add unit directly to specific property
   container.querySelectorAll('.btn-card-add-unit').forEach(btn => {
@@ -1785,11 +1923,14 @@ function renderPropertiesTab(container, isLandlord, isAdmin) {
 // ============================================================================
 function renderLeasesTab(container, isLandlord, isAdmin) {
   const canManage = isLandlord || isAdmin;
+  const pendingLeases = cachedLeases.filter(l => l.status === 'pending');
+  const activeLeases = cachedLeases.filter(l => l.status !== 'pending');
+
   container.innerHTML = `
     <div class="dash-section-header">
       <div>
-        <h2 class="dash-section-header__title">Lease Agreements & Tenancy</h2>
-        <p class="dash-section-header__sub">Binding legal contracts, monthly rates, security deposits, and renewal terms</p>
+        <h2 class="dash-section-header__title">${canManage ? 'Lease Agreements & Tenancy' : 'Your Tenancy & Applications'}</h2>
+        <p class="dash-section-header__sub">Binding legal contracts, monthly rates, security deposits, and rental applications</p>
       </div>
       ${canManage ? `
         <button type="button" class="btn btn--primary btn--sm" id="btn-tab-new-lease">
@@ -1797,6 +1938,74 @@ function renderLeasesTab(container, isLandlord, isAdmin) {
           <span>New Lease Agreement</span>
         </button>
       ` : ''}
+    </div>
+
+    ${(canManage && pendingLeases.length > 0) ? `
+      <!-- Pending Tenant Applications Section for Landlord -->
+      <div class="glass-card" style="padding: var(--space-6); margin-bottom: var(--space-6); border-left: 4px solid var(--color-accent);">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-4);">
+          <div>
+            <h3 style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold); color: var(--color-text-main); margin-bottom: 2px;">
+              Pending Tenant Applications (${pendingLeases.length})
+            </h3>
+            <p style="font-size: var(--font-size-xs); color: var(--color-text-muted);">
+              Prospective tenants who applied for your listed properties. Review and approve to activate the lease.
+            </p>
+          </div>
+          <span class="badge badge--pending">${pendingLeases.length} Pending Review</span>
+        </div>
+
+        <div class="neo-table-container">
+          <table class="neo-table">
+            <thead>
+              <tr>
+                <th>Applicant</th>
+                <th>Property & Door</th>
+                <th>Target Move-In</th>
+                <th>Monthly Rent</th>
+                <th>Application Profile</th>
+                <th style="text-align: right;">Review Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${pendingLeases.map(lease => `
+                <tr>
+                  <td>
+                    <div style="font-weight: var(--font-weight-bold);">${escapeHtml(lease.tenant_name || 'Applicant')}</div>
+                    <div style="font-size: var(--font-size-xs); color: var(--color-text-subtle);">${escapeHtml(lease.tenant_email || '')}</div>
+                    ${lease.tenant_phone ? `<div style="font-size: 11px; color: var(--color-text-muted);">${escapeHtml(lease.tenant_phone)}</div>` : ''}
+                  </td>
+                  <td>
+                    <div style="font-weight: var(--font-weight-medium);">${escapeHtml(lease.unit_number || 'Door')}</div>
+                    <div style="font-size: var(--font-size-xs); color: var(--color-text-subtle);">${escapeHtml(lease.property_name || 'Property')}</div>
+                  </td>
+                  <td style="font-size: var(--font-size-xs);">${formatDate(lease.start_date)}</td>
+                  <td style="font-weight: var(--font-weight-bold);">${formatCurrency(lease.rent_amount)}</td>
+                  <td style="font-size: var(--font-size-xs); color: var(--color-text-muted); max-width: 260px;">
+                    ${escapeHtml(lease.terms || 'Rental application on file')}
+                  </td>
+                  <td style="text-align: right;">
+                    <div style="display: flex; gap: var(--space-2); justify-content: flex-end;">
+                      <button type="button" class="btn btn--primary btn--xs btn-approve-lease" data-lease-id="${escapeHtml(lease.id)}" style="background: #059669; border-color: #059669;">
+                        &check; Approve
+                      </button>
+                      <button type="button" class="btn btn--outline btn--xs btn-decline-lease" data-lease-id="${escapeHtml(lease.id)}" style="color: #dc2626; border-color: #dc2626;">
+                        &times; Decline
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              `).join('')}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    ` : ''}
+
+    <div class="dash-section-header" style="margin-top: ${(canManage && pendingLeases.length > 0) ? 'var(--space-6)' : '0'};">
+      <div>
+        <h3 class="dash-section-header__title" style="font-size: var(--font-size-base);">${canManage ? 'Active & Historical Leases' : 'Your Tenancy Agreements'} (${canManage ? activeLeases.length : cachedLeases.length})</h3>
+      </div>
     </div>
 
     <div class="neo-table-container">
@@ -1815,15 +2024,15 @@ function renderLeasesTab(container, isLandlord, isAdmin) {
           </tr>
         </thead>
         <tbody>
-          ${cachedLeases.map(lease => `
+          ${(canManage ? activeLeases : cachedLeases).length > 0 ? (canManage ? activeLeases : cachedLeases).map(lease => `
             <tr>
               <td>
-                <div style="font-weight: var(--font-weight-semibold);">${escapeHtml(lease.tenant_name || 'Priya Iyer')}</div>
-                <div style="font-size: var(--font-size-xs); color: var(--color-text-subtle);">${escapeHtml(lease.tenant_email || 'tenant@rentroll.com')}</div>
+                <div style="font-weight: var(--font-weight-semibold);">${escapeHtml(lease.tenant_name || 'Resident')}</div>
+                <div style="font-size: var(--font-size-xs); color: var(--color-text-subtle);">${escapeHtml(lease.tenant_email || '')}</div>
               </td>
               <td>
-                <div style="font-weight: var(--font-weight-medium);">${escapeHtml(lease.unit_number || 'Flat 4B')}</div>
-                <div style="font-size: var(--font-size-xs); color: var(--color-text-subtle);">${escapeHtml(lease.property_name || 'Gulmohar Residency')}</div>
+                <div style="font-weight: var(--font-weight-medium);">${escapeHtml(lease.unit_number || 'Unit')}</div>
+                <div style="font-size: var(--font-size-xs); color: var(--color-text-subtle);">${escapeHtml(lease.property_name || 'Property')}</div>
               </td>
               ${isAdmin ? `<td style="font-size: var(--font-size-xs); font-weight: 500;">${escapeHtml(lease.landlord_name || 'Platform')}</td>` : ''}
               <td style="font-size: var(--font-size-xs);">
@@ -1831,9 +2040,9 @@ function renderLeasesTab(container, isLandlord, isAdmin) {
               </td>
               <td style="font-weight: var(--font-weight-bold);">${formatCurrency(lease.rent_amount)}</td>
               <td>${formatCurrency(lease.deposit_amount)}</td>
-              <td><span class="badge badge--${lease.status === 'active' ? 'paid' : 'pending'}">${escapeHtml(lease.status)}</span></td>
+              <td><span class="badge badge--${lease.status === 'active' ? 'paid' : (lease.status === 'pending' ? 'pending' : 'low')}">${escapeHtml(lease.status)}</span></td>
               <td style="font-size: var(--font-size-xs); color: var(--color-text-muted); max-width: 240px;">
-                ${escapeHtml(lease.terms || 'Standard 12-month agreement')}
+                ${escapeHtml(lease.terms || 'Standard agreement')}
               </td>
               ${canManage ? `
                 <td>
@@ -1844,13 +2053,54 @@ function renderLeasesTab(container, isLandlord, isAdmin) {
                 </td>
               ` : ''}
             </tr>
-          `).join('')}
+          `).join('') : `
+            <tr>
+              <td colspan="${canManage ? (isAdmin ? 9 : 8) : (isAdmin ? 8 : 7)}" style="text-align: center; padding: var(--space-8); color: var(--color-text-muted);">
+                <div style="margin-bottom: var(--space-2); font-weight: var(--font-weight-medium);">No registered lease agreements found.</div>
+                ${canManage ? `<button type="button" class="btn btn--outline btn--sm" id="btn-empty-lease">+ Create First Lease Agreement</button>` : ''}
+              </td>
+            </tr>
+          `}
         </tbody>
       </table>
     </div>
   `;
 
   document.getElementById('btn-tab-new-lease')?.addEventListener('click', () => openModal('modal-create-lease'));
+  document.getElementById('btn-empty-lease')?.addEventListener('click', () => openModal('modal-create-lease'));
+
+  // Approve lease application
+  container.querySelectorAll('.btn-approve-lease').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const leaseId = btn.getAttribute('data-lease-id');
+      btn.disabled = true;
+      try {
+        const res = await updateLeaseStatus(leaseId, 'approve');
+        showToast('Application Approved', res.message || 'Lease is now active!', 'success', 3500);
+        await refreshDashboardData(getCurrentUser());
+      } catch (err) {
+        showToast('Approval Failed', err.message, 'error', 3500);
+        btn.disabled = false;
+      }
+    });
+  });
+
+  // Decline lease application
+  container.querySelectorAll('.btn-decline-lease').forEach(btn => {
+    btn.addEventListener('click', async () => {
+      const leaseId = btn.getAttribute('data-lease-id');
+      if (!confirm('Are you sure you want to decline this rental application?')) return;
+      btn.disabled = true;
+      try {
+        const res = await updateLeaseStatus(leaseId, 'decline');
+        showToast('Application Declined', res.message || 'Application declined.', 'info', 3000);
+        await refreshDashboardData(getCurrentUser());
+      } catch (err) {
+        showToast('Action Failed', err.message, 'error', 3500);
+        btn.disabled = false;
+      }
+    });
+  });
 
   // Quick action to record payment directly for a specific lease
   container.querySelectorAll('.btn-lease-pay').forEach(btn => {
@@ -1869,6 +2119,9 @@ function renderPaymentsTab(container, isLandlord, isAdmin) {
   const canManage = isLandlord || isAdmin;
   const totalPaid = cachedPayments.filter(p => p.status === 'paid').reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
   const totalPending = cachedPayments.filter(p => p.status === 'pending').reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+  const collectionRate = (totalPaid + totalPending > 0)
+    ? Math.round((totalPaid / (totalPaid + totalPending)) * 100)
+    : 100;
 
   container.innerHTML = `
     <div class="dash-section-header">
@@ -1902,8 +2155,8 @@ function renderPaymentsTab(container, isLandlord, isAdmin) {
       </div>
       <div class="glass-card dash-stat-card">
         <div class="dash-stat-card__title">Collection Rate</div>
-        <div class="dash-stat-card__val">98.5%</div>
-        <div class="dash-stat-card__sub">0 delinquent accounts</div>
+        <div class="dash-stat-card__val">${collectionRate}%</div>
+        <div class="dash-stat-card__sub">Accounts status summary</div>
       </div>
     </div>
 
@@ -1923,11 +2176,11 @@ function renderPaymentsTab(container, isLandlord, isAdmin) {
           </tr>
         </thead>
         <tbody>
-          ${cachedPayments.map(pay => `
+          ${cachedPayments.length > 0 ? cachedPayments.map(pay => `
             <tr>
               <td style="font-size: var(--font-size-xs); color: var(--color-text-muted);">${formatDate(pay.paid_date || pay.due_date)}</td>
               <td style="font-weight: var(--font-weight-semibold);">${escapeHtml(pay.tenant_name || 'Resident')}</td>
-              <td>${escapeHtml(pay.unit_number || 'Flat 4B')}</td>
+              <td>${escapeHtml(pay.unit_number || 'Unit')}</td>
               <td style="font-weight: var(--font-weight-extrabold);">${formatCurrency(pay.amount)}</td>
               <td style="text-transform: uppercase; font-size: 11px; font-weight: var(--font-weight-bold);">${escapeHtml(pay.payment_method)}</td>
               <td><span class="badge badge--${escapeHtml(pay.status)}">${escapeHtml(pay.status)}</span></td>
@@ -1939,7 +2192,13 @@ function renderPaymentsTab(container, isLandlord, isAdmin) {
                 </button>
               </td>
             </tr>
-          `).join('')}
+          `).join('') : `
+            <tr>
+              <td colspan="8" style="text-align: center; padding: var(--space-8); color: var(--color-text-muted);">
+                No payment transactions recorded in the ledger yet.
+              </td>
+            </tr>
+          `}
         </tbody>
       </table>
     </div>
@@ -1964,8 +2223,8 @@ function renderPaymentsTab(container, isLandlord, isAdmin) {
         payment_method: 'UPI',
         status: 'paid',
         tenant_name: 'Resident',
-        unit_number: 'Flat 4B',
-        property_name: 'Gulmohar Residency',
+        unit_number: 'Unit',
+        property_name: 'Property',
         paid_date: new Date().toISOString()
       };
       downloadPaymentReceipt(pay);
@@ -1994,7 +2253,7 @@ function renderMaintenanceTab(container, isLandlord, isAdmin) {
 
     <!-- Ticket Cards Grid -->
     <div class="tickets-grid">
-      ${cachedTickets.map(tkt => `
+      ${cachedTickets.length > 0 ? cachedTickets.map(tkt => `
         <div class="glass-card ticket-card ticket-card--${escapeHtml(tkt.priority)}">
           <div>
             <div class="ticket-card__header">
@@ -2008,7 +2267,7 @@ function renderMaintenanceTab(container, isLandlord, isAdmin) {
 
           <div>
             <div class="ticket-card__meta">
-              <span><strong>Unit:</strong> ${escapeHtml(tkt.unit_number || 'Apt 4B')}</span>
+              <span><strong>Unit:</strong> ${escapeHtml(tkt.unit_number || 'Door')}</span>
               <span><strong>Category:</strong> ${escapeHtml(tkt.category || 'General')}</span>
             </div>
             <div class="ticket-card__meta">
@@ -2039,7 +2298,12 @@ function renderMaintenanceTab(container, isLandlord, isAdmin) {
             ` : ''}
           </div>
         </div>
-      `).join('')}
+      `).join('') : `
+        <div style="grid-column: 1 / -1; text-align: center; padding: var(--space-8); background: rgba(255,255,255,0.6); border-radius: var(--border-radius-md); border: 2px dashed rgba(0,0,0,0.1);">
+          <h4 style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold); margin-bottom: var(--space-1);">No Maintenance Tickets</h4>
+          <p style="font-size: var(--font-size-xs); color: var(--color-text-muted);">There are no pending maintenance requests or active repair work orders.</p>
+        </div>
+      `}
     </div>
   `;
 
@@ -2197,6 +2461,53 @@ function openModal(modalId, preselectId = null) {
         <option value="ach">Salary Bank Account (...4820) — eNACH Auto-Debit</option>
         <option value="credit_card">RuPay / Visa Platinum Card (...9104) — Instant</option>
       `;
+    }
+  }
+
+  // Dynamic initialization for tenant apply rental modal
+  if (modalId === 'modal-apply-rental') {
+    const propId = preselectId;
+    const prop = cachedProperties.find(p => p.id === propId) || cachedProperties[0];
+    if (prop) {
+      const idInput = document.getElementById('apply-property-id');
+      const nameEl = document.getElementById('apply-property-name');
+      const addrEl = document.getElementById('apply-property-address');
+      const unitSelect = document.getElementById('apply-unit-select');
+
+      if (idInput) idInput.value = prop.id;
+      if (nameEl) nameEl.textContent = prop.name;
+      if (addrEl) addrEl.textContent = `${prop.address}, ${prop.city}, ${prop.state} ${prop.zip_code}`;
+
+      const moveInInput = document.getElementById('apply-move-in-date');
+      if (moveInInput && !moveInInput.value) {
+        const d = new Date();
+        d.setDate(d.getDate() + 1);
+        moveInInput.value = d.toISOString().split('T')[0];
+        moveInInput.min = new Date().toISOString().split('T')[0];
+      }
+
+      const currentUser = getCurrentUser();
+      const phoneInput = document.getElementById('apply-phone');
+      if (phoneInput && currentUser && currentUser.phone) {
+        phoneInput.value = currentUser.phone;
+      }
+
+      if (unitSelect) {
+        unitSelect.innerHTML = '<option value="">Loading available doors...</option>';
+        getUnits(prop.id).then(units => {
+          const vacant = units.filter(u => u.status === 'vacant');
+          const list = vacant.length > 0 ? vacant : units;
+          if (list.length === 0) {
+            unitSelect.innerHTML = '<option value="">Standard Residential Door (Assigned on approval)</option>';
+          } else {
+            unitSelect.innerHTML = list.map(u => `
+              <option value="${u.id}">${escapeHtml(u.unit_number)} — ${u.bedrooms}BHK (${formatCurrency(u.rent_amount)}/mo)</option>
+            `).join('');
+          }
+        }).catch(() => {
+          unitSelect.innerHTML = '<option value="">Standard Residential Door</option>';
+        });
+      }
     }
   }
 
@@ -2554,6 +2865,49 @@ function setupModals(user) {
         showToast('Failed to submit ticket', err.message, 'error', 3500);
       } finally {
         submitBtn.classList.remove('btn--loading');
+      }
+    });
+  }
+
+  // 6. Submit Rental Application Form
+  const formApplyRental = document.getElementById('form-apply-rental');
+  if (formApplyRental) {
+    formApplyRental.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const submitBtn = document.getElementById('btn-submit-rental-application');
+      if (submitBtn) submitBtn.classList.add('btn--loading');
+      try {
+        const propId = formApplyRental.querySelector('#apply-property-id').value;
+        const unitId = formApplyRental.querySelector('#apply-unit-select').value;
+        const moveInDate = formApplyRental.querySelector('#apply-move-in-date').value;
+        const occupation = formApplyRental.querySelector('#apply-occupation').value;
+        const income = formApplyRental.querySelector('#apply-income').value;
+        const phone = formApplyRental.querySelector('#apply-phone').value;
+        const notes = formApplyRental.querySelector('#apply-notes').value;
+
+        const res = await applyForProperty(propId, {
+          unit_id: unitId,
+          move_in_date: moveInDate,
+          occupation,
+          income,
+          phone,
+          notes
+        });
+
+        showToast('Application Submitted', res.message || 'Rental application sent to landlord.', 'success', 4000);
+        closeModal(document.getElementById('modal-apply-rental'));
+        formApplyRental.reset();
+
+        // Switch to leases tab so tenant sees their pending application
+        activeTab = 'leases';
+        document.querySelectorAll('.dash-tab-btn').forEach(b => b.classList.remove('dash-tab-btn--active'));
+        document.querySelector('[data-tab="leases"]')?.classList.add('dash-tab-btn--active');
+
+        await refreshDashboardData(getCurrentUser());
+      } catch (err) {
+        showToast('Application Failed', err.message || 'Could not submit application.', 'error', 3500);
+      } finally {
+        if (submitBtn) submitBtn.classList.remove('btn--loading');
       }
     });
   }

@@ -793,15 +793,15 @@ def properties_view(request):
     user = get_authenticated_user(request)
 
     if request.method == 'GET':
-        # Public showcase (landing page or unauthenticated visitor) or Admin: return all properties
+        # Public showcase, admin, or tenants: return all properties so tenants can browse and apply
         is_public = request.GET.get('public') == 'true' or not user
-        if is_public or (user and user.role == 'admin'):
-            props = Property.objects.all().order_by('-created_at')
+        if is_public or (user and user.role in ['admin', 'tenant']):
+            if user and user.role == 'tenant' and request.GET.get('leased') == 'true':
+                props = Property.objects.filter(units__leases__tenant=user).distinct().order_by('-created_at')
+            else:
+                props = Property.objects.all().order_by('-created_at')
         elif user and user.role == 'landlord':
             props = Property.objects.filter(landlord=user).order_by('-created_at')
-        elif user and user.role == 'tenant':
-            # Tenant only sees properties where they have an active lease
-            props = Property.objects.filter(units__leases__tenant=user).distinct().order_by('-created_at')
         else:
             props = Property.objects.all().order_by('-created_at')
         return JsonResponse({'success': True, 'data': [serialize_property(p) for p in props]})
@@ -877,8 +877,6 @@ def property_detail_view(request, property_id):
         if not is_public and user and user.role != 'admin':
             if user.role == 'landlord' and prop.landlord_id != user.id:
                 return JsonResponse({'success': False, 'message': 'Forbidden: You do not own this property.'}, status=403)
-            elif user.role == 'tenant' and not prop.units.filter(leases__tenant=user).exists():
-                return JsonResponse({'success': False, 'message': 'Forbidden: Access restricted to resident tenants.'}, status=403)
 
         data = serialize_property(prop)
         data['units'] = [serialize_unit(u) for u in prop.units.all()]
@@ -918,6 +916,108 @@ def property_detail_view(request, property_id):
 
 
 @csrf_exempt
+def apply_property_view(request, property_id):
+    """POST /api/properties/<property_id>/apply/"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed.'}, status=405)
+
+    user = get_authenticated_user(request)
+    if not user:
+        return JsonResponse({'success': False, 'message': 'Authentication required to submit an application.'}, status=401)
+
+    if user.role not in ['tenant', 'admin']:
+        return JsonResponse({'success': False, 'message': 'Only registered tenants can apply for rental properties.'}, status=403)
+
+    prop = Property.objects.filter(id=property_id).first()
+    if not prop:
+        return JsonResponse({'success': False, 'message': 'Property not found.'}, status=404)
+
+    try:
+        body = json.loads(request.body)
+    except Exception:
+        body = request.POST
+
+    unit_id = body.get('unit_id')
+    unit = None
+    if unit_id and str(unit_id).strip() not in ['', 'undefined', 'null']:
+        unit = Unit.objects.filter(id=unit_id, property=prop).first()
+
+    if not unit:
+        # Select first vacant unit or fallback to first unit
+        unit = Unit.objects.filter(property=prop, status='vacant').first() or Unit.objects.filter(property=prop).first()
+
+    if not unit:
+        # Create standard vacant unit if none exist yet
+        unit = Unit.objects.create(
+            property=prop,
+            unit_number='Unit 101',
+            bedrooms=2,
+            bathrooms=Decimal('2.0'),
+            square_feet=950,
+            rent_amount=Decimal('28000.00'),
+            deposit_amount=Decimal('56000.00'),
+            status='vacant'
+        )
+
+    # Check for existing pending application by this tenant
+    existing_pending = Lease.objects.filter(unit=unit, tenant=user, status='pending').first()
+    if existing_pending:
+        return JsonResponse({
+            'success': True,
+            'message': 'You have already submitted an application for this property. The landlord has been notified.',
+            'lease': serialize_lease(existing_pending)
+        })
+
+    move_in_str = (body.get('move_in_date') or body.get('start_date') or '').strip()
+    today = datetime.date.today()
+    if move_in_str:
+        try:
+            start_date = datetime.date.fromisoformat(move_in_str)
+        except Exception:
+            start_date = today
+    else:
+        start_date = today
+
+    end_date = start_date + datetime.timedelta(days=335)
+    occupation = (body.get('occupation') or '').strip() or 'Working Professional'
+    income = (body.get('income') or body.get('monthly_income') or '').strip()
+    notes = (body.get('notes') or body.get('message') or '').strip()
+    phone = (body.get('phone') or user.phone or '').strip()
+
+    if phone and not user.phone:
+        user.phone = phone
+        user.save(update_fields=['phone'])
+
+    terms_summary = f"Rental Application | Occupation: {occupation} | Income: Rs. {income}/mo | Phone: {phone} | Applicant Notes: {notes or 'Standard application'}"
+
+    lease = Lease.objects.create(
+        unit=unit,
+        tenant=user,
+        landlord=prop.landlord,
+        start_date=start_date,
+        end_date=end_date,
+        rent_amount=unit.rent_amount,
+        deposit_amount=unit.deposit_amount,
+        status='pending',
+        terms=terms_summary
+    )
+
+    # Dispatch contact notification so Landlord / Admin has complete record
+    ContactMessage.objects.create(
+        name=user.name,
+        email=user.email,
+        subject=f"Rental Application: {prop.name} - {unit.unit_number}",
+        message=f"Application received from {user.name} ({user.email}, Phone: {phone}) for {prop.name} ({unit.unit_number}). Move-in: {start_date}. Monthly income: Rs. {income}. Notes: {notes}"
+    )
+
+    return JsonResponse({
+        'success': True,
+        'message': f'Application for {prop.name} ({unit.unit_number}) submitted successfully! Your landlord has been notified.',
+        'lease': serialize_lease(lease)
+    }, status=201)
+
+
+@csrf_exempt
 def units_view(request):
     """GET & POST /api/units"""
     user = get_authenticated_user(request)
@@ -930,11 +1030,15 @@ def units_view(request):
 
         if property_id:
             qs = qs.filter(property_id=property_id)
-
-        if user and user.role == 'landlord':
+            if request.GET.get('available') == 'true':
+                qs = qs.filter(status='vacant')
+        elif user and user.role == 'landlord':
             qs = qs.filter(property__landlord=user)
         elif user and user.role == 'tenant':
-            qs = qs.filter(leases__tenant=user)
+            if request.GET.get('available') == 'true' or request.GET.get('all') == 'true':
+                qs = qs.filter(status='vacant')
+            else:
+                qs = qs.filter(leases__tenant=user)
 
         return JsonResponse({'success': True, 'data': [serialize_unit(u) for u in qs]})
 
@@ -1187,6 +1291,75 @@ def leases_view(request):
         }, status=201)
 
     return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
+
+
+@csrf_exempt
+def lease_action_view(request, lease_id):
+    """POST /api/leases/<lease_id>/action/"""
+    if request.method != 'POST':
+        return JsonResponse({'success': False, 'message': 'Method not allowed.'}, status=405)
+
+    user = get_authenticated_user(request)
+    if not user:
+        return JsonResponse({'success': False, 'message': 'Authentication required.'}, status=401)
+
+    lease = Lease.objects.filter(id=lease_id).first()
+    if not lease:
+        return JsonResponse({'success': False, 'message': 'Lease agreement not found.'}, status=404)
+
+    # Multi-tenant IDOR check: Landlord or platform admin only
+    if user.role != 'admin' and lease.landlord_id != user.id:
+        return JsonResponse({'success': False, 'message': 'Unauthorized: Only the property landlord can approve or decline applications.'}, status=403)
+
+    try:
+        body = json.loads(request.body)
+    except Exception:
+        body = request.POST
+
+    action = (body.get('action') or '').strip().lower()
+
+    if action == 'approve':
+        lease.status = 'active'
+        lease.save(update_fields=['status', 'updated_at'])
+
+        # Mark unit as occupied
+        unit = lease.unit
+        unit.status = 'occupied'
+        unit.save(update_fields=['status', 'updated_at'])
+
+        # Create upcoming payment record
+        today = datetime.date.today()
+        due_date = lease.start_date if lease.start_date >= today else today
+        Payment.objects.get_or_create(
+            lease=lease,
+            due_date=due_date,
+            defaults={
+                'tenant': lease.tenant,
+                'landlord': lease.landlord,
+                'amount': lease.rent_amount,
+                'status': 'pending',
+                'payment_method': 'upi',
+                'notes': f'Initial scheduled rent for {unit.unit_number}'
+            }
+        )
+
+        return JsonResponse({
+            'success': True,
+            'message': f'Application for {lease.tenant.name} approved! Lease is now active.',
+            'lease': serialize_lease(lease)
+        })
+
+    elif action == 'decline':
+        lease.status = 'terminated'
+        lease.save(update_fields=['status', 'updated_at'])
+
+        return JsonResponse({
+            'success': True,
+            'message': f'Application for {lease.tenant.name} has been declined.',
+            'lease': serialize_lease(lease)
+        })
+
+    return JsonResponse({'success': False, 'message': 'Invalid action. Supported: approve, decline.'}, status=400)
 
 
 @csrf_exempt

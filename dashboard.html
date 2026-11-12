@@ -44,7 +44,7 @@
             <span>Review Us on Landing Page</span>
           </a>
           <a href="index.html" class="btn btn--ghost btn--sm">View Landing Page</a>
-          <button id="dash-logout-btn" type="button" class="btn btn--danger btn--sm">
+          <button id="dash-logout-btn" type="button" class="btn btn--danger btn--sm" onclick="try{localStorage.clear();sessionStorage.clear();}catch(e){}window.location.href='login.html';">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
             <span>Log Out</span>
           </button>
@@ -61,37 +61,37 @@
         <button type="button" class="dash-tab-btn" data-tab="users" id="tab-nav-users" style="display: none;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
           <span>Users Directory</span>
-          <span class="dash-tab-count" id="badge-count-users" style="background-color: #ede9fe; color: #5b21b6;">7</span>
+          <span class="dash-tab-count" id="badge-count-users" style="background-color: #ede9fe; color: #5b21b6;">0</span>
         </button>
 
         <button type="button" class="dash-tab-btn" data-tab="properties" id="tab-nav-properties">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
           <span>Properties & Units</span>
-          <span class="dash-tab-count" id="badge-count-properties">4</span>
+          <span class="dash-tab-count" id="badge-count-properties">0</span>
         </button>
 
         <button type="button" class="dash-tab-btn" data-tab="leases" id="tab-nav-leases">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
           <span>Leases & Tenancy</span>
-          <span class="dash-tab-count" id="badge-count-leases">3</span>
+          <span class="dash-tab-count" id="badge-count-leases">0</span>
         </button>
 
         <button type="button" class="dash-tab-btn" data-tab="payments" id="tab-nav-payments">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
           <span>Rent Ledger</span>
-          <span class="dash-tab-count" id="badge-count-payments">6</span>
+          <span class="dash-tab-count" id="badge-count-payments">0</span>
         </button>
 
         <button type="button" class="dash-tab-btn" data-tab="maintenance" id="tab-nav-maintenance">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>
           <span>Maintenance Triage</span>
-          <span class="dash-tab-count" id="badge-count-tickets" style="background-color: #fee2e2; color: #991b1b;">2</span>
+          <span class="dash-tab-count" id="badge-count-tickets" style="background-color: #fee2e2; color: #991b1b;">0</span>
         </button>
 
         <button type="button" class="dash-tab-btn" data-tab="inquiries" id="tab-nav-inquiries" style="display: none;">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
           <span>Inquiries & Reviews</span>
-          <span class="dash-tab-count" id="badge-count-inquiries" style="background-color: #ede9fe; color: #5b21b6;">3</span>
+          <span class="dash-tab-count" id="badge-count-inquiries" style="background-color: #ede9fe; color: #5b21b6;">0</span>
         </button>
       </nav>
 
@@ -449,6 +449,69 @@
           <button type="submit" class="btn btn--primary btn--sm">
             <span class="btn__spinner" aria-hidden="true"></span>
             <span class="btn__text">Dispatch Ticket</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal: Tenant Rental Application -->
+  <div class="neo-modal-backdrop" id="modal-apply-rental" role="dialog" aria-modal="true" aria-labelledby="modal-apply-rental-title">
+    <div class="neo-modal glass-card">
+      <div class="neo-modal-header">
+        <h2 class="neo-modal-title" id="modal-apply-rental-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span>Apply for Rental Property</span>
+        </h2>
+        <button type="button" class="neo-modal-close" aria-label="Close modal">&times;</button>
+      </div>
+      <form id="form-apply-rental">
+        <input type="hidden" id="apply-property-id" name="property_id">
+        
+        <div style="background: rgba(255,255,255,0.7); border-radius: var(--border-radius-md); padding: var(--space-4); margin-bottom: var(--space-4); border: 1px solid rgba(0,0,0,0.06);">
+          <div id="apply-property-name" style="font-size: var(--font-size-base); font-weight: var(--font-weight-bold); color: var(--color-primary); margin-bottom: 2px;">Property Details</div>
+          <div id="apply-property-address" style="font-size: var(--font-size-xs); color: var(--color-text-muted);">Address will appear here</div>
+        </div>
+
+        <div class="form-row form-row--2-col">
+          <div class="form-group">
+            <label class="form-label" for="apply-unit-select">Select Unit / Door *</label>
+            <select id="apply-unit-select" class="form-control" required>
+              <option value="">Loading available units...</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="apply-move-in-date">Target Move-in Date *</label>
+            <input type="date" id="apply-move-in-date" class="form-control" required>
+          </div>
+        </div>
+
+        <div class="form-row form-row--2-col">
+          <div class="form-group">
+            <label class="form-label" for="apply-occupation">Current Occupation *</label>
+            <input type="text" id="apply-occupation" class="form-control" placeholder="e.g. Software Engineer / Consultant" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="apply-income">Monthly Household Income (₹) *</label>
+            <input type="number" id="apply-income" class="form-control" placeholder="e.g. 120000" min="5000" step="1000" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="apply-phone">Contact Phone Number *</label>
+          <input type="tel" id="apply-phone" class="form-control" placeholder="+91 98765 43210" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="apply-notes">Notes / Message to Landlord</label>
+          <textarea id="apply-notes" class="form-control" rows="3" placeholder="Tell the landlord about yourself, proposed lease duration, or move-in timeline."></textarea>
+        </div>
+
+        <div class="neo-modal-footer">
+          <button type="button" class="btn btn--ghost btn--sm btn-modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn--primary btn--sm" id="btn-submit-rental-application">
+            <span class="btn__spinner" aria-hidden="true"></span>
+            <span class="btn__text">Submit Rental Application</span>
           </button>
         </div>
       </form>

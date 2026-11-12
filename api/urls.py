@@ -19,6 +19,7 @@ urlpatterns = [
 
     # Properties
     re_path(r'^properties/?$', views.properties_view, name='api_properties'),
+    re_path(r'^properties/(?P<property_id>[^/]+)/apply/?$', views.apply_property_view, name='api_property_apply'),
     re_path(r'^properties/(?P<property_id>[^/]+)/?$', views.property_detail_view, name='api_property_detail'),
 
     # Units
@@ -27,6 +28,7 @@ urlpatterns = [
 
     # Leases
     re_path(r'^leases/?$', views.leases_view, name='api_leases'),
+    re_path(r'^leases/(?P<lease_id>[^/]+)/action/?$', views.lease_action_view, name='api_lease_action'),
 
     # Payments
     re_path(r'^payments/?$', views.payments_view, name='api_payments'),
