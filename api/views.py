@@ -387,7 +387,15 @@ def signup_view(request):
     if len(password) < 8:
         return JsonResponse({'success': False, 'message': 'Password must be at least 8 characters long.'}, status=400)
 
-    if User.objects.filter(email=email).exists():
+    try:
+        user_exists = User.objects.filter(email=email).exists()
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Cloud database connection error: {str(e)}. Please verify database credentials or run migrations in the Render Shell.'
+        }, status=503)
+
+    if user_exists:
         return JsonResponse({'success': False, 'message': 'An account with this email address already exists. Please log in.'}, status=409)
 
     hashed = hash_password(password)
@@ -454,7 +462,13 @@ def login_view(request):
     if not email or not password:
         return JsonResponse({'success': False, 'message': 'Email and password are required.'}, status=400)
 
-    user = User.objects.filter(email__iexact=email).first()
+    try:
+        user = User.objects.filter(email__iexact=email).first()
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Cloud database connection error: {str(e)}. Please verify database credentials or run migrations in the Render Shell.'
+        }, status=503)
     if not user:
         # Check if demo account needs auto-provisioning
         if email == 'admin@rentroll.com' and password == 'Password123!':
@@ -566,7 +580,13 @@ def password_reset_request_view(request):
     # Standard security practice: return a consistent message to prevent email enumeration
     generic_msg = 'If an account is associated with this email address, password reset instructions have been sent.'
     
-    user = User.objects.filter(email__iexact=email).first()
+    try:
+        user = User.objects.filter(email__iexact=email).first()
+    except Exception as e:
+        return JsonResponse({
+            'success': False,
+            'message': f'Cloud database connection error: {str(e)}. Please verify database credentials or run migrations in the Render Shell.'
+        }, status=503)
     if not user:
         # Security: Do not reveal that email does not exist
         return JsonResponse({'success': True, 'message': generic_msg})
