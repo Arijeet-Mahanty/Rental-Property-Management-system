@@ -38,7 +38,7 @@
       <div id="signup-general-alert" class="form-error" role="alert" aria-live="polite" style="margin-bottom: var(--space-4);"></div>
 
       <!-- Sign Up Form -->
-      <form id="signup-form" novalidate>
+      <form id="signup-form" autocomplete="off" novalidate>
         <!-- Role Selector (Three Glass Radio Cards) -->
         <fieldset class="form-group" style="border: none; padding: 0; margin-bottom: var(--space-5);">
           <legend class="form-label">I am signing up as a:</legend>
@@ -100,7 +100,7 @@
               name="name" 
               class="form-input" 
               placeholder="e.g. Rajesh Sharma" 
-              autocomplete="name" 
+              autocomplete="off" 
               required
               aria-required="true"
             >
@@ -118,7 +118,7 @@
               name="email" 
               class="form-input" 
               placeholder="name@example.com" 
-              autocomplete="email" 
+              autocomplete="off" 
               required
               aria-required="true"
             >
@@ -136,7 +136,7 @@
               name="password" 
               class="form-input form-input--has-icon-right" 
               placeholder="At least 8 characters" 
-              autocomplete="new-password" 
+              autocomplete="off" 
               required
               aria-required="true"
             >
@@ -169,7 +169,7 @@
               name="confirmPassword" 
               class="form-input form-input--has-icon-right" 
               placeholder="Re-enter password" 
-              autocomplete="new-password" 
+              autocomplete="off" 
               required
               aria-required="true"
             >

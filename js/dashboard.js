@@ -212,16 +212,30 @@ async function refreshDashboardData(user) {
 }
 
 /**
+ * Programmatically switches the active dashboard tab
+ */
+export function switchToTab(targetTab) {
+  const user = getCurrentUser();
+  if (!user) return;
+  activeTab = targetTab;
+  const tabBtns = document.querySelectorAll('.dash-tab-btn');
+  tabBtns.forEach(b => b.classList.remove('dash-tab-btn--active'));
+  const targetBtn = document.querySelector(`[data-tab="${targetTab}"]`);
+  if (targetBtn) {
+    targetBtn.classList.add('dash-tab-btn--active');
+  }
+  renderActiveTab(user);
+}
+
+/**
  * Configures Tab Navigation buttons
  */
 function setupTabNavigation(user) {
   const tabBtns = document.querySelectorAll('.dash-tab-btn');
   tabBtns.forEach(btn => {
     btn.addEventListener('click', () => {
-      tabBtns.forEach(b => b.classList.remove('dash-tab-btn--active'));
-      btn.classList.add('dash-tab-btn--active');
-      activeTab = btn.getAttribute('data-tab');
-      renderActiveTab(user);
+      const target = btn.getAttribute('data-tab');
+      if (target) switchToTab(target);
     });
   });
 }
@@ -892,20 +906,20 @@ function renderAdminOverviewTab(container, user) {
 
   // Bind Overview buttons
   document.getElementById('btn-admin-goto-users')?.addEventListener('click', () => {
-    document.querySelector('[data-tab="users"]')?.click();
+    switchToTab('users');
   });
   document.getElementById('btn-admin-goto-inquiries')?.addEventListener('click', () => {
-    document.querySelector('[data-tab="inquiries"]')?.click();
+    switchToTab('inquiries');
   });
   document.getElementById('btn-admin-add-prop')?.addEventListener('click', () => openModal('modal-add-property'));
   document.getElementById('btn-admin-add-unit')?.addEventListener('click', () => openModal('modal-add-unit'));
   document.getElementById('btn-admin-new-lease')?.addEventListener('click', () => openModal('modal-create-lease'));
   document.getElementById('btn-admin-record-pay')?.addEventListener('click', () => openModal('modal-record-payment'));
   document.getElementById('btn-admin-view-all-payments')?.addEventListener('click', () => {
-    document.querySelector('[data-tab="payments"]')?.click();
+    switchToTab('payments');
   });
   document.getElementById('btn-admin-view-all-tickets')?.addEventListener('click', () => {
-    document.querySelector('[data-tab="maintenance"]')?.click();
+    switchToTab('maintenance');
   });
 }
 
@@ -1271,13 +1285,13 @@ function renderOverviewTab(container, user, isLandlord) {
     document.getElementById('btn-tenant-pay-rent')?.addEventListener('click', () => openModal('modal-pay-rent'));
     document.getElementById('btn-tenant-report-issue')?.addEventListener('click', () => openModal('modal-create-ticket'));
     document.getElementById('btn-tenant-view-ledger')?.addEventListener('click', () => {
-      document.querySelector('[data-tab="payments"]')?.click();
+      switchToTab('payments');
     });
     document.getElementById('btn-tenant-browse-rentals')?.addEventListener('click', () => {
-      document.querySelector('[data-tab="properties"]')?.click();
+      switchToTab('properties');
     });
     document.getElementById('btn-tenant-view-leases')?.addEventListener('click', () => {
-      document.querySelector('[data-tab="leases"]')?.click();
+      switchToTab('leases');
     });
   }
 }
@@ -1288,13 +1302,13 @@ function bindOverviewEvents() {
   document.getElementById('btn-action-new-lease')?.addEventListener('click', () => openModal('modal-create-lease'));
   document.getElementById('btn-action-record-pay')?.addEventListener('click', () => openModal('modal-record-payment'));
   document.getElementById('btn-view-all-payments')?.addEventListener('click', () => {
-    document.querySelector('[data-tab="payments"]')?.click();
+    switchToTab('payments');
   });
   document.getElementById('btn-view-all-props')?.addEventListener('click', () => {
-    document.querySelector('[data-tab="properties"]')?.click();
+    switchToTab('properties');
   });
   document.getElementById('btn-view-ticket-triage')?.addEventListener('click', () => {
-    document.querySelector('[data-tab="maintenance"]')?.click();
+    switchToTab('maintenance');
   });
 }
 
@@ -2514,8 +2528,9 @@ function openModal(modalId, preselectId = null) {
   if (firstInput) firstInput.focus();
 }
 
-// Expose openModal globally and via custom event for AI Chatbot and other modules
+// Expose openModal and switchToTab globally and via custom event for AI Chatbot and other modules
 window.openModal = openModal;
+window.switchToTab = switchToTab;
 document.addEventListener('rentroll:open-modal', (e) => {
   if (e.detail && e.detail.modalId) {
     openModal(e.detail.modalId);

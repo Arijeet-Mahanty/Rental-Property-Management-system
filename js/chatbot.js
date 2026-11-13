@@ -359,9 +359,13 @@ function handleDirectAction(action) {
       }
     }
   } else if (action.type === 'switch_tab') {
-    const tabBtn = document.querySelector(`[data-tab="${action.target}"]`);
-    if (tabBtn) {
-      tabBtn.click();
+    if (window.switchToTab) {
+      window.switchToTab(action.target);
+    } else {
+      const tabBtn = document.querySelector(`[data-tab="${action.target}"]`);
+      if (tabBtn) {
+        tabBtn.click();
+      }
     }
   }
 }

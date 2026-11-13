@@ -38,7 +38,7 @@
       <div id="login-general-alert" class="form-error" role="alert" aria-live="polite" style="margin-bottom: var(--space-4);"></div>
 
       <!-- Login Form -->
-      <form id="login-form" novalidate>
+      <form id="login-form" autocomplete="off" novalidate>
         <!-- Email Field -->
         <div class="form-group">
           <label for="login-email" class="form-label">Email address</label>
@@ -49,7 +49,7 @@
               name="email" 
               class="form-input" 
               placeholder="you@domain.com" 
-              autocomplete="email" 
+              autocomplete="off" 
               required
               aria-required="true"
             >
@@ -70,7 +70,7 @@
               name="password" 
               class="form-input form-input--has-icon-right" 
               placeholder="Enter your password" 
-              autocomplete="current-password" 
+              autocomplete="off" 
               required
               aria-required="true"
             >

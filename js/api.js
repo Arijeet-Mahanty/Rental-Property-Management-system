@@ -564,69 +564,12 @@ function delay(ms = ARTIFICIAL_DELAY_MS) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-function initOfflineStorage() {
-  const adminAccount = {
-    id: 'usr_admin_demo',
-    name: 'Arjun Singhania',
-    email: 'admin@rentroll.com',
-    password: 'Password123!',
-    role: 'admin',
-    phone: '+91 98100 00001'
-  };
-
-  const landlordAccount = {
-    id: 'usr_landlord_demo',
-    name: 'Rajesh Sharma',
-    email: 'landlord@rentroll.com',
-    password: 'Password123!',
-    role: 'landlord',
-    phone: '+91 98201 23456'
-  };
-
-  const tenantAccount = {
-    id: 'usr_tenant_demo',
-    name: 'Priya Iyer',
-    email: 'tenant@rentroll.com',
-    password: 'Password123!',
-    role: 'tenant',
-    phone: '+91 98450 87654'
-  };
-
-  let users = [];
-  try {
-    users = JSON.parse(localStorage.getItem(STORAGE_KEY_USERS) || '[]');
-  } catch {
-    users = [];
-  }
-
-  // Ensure admin demo account is always present
-  const adminIdx = users.findIndex(u => u.email && u.email.toLowerCase() === 'admin@rentroll.com');
-  if (adminIdx === -1) {
-    users.unshift(adminAccount);
-  } else {
-    users[adminIdx] = { ...users[adminIdx], ...adminAccount };
-  }
-
-  // Ensure landlord and tenant demo accounts are present
-  if (!users.some(u => u.email && u.email.toLowerCase() === 'landlord@rentroll.com')) {
-    users.push(landlordAccount);
-  }
-  if (!users.some(u => u.email && u.email.toLowerCase() === 'tenant@rentroll.com')) {
-    users.push(tenantAccount);
-  }
-
-  localStorage.setItem(STORAGE_KEY_USERS, JSON.stringify(users));
-}
-initOfflineStorage();
-
 async function offlineLogin(email, password, rememberMe) {
   await delay();
-  initOfflineStorage();
   const norm = (email || '').trim().toLowerCase();
   const users = JSON.parse(localStorage.getItem(STORAGE_KEY_USERS) || '[]');
   let user = users.find(u => u.email && u.email.toLowerCase() === norm);
 
-  // Guarantee demo accounts match Password123!
   if (!user || user.password !== password) {
     throw new Error('Invalid email or password. Please verify your credentials.');
   }
@@ -970,21 +913,6 @@ async function handleOfflineRequest(endpoint, options = {}) {
         suggestions = ['Portfolio cashflow & yield', 'Check vacant units', 'Maintenance work orders'];
       } else if (msg.includes('repair') || msg.includes('maintenance') || msg.includes('ticket')) {
         reply = `You have real-time triage for all repair requests submitted by residents.`;
-        action = { type: 'switch_tab', target: 'maintenance', label: '🔧 Open Maintenance Triage' };
-        suggestions = ['Portfolio cashflow & yield', 'Check vacant units', 'Record rent payment'];
-      }
-    }
-        suggestions = ['Check vacant units', 'Pending maintenance tickets', 'Create new lease'];
-      } else if (msg.includes('unit') || msg.includes('occupancy') || msg.includes('vacan') || msg.includes('door')) {
-        reply = `You have 18 total doors across your properties with 1 vacancy (Flat 6C at Gulmohar Residency). Would you like to add a new door or register a lease?`;
-        action = { type: 'open_modal', target: 'modal-add-unit', label: '🏠 Add New Door / Unit' };
-        suggestions = ['Create new lease agreement', 'Portfolio cashflow & yield', 'Pending maintenance tickets'];
-      } else if (msg.includes('lease') || msg.includes('stamp') || msg.includes('agreement')) {
-        reply = `Residential agreements in India follow the 11-month tenure norm with digital e-Stamping (Karnataka, Maharashtra, Delhi-NCR) and 5-10% standard escalation.`;
-        action = { type: 'open_modal', target: 'modal-create-lease', label: '📑 Create New Lease Agreement' };
-        suggestions = ['Portfolio cashflow & yield', 'Check vacant units', 'Maintenance work orders'];
-      } else if (msg.includes('repair') || msg.includes('maintenance') || msg.includes('ticket')) {
-        reply = `You have active maintenance work orders in triage. Emergency tickets are prioritized for same-day resolution.`;
         action = { type: 'switch_tab', target: 'maintenance', label: '🔧 Open Maintenance Triage' };
         suggestions = ['Portfolio cashflow & yield', 'Check vacant units', 'Record rent payment'];
       }

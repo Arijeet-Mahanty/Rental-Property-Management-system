@@ -1147,27 +1147,21 @@ input[type="number"].form-control {
 .dash-tabs-nav {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: var(--space-2);
   background-color: var(--color-bg-inset);
-  padding: 6px;
+  padding: 8px;
   border-radius: var(--radius-xl);
   border: var(--neo-border-inset);
   box-shadow: var(--neo-shadow-pressed-sm);
   margin-bottom: var(--space-8);
-  overflow-x: auto;
-  scrollbar-width: none;
-  -webkit-overflow-scrolling: touch;
-  scroll-snap-type: x proximity;
-}
-.dash-tabs-nav::-webkit-scrollbar {
-  display: none;
 }
 
 .dash-tab-btn {
   display: inline-flex;
   align-items: center;
   gap: var(--space-2);
-  padding: 0.65rem 1.25rem;
+  padding: 0.55rem 1.05rem;
   font-family: var(--font-sans);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-semibold);
@@ -1178,7 +1172,6 @@ input[type="number"].form-control {
   cursor: pointer;
   white-space: nowrap;
   flex-shrink: 0;
-  scroll-snap-align: start;
   transition: all var(--transition-fast);
 }
 
