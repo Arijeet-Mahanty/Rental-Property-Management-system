@@ -627,35 +627,6 @@ async function offlineLogin(email, password, rememberMe) {
   let user = users.find(u => u.email && u.email.toLowerCase() === norm);
 
   // Guarantee demo accounts match Password123!
-  if (!user && norm === 'admin@rentroll.com' && password === 'Password123!') {
-    user = {
-      id: 'usr_admin_demo',
-      name: 'Arjun Singhania',
-      email: 'admin@rentroll.com',
-      password: 'Password123!',
-      role: 'admin',
-      phone: '+91 98100 00001'
-    };
-  } else if (!user && norm === 'landlord@rentroll.com' && password === 'Password123!') {
-    user = {
-      id: 'usr_landlord_demo',
-      name: 'Rajesh Sharma',
-      email: 'landlord@rentroll.com',
-      password: 'Password123!',
-      role: 'landlord',
-      phone: '+91 98201 23456'
-    };
-  } else if (!user && norm === 'tenant@rentroll.com' && password === 'Password123!') {
-    user = {
-      id: 'usr_tenant_demo',
-      name: 'Priya Iyer',
-      email: 'tenant@rentroll.com',
-      password: 'Password123!',
-      role: 'tenant',
-      phone: '+91 98450 87654'
-    };
-  }
-
   if (!user || user.password !== password) {
     throw new Error('Invalid email or password. Please verify your credentials.');
   }
@@ -704,7 +675,7 @@ async function offlineSignup(data) {
 
 async function handleOfflineRequest(endpoint, options = {}) {
   await delay(150);
-  const user = getCurrentUser() || { id: 'usr_landlord_demo', role: 'landlord', name: 'Rajesh Sharma' };
+  const user = getCurrentUser();
 
   if (endpoint.startsWith('/auth/login')) {
     const body = typeof options.body === 'string' ? JSON.parse(options.body) : (options.body || {});
@@ -785,76 +756,70 @@ async function handleOfflineRequest(endpoint, options = {}) {
       return {
         data: {
           role: 'public',
-          totalProperties: 6,
-          totalUnits: 20,
-          occupiedUnits: 18,
-          occupancyRate: 90,
-          totalRentCollected: 259500,
-          monthlyRentRoll: 1171500,
-          activeLeasesCount: 5,
-          reviewsCount: 4,
-          onTimePaymentRate: 99.4
+          totalProperties: 0,
+          totalUnits: 0,
+          occupiedUnits: 0,
+          occupancyRate: 0,
+          totalRentCollected: 0,
+          monthlyRentRoll: 0,
+          activeLeasesCount: 0,
+          reviewsCount: 0,
+          onTimePaymentRate: 100
         }
       };
+    }
+    if (!user) {
+      return { data: { role: 'guest', totalProperties: 0, totalUnits: 0, monthlyRentRoll: 0 } };
     }
     if (user.role === 'admin') {
       return {
         data: {
           role: 'admin',
-          totalUsers: 7,
-          totalLandlords: 2,
-          totalTenants: 4,
-          totalProperties: 4,
-          totalUnits: 18,
-          occupiedUnits: 17,
-          vacantUnits: 1,
-          occupancyRate: 94,
-          monthlyRentRoll: 1104500,
-          paidRentTotal: 185500,
-          pendingRentTotal: 28500,
-          activeLeasesCount: 3,
-          openMaintenanceCount: 2,
-          inquiriesCount: 2,
-          reviewsCount: 3
+          totalUsers: 0,
+          totalLandlords: 0,
+          totalTenants: 0,
+          totalProperties: 0,
+          totalUnits: 0,
+          occupiedUnits: 0,
+          vacantUnits: 0,
+          occupancyRate: 0,
+          monthlyRentRoll: 0,
+          paidRentTotal: 0,
+          pendingRentTotal: 0,
+          activeLeasesCount: 0,
+          openMaintenanceCount: 0,
+          inquiriesCount: 0,
+          reviewsCount: 0
         }
       };
     } else if (user.role === 'landlord') {
       return {
         data: {
           role: 'landlord',
-          totalProperties: 4,
-          totalUnits: 18,
-          occupiedUnits: 17,
-          vacantUnits: 1,
-          occupancyRate: 94,
-          monthlyRentRoll: 535000,
-          paidRentThisMonth: 128500,
-          pendingRent: 28500,
-          openMaintenanceCount: 2,
-          highPriorityMaintenanceCount: 1
+          totalProperties: 0,
+          totalUnits: 0,
+          occupiedUnits: 0,
+          vacantUnits: 0,
+          occupancyRate: 0,
+          monthlyRentRoll: 0,
+          paidRentThisMonth: 0,
+          pendingRent: 0,
+          openMaintenanceCount: 0,
+          highPriorityMaintenanceCount: 0
         }
       };
     } else {
       return {
         data: {
           role: 'tenant',
-          activeLease: {
-            id: 'lease_1',
-            startDate: '2026-02-01',
-            endDate: '2027-01-31',
-            rentAmount: 28500,
-            depositAmount: 85500,
-            unitName: 'Flat 4B',
-            propertyName: 'Gulmohar Residency',
-            address: '14th Main, 4th Block, Koramangala, Bengaluru, KA 560034'
-          },
-          monthlyRent: 28500,
-          nextDueDate: '2026-11-01',
-          nextAmountDue: 28500,
-          lastPaidAmount: 28500,
-          lastPaidDate: '2026-10-01T08:30:00.000Z',
-          openTicketsCount: 1,
-          totalTicketsCount: 1
+          activeLease: null,
+          monthlyRent: 0,
+          nextDueDate: null,
+          nextAmountDue: 0,
+          lastPaidAmount: 0,
+          lastPaidDate: null,
+          openTicketsCount: 0,
+          totalTicketsCount: 0
         }
       };
     }
@@ -871,10 +836,10 @@ async function handleOfflineRequest(endpoint, options = {}) {
       const newProp = {
         id: `prop_local_${Date.now()}`,
         name: body.name || 'New Property',
-        address: body.address || 'MG Road Corridor',
-        city: body.city || 'Bengaluru',
-        state: body.state || 'KA',
-        zip_code: body.zip_code || '560001',
+        address: body.address || 'Address',
+        city: body.city || 'City',
+        state: body.state || 'State',
+        zip_code: body.zip_code || '',
         property_type: body.property_type || 'Apartment Building',
         image_url: 'assets/indian_modern_villa.jpg',
         units_count: 0,
@@ -889,59 +854,26 @@ async function handleOfflineRequest(endpoint, options = {}) {
       return { success: true, message: 'Property created successfully.', data: newProp };
     }
 
-    const defaultProps = [
-      { id: 'prop_1', name: 'Gulmohar Residency', address: '42, 80 Feet Road, 4th Block, Koramangala', city: 'Bengaluru', state: 'KA', zip_code: '560034', property_type: 'Apartment Society', image_url: 'assets/indian_modern_villa.jpg', units_count: 6, occupied_units_count: 5, occupancy_rate: 83, monthly_rent_total: 202500 },
-      { id: 'prop_2', name: 'Skyline Palms Heights', address: '15, Turner Road, Bandra West', city: 'Mumbai', state: 'MH', zip_code: '400050', property_type: 'Gated High-Rise', image_url: 'assets/indian_luxury_apartment.jpg', units_count: 5, occupied_units_count: 5, occupancy_rate: 100, monthly_rent_total: 443000 },
-      { id: 'prop_3', name: 'Greenfield Heights Duplex', address: '88, Whitefield Main Road', city: 'Bengaluru', state: 'KA', zip_code: '560066', property_type: 'Independent Villa/Duplex', image_url: 'assets/tenant_apartment.jpg', units_count: 2, occupied_units_count: 2, occupancy_rate: 100, monthly_rent_total: 120000 },
-      { id: 'prop_4', name: 'Cyber Greens Residency', address: 'DLF Phase 5, Golf Course Road', city: 'Gurugram', state: 'HR', zip_code: '122002', property_type: 'Luxury Condominium', image_url: 'assets/urban_brownstone.jpg', units_count: 5, occupied_units_count: 5, occupancy_rate: 100, monthly_rent_total: 339000 }
-    ];
     const localProps = JSON.parse(localStorage.getItem('rentroll_properties') || '[]');
     return {
-      data: [...localProps, ...defaultProps]
+      data: localProps
     };
   }
 
   if (endpoint.startsWith('/units')) {
-    return {
-      data: [
-        { id: 'unit_101', property_name: 'Gulmohar Residency', unit_number: 'Flat 1A', bedrooms: 1, bathrooms: 1.0, square_feet: 680, rent_amount: 24000, status: 'occupied', current_tenant: { name: 'Sanjay Verma' } },
-        { id: 'unit_102', property_name: 'Gulmohar Residency', unit_number: 'Flat 2A', bedrooms: 2, bathrooms: 2.0, square_feet: 1050, rent_amount: 35000, status: 'occupied', current_tenant: { name: 'Aarav Mehta' } },
-        { id: 'unit_104', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', bedrooms: 2, bathrooms: 2.0, square_feet: 1100, rent_amount: 28500, status: 'occupied', current_tenant: { name: 'Priya Iyer' } },
-        { id: 'unit_106', property_name: 'Gulmohar Residency', unit_number: 'Flat 6C', bedrooms: 1, bathrooms: 1.0, square_feet: 650, rent_amount: 22000, status: 'vacant', current_tenant: null },
-        { id: 'unit_201', property_name: 'Skyline Palms Heights', unit_number: 'Tower 101', bedrooms: 2, bathrooms: 2.0, square_feet: 1150, rent_amount: 65000, status: 'occupied', current_tenant: { name: 'Ananya Deshmukh' } }
-      ]
-    };
+    return { data: [] };
   }
 
   if (endpoint.startsWith('/leases')) {
-    return {
-      data: [
-        { id: 'lease_1', unit_number: 'Flat 4B', property_name: 'Gulmohar Residency', tenant_name: 'Priya Iyer', tenant_email: 'tenant@rentroll.com', start_date: '2026-02-01', end_date: '2027-01-31', rent_amount: 28500, deposit_amount: 85500, status: 'active' },
-        { id: 'lease_2', unit_number: 'Flat 2A', property_name: 'Gulmohar Residency', tenant_name: 'Aarav Mehta', tenant_email: 'aarav.mehta@example.in', start_date: '2026-01-01', end_date: '2026-12-31', rent_amount: 35000, deposit_amount: 105000, status: 'active' },
-        { id: 'lease_3', unit_number: 'Tower 101', property_name: 'Skyline Palms Heights', tenant_name: 'Ananya Deshmukh', tenant_email: 'ananya.d@example.in', start_date: '2026-03-01', end_date: '2027-02-28', rent_amount: 65000, deposit_amount: 195000, status: 'active' }
-      ]
-    };
+    return { data: [] };
   }
 
   if (endpoint.startsWith('/payments')) {
-    return {
-      data: [
-        { id: 'pay_101', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', tenant_name: 'Priya Iyer', amount: 28500, due_date: '2026-10-01', paid_date: '2026-10-01', status: 'paid', payment_method: 'upi', transaction_ref: 'UPI-RR-90421', notes: 'October 2026 Rent - Paid via Google Pay UPI' },
-        { id: 'pay_104', property_name: 'Gulmohar Residency', unit_number: 'Flat 2A', tenant_name: 'Aarav Mehta', amount: 35000, due_date: '2026-10-01', paid_date: '2026-10-02', status: 'paid', payment_method: 'enach', transaction_ref: 'eNACH-HDFC-4028', notes: 'October 2026 Rent - eNACH Mandate Cleared' },
-        { id: 'pay_105', property_name: 'Skyline Palms Heights', unit_number: 'Tower 101', tenant_name: 'Ananya Deshmukh', amount: 65000, due_date: '2026-10-01', paid_date: '2026-10-01', status: 'paid', payment_method: 'netbanking', transaction_ref: 'IMPS-ICICI-1192', notes: 'October 2026 Rent - Direct IMPS Transfer' },
-        { id: 'pay_106', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', tenant_name: 'Priya Iyer', amount: 28500, due_date: '2026-11-01', paid_date: null, status: 'pending', payment_method: 'upi', transaction_ref: null, notes: 'November 2026 Rent (Upcoming UPI Auto-Debit)' }
-      ]
-    };
+    return { data: [] };
   }
 
   if (endpoint.startsWith('/maintenance')) {
-    return {
-      data: [
-        { id: 'tkt_1', property_name: 'Gulmohar Residency', unit_number: 'Flat 4B', tenant_name: 'Priya Iyer', title: 'Water purifier (RO) filter servicing', category: 'plumbing', priority: 'medium', status: 'in_progress', description: 'RO water purifier flow has slowed down significantly. Filter cartridge replacement required.', estimated_cost: 1200, actual_cost: 0, resolution_notes: 'Urban Company technician booked for tomorrow 10:00 AM.', created_at: '2026-10-24T14:20:00.000Z' },
-        { id: 'tkt_2', property_name: 'Gulmohar Residency', unit_number: 'Flat 101', tenant_name: 'Priya Iyer', title: 'Bathroom hot water geyser inspection', category: 'electrical', priority: 'high', status: 'open', description: 'Geyser is tripping the MCB switch whenever switched on. Heating element needs check.', estimated_cost: 1500, actual_cost: 0, created_at: '2026-10-25T09:10:00.000Z' },
-        { id: 'tkt_3', property_name: 'Gulmohar Residency', unit_number: 'Flat 2A', tenant_name: 'Aarav Mehta', title: 'Ceiling fan regulator replacement', category: 'electrical', priority: 'low', status: 'resolved', description: 'Master bedroom fan running only at speed 5. Regulator switch replaced.', estimated_cost: 450, actual_cost: 400, resolution_notes: 'Replaced modular regulator switch. Working smoothly.', created_at: '2026-10-18T16:45:00.000Z' }
-      ]
-    };
+    return { data: [] };
   }
 
   if (endpoint.startsWith('/contact')) {
@@ -984,37 +916,22 @@ async function handleOfflineRequest(endpoint, options = {}) {
   if (endpoint.startsWith('/admin/users')) {
     return {
       success: true,
-      data: [
-        { id: 'usr_admin_demo', name: 'Arjun Singhania', email: 'admin@rentroll.com', role: 'admin', phone: '+91 98100 00001', properties_count: 0, leases_count: 0, created_at: '2026-01-01T00:00:00.000Z' },
-        { id: 'usr_landlord_demo', name: 'Rajesh Sharma', email: 'landlord@rentroll.com', role: 'landlord', phone: '+91 98201 23456', properties_count: 3, leases_count: 2, created_at: '2026-01-05T00:00:00.000Z' },
-        { id: 'usr_landlord_2', name: 'Sunita Kulkarni', email: 'sunita.k@example.in', role: 'landlord', phone: '+91 98220 99887', properties_count: 1, leases_count: 1, created_at: '2026-01-10T00:00:00.000Z' },
-        { id: 'usr_tenant_demo', name: 'Priya Iyer', email: 'tenant@rentroll.com', role: 'tenant', phone: '+91 98450 87654', properties_count: 0, leases_count: 1, created_at: '2026-01-15T00:00:00.000Z' },
-        { id: 'usr_tenant_2', name: 'Aarav Mehta', email: 'aarav.mehta@example.in', role: 'tenant', phone: '+91 99102 34567', properties_count: 0, leases_count: 1, created_at: '2026-01-18T00:00:00.000Z' },
-        { id: 'usr_tenant_3', name: 'Ananya Deshmukh', email: 'ananya.d@example.in', role: 'tenant', phone: '+91 97654 12389', properties_count: 0, leases_count: 1, created_at: '2026-01-20T00:00:00.000Z' },
-        { id: 'usr_tenant_4', name: 'Vikram Malhotra', email: 'vikram.m@example.in', role: 'tenant', phone: '+91 98111 22334', properties_count: 0, leases_count: 0, created_at: '2026-01-22T00:00:00.000Z' }
-      ]
+      data: []
     };
   }
 
   if (endpoint.startsWith('/admin/inquiries')) {
     return {
       success: true,
-      inquiries: [
-        { id: 'msg_in_1', name: 'Karan Singhal', email: 'karan.s@realtyinvest.in', phone: '+91 98200 44556', subject: 'Enterprise Portfolio Onboarding (35 Units in Gachibowli, Hyderabad)', portfolio_size: '25-50 doors', message: 'Interested in automated UPI rent collection and tenant HRA receipt generation for 2 residential apartment complexes in Hyderabad.', status: 'new', created_at: '2026-10-28T10:15:00.000Z' },
-        { id: 'msg_in_2', name: 'Meera Nambiar', email: 'meera.nambiar@heritageprops.com', phone: '+91 98401 55667', subject: 'Society Maintenance & Parking Management', portfolio_size: '10-25 doors', message: 'Looking to streamline monthly maintenance and digital lease agreements for our gated villas in Chennai.', status: 'contacted', created_at: '2026-10-29T14:30:00.000Z' }
-      ],
-      reviews: [
-        { id: 'rev_in_1', name: 'Rajesh Sharma', role: 'landlord', rating: 5, property_name: 'Gulmohar Residency (18 Flats)', title: 'UPI autopay eliminated chasing rent completely', comment: 'Managing 18 flats across Koramangala and Indiranagar used to consume the first week of every month. With RentRoll UPI & eNACH autopay, 100% of my rent hits my HDFC account on the 1st. My CA loved the HRA & GST reports.', verified: true, created_at: '2026-10-20T11:00:00.000Z' },
-        { id: 'rev_in_2', name: 'Priya Iyer', role: 'tenant', rating: 5, property_name: 'Flat 4B, Koramangala', title: 'Instant HRA rent receipts with Landlord PAN', comment: 'No more awkward follow-ups for rent receipts at tax submission time. I pay via Google Pay UPI in 30 seconds and instantly download digitally signed HRA receipts for my company declaration.', verified: true, created_at: '2026-10-22T15:20:00.000Z' },
-        { id: 'rev_in_3', name: 'Sunita Kulkarni', role: 'landlord', rating: 5, property_name: 'Koregaon Park Duplexes (6 Flats)', title: 'Photo repair triage saved thousands on contractor visits', comment: 'When a tenant reported a geyser issue on Sunday evening, they submitted a video ticket with sound. We identified the MCB trip remotely without paying emergency electrician charges.', verified: true, created_at: '2026-10-24T09:45:00.000Z' }
-      ]
+      inquiries: [],
+      reviews: []
     };
   }
 
   if (endpoint.startsWith('/chatbot')) {
     const body = typeof options.body === 'string' ? JSON.parse(options.body) : (options.body || {});
     const msg = (body.message || '').toLowerCase();
-    const user = getCurrentUser() || { name: 'Resident', role: 'tenant' };
+    const user = getCurrentUser() || { name: 'User', role: 'tenant' };
 
     let reply = `Hello ${user.name}! I am your RentRoll AI Assistant. How can I help you today?`;
     let action = null;
@@ -1022,26 +939,41 @@ async function handleOfflineRequest(endpoint, options = {}) {
 
     if (user.role === 'tenant') {
       if (msg.includes('pay') || msg.includes('rent') || msg.includes('upi') || msg.includes('due')) {
-        reply = `Hello ${user.name}! Your monthly rent is ₹28,500, due on the 1st of every month via UPI AutoPay or eNACH.\n\nWould you like to authorize this payment now?`;
-        action = { type: 'open_modal', target: 'modal-pay-rent', label: '💳 Authorize ₹28,500 Payment' };
+        reply = `Hello ${user.name}! You can pay your rent directly from the Payments tab using UPI AutoPay or Netbanking.`;
+        action = { type: 'switch_tab', target: 'payments', label: '💳 Go to Payments' };
         suggestions = ['Download HRA rent receipt', 'Submit maintenance ticket', 'When does my lease expire?'];
       } else if (msg.includes('hra') || msg.includes('tax') || msg.includes('receipt')) {
-        reply = `RentRoll automatically generates digitally signed HRA rent receipts with Landlord PAN (mandatory under Section 10(13A) of the Income Tax Act if rent exceeds ₹1,00,000/yr). You can download them anytime from your Rent Ledger.`;
+        reply = `RentRoll automatically generates digitally signed HRA rent receipts. You can download them anytime from your Rent Ledger.`;
         action = { type: 'switch_tab', target: 'payments', label: '📄 Go to Rent Ledger & Receipts' };
         suggestions = ['How to pay rent via UPI?', 'Submit maintenance ticket', 'Notice period rules'];
       } else if (msg.includes('repair') || msg.includes('maintenance') || msg.includes('ticket') || msg.includes('fix')) {
-        reply = `Under the Model Tenancy framework, structural and plumbing/electrical issues are coordinated by the landlord. You can submit a repair request for rapid technician dispatch.`;
+        reply = `You can submit a repair request anytime for rapid technician dispatch.`;
         action = { type: 'open_modal', target: 'modal-create-ticket', label: '🔧 Submit Repair Request' };
         suggestions = ['How to pay rent via UPI?', 'Download HRA rent receipt', 'What are tenant responsibilities?'];
       } else if (msg.includes('lease') || msg.includes('notice') || msg.includes('terms') || msg.includes('deposit')) {
-        reply = `Your active 11-month lease is registered on RentRoll. Standard notice periods are 30 days, and security deposits are refundable within 7-15 days after inspection.`;
+        reply = `Your active lease details and tenancy agreements are accessible in the Leases tab.`;
         action = { type: 'switch_tab', target: 'leases', label: '📑 View My Lease Details' };
         suggestions = ['How to pay rent via UPI?', 'Download HRA rent receipt', 'Report a maintenance issue'];
       }
     } else {
       if (msg.includes('cashflow') || msg.includes('yield') || msg.includes('rent roll') || msg.includes('revenue')) {
-        reply = `Hello ${user.name}! Your contracted monthly rent roll is ₹11,71,500 with a 94.4% occupancy rate across your properties. You can export complete ledger reports anytime.`;
+        reply = `Hello ${user.name}! You can monitor your real-time contracted rent roll and occupancy in the Payments and Overview tabs.`;
         action = { type: 'switch_tab', target: 'payments', label: '📊 Open Rent Ledger & Export CSV' };
+        suggestions = ['Check vacant units', 'Pending maintenance tickets', 'Create new lease'];
+      } else if (msg.includes('unit') || msg.includes('occupancy') || msg.includes('vacan') || msg.includes('door')) {
+        reply = `You can manage your doors and view vacancies from the Properties & Units tab.`;
+        action = { type: 'open_modal', target: 'modal-add-unit', label: '🏠 Add New Door / Unit' };
+        suggestions = ['Create new lease agreement', 'Portfolio cashflow & yield', 'Pending maintenance tickets'];
+      } else if (msg.includes('lease') || msg.includes('stamp') || msg.includes('agreement')) {
+        reply = `You can draft, review, and manage lease agreements in the Leases & Tenancy tab.`;
+        action = { type: 'open_modal', target: 'modal-create-lease', label: '📑 Create New Lease Agreement' };
+        suggestions = ['Portfolio cashflow & yield', 'Check vacant units', 'Maintenance work orders'];
+      } else if (msg.includes('repair') || msg.includes('maintenance') || msg.includes('ticket')) {
+        reply = `You have real-time triage for all repair requests submitted by residents.`;
+        action = { type: 'switch_tab', target: 'maintenance', label: '🔧 Open Maintenance Triage' };
+        suggestions = ['Portfolio cashflow & yield', 'Check vacant units', 'Record rent payment'];
+      }
+    }
         suggestions = ['Check vacant units', 'Pending maintenance tickets', 'Create new lease'];
       } else if (msg.includes('unit') || msg.includes('occupancy') || msg.includes('vacan') || msg.includes('door')) {
         reply = `You have 18 total doors across your properties with 1 vacancy (Flat 6C at Gulmohar Residency). Would you like to add a new door or register a lease?`;

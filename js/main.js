@@ -425,18 +425,15 @@ function initFeedbackSection() {
     try {
       const serverReviews = await getFeedbackReviews();
       if (Array.isArray(serverReviews) && serverReviews.length > 0) {
+        grid.innerHTML = '';
         [...serverReviews].reverse().forEach(rev => renderReviewCard(rev, false));
+        setupInfiniteMarquee();
       }
     } catch (err) {
-      console.warn('[Feedback] Could not fetch server reviews, falling back to local:', err);
+      console.warn('[Feedback] Could not fetch server reviews:', err);
     }
 
-    // Also load any locally saved reviews
-    const stored = JSON.parse(localStorage.getItem('rentroll_custom_feedback') || '[]');
-    stored.forEach(rev => renderReviewCard(rev, false));
-
     updateFilterCounts();
-    setupInfiniteMarquee();
   }
 
   loadFeedbackReviews();
@@ -723,13 +720,36 @@ async function initLandingProperties() {
 
   try {
     const properties = await getProperties(true);
-    if (!properties || properties.length === 0) return;
-
-    if (archGrid) {
-      renderLandingArchitectureCards(archGrid, properties);
-    }
-    if (galleryGrid) {
-      renderLandingGalleryCards(galleryGrid, properties);
+    if (properties && properties.length > 0) {
+      if (archGrid) {
+        renderLandingArchitectureCards(archGrid, properties);
+      }
+      if (galleryGrid) {
+        renderLandingGalleryCards(galleryGrid, properties);
+      }
+    } else {
+      if (archGrid) {
+        archGrid.innerHTML = `
+          <div class="glass-card" style="grid-column: 1 / -1; text-align: center; padding: var(--space-8); border: 1px dashed var(--color-border); border-radius: var(--radius-xl);">
+            <div style="font-size: 2.2rem; margin-bottom: var(--space-3);">🏠</div>
+            <h3 style="font-size: var(--font-size-xl); margin-bottom: var(--space-2); color: var(--color-text-main); font-weight: 700;">No Listed Properties Yet</h3>
+            <p style="color: var(--color-text-muted); max-width: 520px; margin: 0 auto var(--space-5); line-height: 1.6;">Properties listed by verified landlords will dynamically showcase here in real-time. Create an account or log in to manage or view units.</p>
+            <div style="display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap;">
+              <a href="signup.html" class="btn btn--primary">Sign Up to List Property</a>
+              <a href="login.html" class="btn btn--secondary">Log In</a>
+            </div>
+          </div>
+        `;
+      }
+      if (galleryGrid) {
+        galleryGrid.innerHTML = `
+          <div class="glass-card" style="grid-column: 1 / -1; text-align: center; padding: var(--space-6); border: 1px dashed var(--color-border); border-radius: var(--radius-xl);">
+            <div style="font-size: 1.8rem; margin-bottom: var(--space-2);">🌆</div>
+            <h4 style="font-size: var(--font-size-lg); margin-bottom: var(--space-2); color: var(--color-text-main); font-weight: 600;">Portfolio Gallery Ready</h4>
+            <p style="color: var(--color-text-muted); max-width: 460px; margin: 0 auto; font-size: var(--font-size-sm);">Property photos will appear automatically once doors are registered in the system.</p>
+          </div>
+        `;
+      }
     }
     initScrollReveal();
   } catch (err) {

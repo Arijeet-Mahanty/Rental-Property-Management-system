@@ -18,8 +18,7 @@ try:
         if 'api_user' not in tables:
             print("[RentRoll WSGI] 'api_user' table missing. Running automatic migrations...", flush=True)
             call_command('migrate', interactive=False)
-            call_command('seed_indian_data')
-            print("[RentRoll WSGI] Database tables and seed data initialized successfully!", flush=True)
+            print("[RentRoll WSGI] Database tables initialized successfully!", flush=True)
 except Exception as e:
     print(f"[RentRoll WSGI] Database bootstrap notice: {e}", file=sys.stderr, flush=True)
 

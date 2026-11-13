@@ -477,12 +477,12 @@ input[type="number"].form-control {
 
 .role-selector {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(3, 1fr);
   gap: var(--space-3);
   margin-bottom: var(--space-5);
 }
 
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .role-selector {
     grid-template-columns: 1fr;
   }

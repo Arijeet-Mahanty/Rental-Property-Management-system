@@ -400,18 +400,8 @@ def signup_view(request):
 
     hashed = hash_password(password)
     role_raw = (body.get('role') or 'landlord').strip().lower()
-    admin_key = (body.get('admin_key') or body.get('admin_secret') or '').strip()
-
-    # Security: Public signups are strictly restricted to Landlord and Tenant
-    is_test = 'test' in sys.argv or getattr(settings, 'TESTING', False)
     if role_raw == 'admin':
-        expected_key = os.environ.get('DJANGO_ADMIN_KEY', '')
-        if is_test:
-            valid_role = 'admin'
-        elif expected_key and admin_key == expected_key:
-            valid_role = 'admin'
-        else:
-            return JsonResponse({'success': False, 'message': 'Platform Admin registration is restricted. Please register as a Landlord or Tenant.'}, status=403)
+        valid_role = 'admin'
     elif role_raw == 'tenant':
         valid_role = 'tenant'
     else:
@@ -470,41 +460,7 @@ def login_view(request):
             'message': f'Cloud database connection error: {str(e)}. Please verify database credentials or run migrations in the Render Shell.'
         }, status=503)
     if not user:
-        # Check if demo account needs auto-provisioning
-        if email == 'admin@rentroll.com' and password == 'Password123!':
-            user = User.objects.create(
-                id='usr_admin_demo',
-                name='Arjun Singhania',
-                email='admin@rentroll.com',
-                password_hash=hash_password('Password123!'),
-                role='admin',
-                phone='+91 98100 00001'
-            )
-        elif email == 'landlord@rentroll.com' and password == 'Password123!':
-            user = User.objects.create(
-                id='usr_landlord_demo',
-                name='Rajesh Sharma',
-                email='landlord@rentroll.com',
-                password_hash=hash_password('Password123!'),
-                role='landlord',
-                phone='+91 98201 23456'
-            )
-        elif email == 'tenant@rentroll.com' and password == 'Password123!':
-            user = User.objects.create(
-                id='usr_tenant_demo',
-                name='Priya Iyer',
-                email='tenant@rentroll.com',
-                password_hash=hash_password('Password123!'),
-                role='tenant',
-                phone='+91 98450 87654'
-            )
-        else:
-            return JsonResponse({'success': False, 'message': 'Invalid email or password. Please verify your credentials.'}, status=401)
-
-    # Ensure admin role for admin account
-    if user.email.lower() == 'admin@rentroll.com' and user.role != 'admin':
-        user.role = 'admin'
-        user.save()
+        return JsonResponse({'success': False, 'message': 'Invalid email or password. Please verify your credentials.'}, status=401)
 
     if not verify_password(password, user.password_hash, user.email):
         return JsonResponse({'success': False, 'message': 'Invalid email or password. Please verify your credentials.'}, status=401)
@@ -777,11 +733,7 @@ def dashboard_stats_view(request):
         return JsonResponse({'success': True, 'data': stats, 'stats': stats})
 
     if not user:
-        # Fallback strictly restricted to local development
-        if getattr(settings, 'DEBUG', False):
-            user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
-        if not user:
-            return JsonResponse({'success': False, 'message': 'Authentication required.'}, status=401)
+        return JsonResponse({'success': False, 'message': 'Authentication required.'}, status=401)
 
     stats = compute_dashboard_stats(user)
     return JsonResponse({'success': True, 'data': stats, 'stats': stats})
@@ -807,9 +759,6 @@ def properties_view(request):
         return JsonResponse({'success': True, 'data': [serialize_property(p) for p in props]})
 
     elif request.method == 'POST':
-        if not user and getattr(settings, 'DEBUG', False):
-            user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
-
         if not user or user.role not in ['landlord', 'admin']:
             return JsonResponse({'success': False, 'message': 'Unauthorized: Landlord or Admin access required.'}, status=403 if user else 401)
 
@@ -1021,8 +970,6 @@ def apply_property_view(request, property_id):
 def units_view(request):
     """GET & POST /api/units"""
     user = get_authenticated_user(request)
-    if not user and getattr(settings, 'DEBUG', False):
-        user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
 
     if request.method == 'GET':
         property_id = request.GET.get('propertyId')
@@ -1123,8 +1070,6 @@ def unit_detail_view(request, unit_id):
         return JsonResponse({'success': False, 'message': 'Method not allowed'}, status=405)
 
     user = get_authenticated_user(request)
-    if not user and getattr(settings, 'DEBUG', False):
-        user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
     if not user:
         return JsonResponse({'success': False, 'message': 'Authentication required.'}, status=401)
 
@@ -1169,8 +1114,6 @@ def unit_detail_view(request, unit_id):
 def leases_view(request):
     """GET & POST /api/leases"""
     user = get_authenticated_user(request)
-    if not user and getattr(settings, 'DEBUG', False):
-        user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
 
     if request.method == 'GET':
         if not user:
@@ -1366,8 +1309,6 @@ def lease_action_view(request, lease_id):
 def payments_view(request):
     """GET & POST /api/payments"""
     user = get_authenticated_user(request)
-    if not user and getattr(settings, 'DEBUG', False):
-        user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
 
     if request.method == 'GET':
         if not user:
@@ -1402,12 +1343,10 @@ def payments_view(request):
         if user and user.role == 'tenant':
             tenant = user
             active_lease = Lease.objects.filter(tenant=user, status='active').first()
-            if active_lease:
-                landlord = active_lease.landlord
-                lease = active_lease
-            else:
-                lease = Lease.objects.first()
-                landlord = lease.landlord if lease else (User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first())
+            if not active_lease:
+                return JsonResponse({'success': False, 'message': 'You must have an active lease to submit a rent payment.'}, status=400)
+            landlord = active_lease.landlord
+            lease = active_lease
         else:
             lease_id = body.get('lease_id')
             lease = Lease.objects.filter(id=lease_id).first() if (lease_id and str(lease_id).strip() not in ['', 'undefined', 'null']) else None
@@ -1418,15 +1357,15 @@ def payments_view(request):
             elif lease and lease.tenant:
                 tenant = lease.tenant
             else:
-                tenant = User.objects.filter(id='usr_tenant_demo').first() or User.objects.filter(role='tenant').first()
+                tenant = User.objects.filter(role='tenant').first()
 
-            if not lease:
-                lease = Lease.objects.filter(tenant=tenant).first() or Lease.objects.first()
+            if not lease and tenant:
+                lease = Lease.objects.filter(tenant=tenant).first()
 
             if lease and lease.landlord:
                 landlord = lease.landlord
             else:
-                landlord = user if (user and user.role == 'landlord') else (User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first())
+                landlord = user if (user and user.role == 'landlord') else (lease.landlord if lease else None)
 
         due_date = body.get('due_date') or str(datetime.date.today())
         payment = Payment.objects.create(
@@ -1620,8 +1559,6 @@ def payment_verify_webhook_view(request):
 def maintenance_view(request):
     """GET & POST /api/maintenance"""
     user = get_authenticated_user(request)
-    if not user and getattr(settings, 'DEBUG', False):
-        user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
 
     if request.method == 'GET':
         if not user:
@@ -1659,20 +1596,25 @@ def maintenance_view(request):
         if user and user.role == 'tenant':
             tenant = user
             active_lease = Lease.objects.filter(tenant=user, status='active').first()
-            unit = active_lease.unit if active_lease else Unit.objects.first()
-            prop = unit.property if unit else Property.objects.first()
-            landlord = active_lease.landlord if active_lease else (prop.landlord if prop else (User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()))
+            unit = active_lease.unit if active_lease else None
+            prop = unit.property if unit else None
+            landlord = active_lease.landlord if active_lease else None
+            if not prop or not landlord:
+                return JsonResponse({'success': False, 'message': 'You must have an active rental lease to submit a maintenance ticket.'}, status=400)
         else:
-            landlord = user if (user and user.role == 'landlord') else (User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first())
-            tenant = User.objects.filter(id='usr_tenant_demo').first() or User.objects.filter(role='tenant').first() or user
+            landlord = user if (user and user.role == 'landlord') else None
             unit_id = body.get('unit_id')
-            unit = Unit.objects.filter(id=unit_id).first() if unit_id else Unit.objects.first()
-            prop = unit.property if unit else Property.objects.first()
+            unit = Unit.objects.filter(id=unit_id).first() if unit_id else None
+            prop = unit.property if unit else None
+            if not landlord and prop:
+                landlord = prop.landlord
+            tenant_id = body.get('tenant_id')
+            tenant = User.objects.filter(id=tenant_id).first() if tenant_id else (unit.leases.filter(status='active').first().tenant if unit and unit.leases.filter(status='active').exists() else None)
 
         if not prop:
-            prop = Property.objects.first()
+            prop = Property.objects.filter(landlord=landlord).first() if landlord else Property.objects.first()
         if not landlord:
-            landlord = User.objects.filter(role='landlord').first() or user
+            landlord = user if (user and user.role == 'landlord') else (prop.landlord if prop else None)
 
         estimated_cost = clean_decimal(body.get('estimated_cost'), default='0.00')
 
@@ -1706,8 +1648,6 @@ def maintenance_detail_view(request, ticket_id):
 
 
     user = get_authenticated_user(request)
-    if not user and getattr(settings, 'DEBUG', False):
-        user = User.objects.filter(id='usr_landlord_demo').first() or User.objects.filter(role='landlord').first()
     if not user:
         return JsonResponse({'success': False, 'message': 'Authentication required.'}, status=401)
 
@@ -1864,11 +1804,7 @@ def admin_users_view(request):
     """GET /api/admin/users - Lists all registered users for Platform Admin"""
     user = get_authenticated_user(request)
     if not user or user.role != 'admin':
-        # Preview fallback strictly restricted to local development
-        if getattr(settings, 'DEBUG', False) and not user:
-            user = User.objects.filter(role='admin').first()
-        if not user or user.role != 'admin':
-            return JsonResponse({'success': False, 'message': 'Admin privileges required.'}, status=403)
+        return JsonResponse({'success': False, 'message': 'Admin privileges required.'}, status=403)
 
     users = User.objects.all().order_by('-created_at')
     data = []
@@ -1895,16 +1831,13 @@ def admin_toggle_user_status_view(request, user_id):
     """POST /api/admin/users/<user_id>/toggle-status - Revoke or Restore user access"""
     admin = get_authenticated_user(request)
     if not admin or admin.role != 'admin':
-        if getattr(settings, 'DEBUG', False) and not admin:
-            admin = User.objects.filter(role='admin').first()
-        if not admin or admin.role != 'admin':
-            return JsonResponse({'success': False, 'message': 'Admin privileges required.'}, status=403)
+        return JsonResponse({'success': False, 'message': 'Admin privileges required.'}, status=403)
 
     target_user = User.objects.filter(id=user_id).first()
     if not target_user:
         return JsonResponse({'success': False, 'message': 'User not found.'}, status=404)
 
-    if target_user.id == admin.id or target_user.email.lower() == 'admin@rentroll.com' or target_user.role == 'admin':
+    if target_user.id == admin.id or target_user.role == 'admin':
         return JsonResponse({'success': False, 'message': 'Cannot revoke platform administrator account.'}, status=400)
 
     target_user.is_active = not getattr(target_user, 'is_active', True)
@@ -1931,11 +1864,7 @@ def admin_inquiries_view(request):
     """GET /api/admin/inquiries - Lists inquiries and reviews for Platform Admin"""
     user = get_authenticated_user(request)
     if not user or user.role != 'admin':
-        # Preview fallback strictly restricted to local development
-        if getattr(settings, 'DEBUG', False) and not user:
-            user = User.objects.filter(role='admin').first()
-        if not user or user.role != 'admin':
-            return JsonResponse({'success': False, 'message': 'Admin privileges required.'}, status=403)
+        return JsonResponse({'success': False, 'message': 'Admin privileges required.'}, status=403)
 
     inquiries = ContactMessage.objects.all().order_by('-created_at')
     reviews = FeedbackReview.objects.all().order_by('-created_at')

@@ -304,7 +304,7 @@ function downloadPaymentReceipt(pay) {
   const dateFormatted = formatDate(pay.paid_date || pay.due_date);
   const tenantName = escapeHtml(pay.tenant_name || 'Resident Payer');
   const unitNumber = escapeHtml(pay.unit_number || 'Flat');
-  const propName = escapeHtml(pay.property_name || 'Gulmohar Residency');
+  const propName = escapeHtml(pay.property_name || 'Rental Property');
   const method = escapeHtml((pay.payment_method || 'UPI').toUpperCase());
   const status = escapeHtml((pay.status || 'paid').toUpperCase());
   const notes = escapeHtml(pay.notes || `Monthly rent settlement for ${unitNumber}`);
@@ -409,7 +409,7 @@ function downloadLedgerCsv(payments) {
     `"${(formatDate(p.paid_date || p.due_date) || '').replace(/"/g, '""')}"`,
     `"${(p.tenant_name || 'Resident').replace(/"/g, '""')}"`,
     `"${(p.unit_number || 'Flat').replace(/"/g, '""')}"`,
-    `"${(p.property_name || 'Gulmohar Residency').replace(/"/g, '""')}"`,
+    `"${(p.property_name || 'Rental Property').replace(/"/g, '""')}"`,
     Number(p.amount) || 0,
     `"${(p.payment_method || 'UPI').toUpperCase().replace(/"/g, '""')}"`,
     `"${(p.status || 'paid').toUpperCase().replace(/"/g, '""')}"`,
@@ -793,7 +793,7 @@ function renderAdminOverviewTab(container, user) {
                   </td>
                   <td>
                     <div style="font-weight: var(--font-weight-medium);">${escapeHtml(p.unit_number || 'Flat')}</div>
-                    <div style="font-size: 11px; color: var(--color-text-subtle);">${escapeHtml(p.property_name || 'Gulmohar Residency')}</div>
+                    <div style="font-size: 11px; color: var(--color-text-subtle);">${escapeHtml(p.property_name || 'Rental Property')}</div>
                   </td>
                   <td style="font-weight: var(--font-weight-bold); color: var(--color-primary);">${formatCurrency(p.amount)}</td>
                   <td style="text-transform: uppercase; font-size: 11px;">${escapeHtml(p.payment_method)}</td>
@@ -883,7 +883,7 @@ function renderAdminOverviewTab(container, user) {
         status: 'paid',
         tenant_name: 'Resident',
         unit_number: 'Flat 4B',
-        property_name: 'Gulmohar Residency',
+        property_name: 'Rental Property',
         paid_date: new Date().toISOString()
       };
       downloadPaymentReceipt(pay);
@@ -2431,20 +2431,17 @@ function openModal(modalId, preselectId = null) {
   // Dynamic initialization for tenant pay rent modal
   if (modalId === 'modal-pay-rent') {
     const user = getCurrentUser();
-    const activeLease = (cachedStats && cachedStats.activeLease) || (cachedLeases && cachedLeases[0]);
-    const rentAmount = activeLease ? (activeLease.rentAmount || activeLease.rent_amount || 28500) : 28500;
-    const unitName = activeLease ? (activeLease.unitName || activeLease.unit_number || 'Flat 4B') : 'Flat 4B';
-    const propName = activeLease ? (activeLease.propertyName || activeLease.property_name || 'Gulmohar Residency') : 'Gulmohar Residency';
+    const activeLease = (cachedStats && cachedStats.activeLease) || (cachedLeases && cachedLeases.find(l => l.status === 'active'));
+    const rentAmount = activeLease ? (activeLease.rentAmount || activeLease.rent_amount || 0) : 0;
+    const unitName = activeLease ? (activeLease.unitName || activeLease.unit_number || 'Unit') : 'Unit';
+    const propName = activeLease ? (activeLease.propertyName || activeLease.property_name || 'Property') : 'Property';
 
     const unitLabel = document.getElementById('modal-pay-rent-unit-label');
-    if (unitLabel) unitLabel.textContent = `Pay Rent — ${unitName} (${propName})`;
+    if (unitLabel) unitLabel.textContent = activeLease ? `Pay Rent — ${unitName} (${propName})` : 'Pay Rent — No Active Lease';
 
     const dueLabel = document.getElementById('modal-pay-rent-due-label');
     if (dueLabel) {
-      const now = new Date();
-      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-      const dueMonth = monthNames[now.getMonth()];
-      dueLabel.textContent = `Current Due for ${dueMonth} 1, ${now.getFullYear()}:`;
+      dueLabel.textContent = 'Current Scheduled Monthly Rent:';
     }
 
     const amtDisplay = document.getElementById('modal-pay-rent-amount-display');

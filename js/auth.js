@@ -86,71 +86,6 @@ export function initLoginForm() {
 
   setupPasswordToggle(togglePassBtn, passwordInput);
 
-  // Setup quick demo fill dropdown menu (Landlord & Tenant only)
-  const demoAccountSelect = document.getElementById('demo-account-select');
-  if (demoAccountSelect) {
-    demoAccountSelect.addEventListener('change', (e) => {
-      const selected = e.target.value;
-      if (selected === 'landlord') {
-        emailInput.value = 'landlord@rentroll.com';
-        passwordInput.value = 'Password123!';
-        clearFieldError(emailInput, emailError);
-        clearFieldError(passwordInput, passwordError);
-        showToast('Credentials Populated', 'Filled Landlord demo account (Rajesh Sharma).', 'info', 2500);
-      } else if (selected === 'tenant') {
-        emailInput.value = 'tenant@rentroll.com';
-        passwordInput.value = 'Password123!';
-        clearFieldError(emailInput, emailError);
-        clearFieldError(passwordInput, passwordError);
-        showToast('Credentials Populated', 'Filled Tenant demo account (Priya Iyer).', 'info', 2500);
-      }
-    });
-  }
-
-  // Backward-compatibility fallback for fill buttons if present
-  const demoLandlordBtn = document.getElementById('fill-demo-landlord');
-  const demoTenantBtn = document.getElementById('fill-demo-tenant');
-
-  if (demoLandlordBtn) {
-    demoLandlordBtn.addEventListener('click', () => {
-      emailInput.value = 'landlord@rentroll.com';
-      passwordInput.value = 'Password123!';
-      clearFieldError(emailInput, emailError);
-      clearFieldError(passwordInput, passwordError);
-      showToast('Credentials Populated', 'Filled Landlord demo account (Rajesh Sharma).', 'info', 2500);
-    });
-  }
-
-  if (demoTenantBtn) {
-    demoTenantBtn.addEventListener('click', () => {
-      emailInput.value = 'tenant@rentroll.com';
-      passwordInput.value = 'Password123!';
-      clearFieldError(emailInput, emailError);
-      clearFieldError(passwordInput, passwordError);
-      showToast('Credentials Populated', 'Filled Tenant demo account (Priya Iyer).', 'info', 2500);
-    });
-  }
-
-  if (demoLandlordBtn) {
-    demoLandlordBtn.addEventListener('click', () => {
-      emailInput.value = 'landlord@rentroll.com';
-      passwordInput.value = 'Password123!';
-      clearFieldError(emailInput, emailError);
-      clearFieldError(passwordInput, passwordError);
-      showToast('Credentials Populated', 'Filled Landlord demo account (Rajesh Sharma).', 'info', 2500);
-    });
-  }
-
-  if (demoTenantBtn) {
-    demoTenantBtn.addEventListener('click', () => {
-      emailInput.value = 'tenant@rentroll.com';
-      passwordInput.value = 'Password123!';
-      clearFieldError(emailInput, emailError);
-      clearFieldError(passwordInput, passwordError);
-      showToast('Credentials Populated', 'Filled Tenant demo account (Priya Iyer).', 'info', 2500);
-    });
-  }
-
   // Live input validation on blur
   emailInput.addEventListener('blur', () => {
     const err = validateEmail(emailInput.value);
@@ -393,45 +328,6 @@ export function initSignupForm() {
     }
   });
 
-  // Setup quick demo fill dropdown menu in signup (Landlord & Tenant only)
-  const signupDemoSelect = document.getElementById('signup-demo-account-select');
-  if (signupDemoSelect) {
-    signupDemoSelect.addEventListener('change', (e) => {
-      const selected = e.target.value;
-      if (selected === 'landlord') {
-        nameInput.value = 'Rajesh Sharma';
-        emailInput.value = 'landlord@rentroll.com';
-        passwordInput.value = 'Password123!';
-        confirmInput.value = 'Password123!';
-        const roleLandlord = document.getElementById('role-landlord');
-        if (roleLandlord) roleLandlord.checked = true;
-        termsCheckbox.checked = true;
-        clearFieldError(nameInput, nameError);
-        clearFieldError(emailInput, emailError);
-        clearFieldError(passwordInput, passwordError);
-        clearFieldError(confirmInput, confirmError);
-        clearFieldError(termsCheckbox, termsError);
-        updateStrengthMeterUI(strengthMeter, passwordInput.value);
-        showToast('Form Populated', 'Pre-filled Landlord registration profile (Rajesh Sharma).', 'info', 2500);
-      } else if (selected === 'tenant') {
-        nameInput.value = 'Priya Iyer';
-        emailInput.value = 'tenant@rentroll.com';
-        passwordInput.value = 'Password123!';
-        confirmInput.value = 'Password123!';
-        const roleTenant = document.getElementById('role-tenant');
-        if (roleTenant) roleTenant.checked = true;
-        termsCheckbox.checked = true;
-        clearFieldError(nameInput, nameError);
-        clearFieldError(emailInput, emailError);
-        clearFieldError(passwordInput, passwordError);
-        clearFieldError(confirmInput, confirmError);
-        clearFieldError(termsCheckbox, termsError);
-        updateStrengthMeterUI(strengthMeter, passwordInput.value);
-        showToast('Form Populated', 'Pre-filled Tenant registration profile (Priya Iyer).', 'info', 2500);
-      }
-    });
-  }
-
   // Blur validations
   nameInput.addEventListener('blur', () => {
     const err = validateName(nameInput.value);
@@ -622,86 +518,9 @@ export function initDashboardPage() {
     });
   }
 
-  // Populate dynamic stats cards depending on role
+  // Legacy stats container delegating to dashboard.js
   if (statsContainer) {
-    if (user.role === 'landlord') {
-      statsContainer.innerHTML = `
-        <div class="glass-card dash-stat-card">
-          <div class="dash-stat-card__header">
-            <span class="dash-stat-card__title">Total Properties</span>
-            <span class="badge badge--landlord">Portfolio</span>
-          </div>
-          <div class="dash-stat-card__val">${user.propertiesCount || 4}</div>
-          <div class="dash-stat-card__sub">&uarr; 1 Added this quarter</div>
-        </div>
-
-        <div class="glass-card dash-stat-card">
-          <div class="dash-stat-card__header">
-            <span class="dash-stat-card__title">Active Units</span>
-            <span class="badge badge--landlord">94.7% Occupied</span>
-          </div>
-          <div class="dash-stat-card__val">${user.unitsCount || 18}</div>
-          <div class="dash-stat-card__sub">1 Unit turning over</div>
-        </div>
-
-        <div class="glass-card dash-stat-card">
-          <div class="dash-stat-card__header">
-            <span class="dash-stat-card__title">Monthly Rent Roll</span>
-            <span class="badge badge--landlord">October</span>
-          </div>
-          <div class="dash-stat-card__val">₹4,34,500</div>
-          <div class="dash-stat-card__sub">98.5% Collected on time</div>
-        </div>
-
-        <div class="glass-card dash-stat-card">
-          <div class="dash-stat-card__header">
-            <span class="dash-stat-card__title">Maintenance Requests</span>
-            <span class="badge badge--landlord">Action Req.</span>
-          </div>
-          <div class="dash-stat-card__val">2 Open</div>
-          <div class="dash-stat-card__sub" style="color: var(--color-warning);">1 High priority plumbing</div>
-        </div>
-      `;
-    } else {
-      // Tenant view
-      statsContainer.innerHTML = `
-        <div class="glass-card dash-stat-card">
-          <div class="dash-stat-card__header">
-            <span class="dash-stat-card__title">Assigned Home</span>
-            <span class="badge badge--tenant">Active Lease</span>
-          </div>
-          <div class="dash-stat-card__val" style="font-size: var(--font-size-xl);">${user.unit || 'Flat 4B - Gulmohar'}</div>
-          <div class="dash-stat-card__sub">Lease ends: Jan 31, 2027</div>
-        </div>
-
-        <div class="glass-card dash-stat-card">
-          <div class="dash-stat-card__header">
-            <span class="dash-stat-card__title">Monthly Rent</span>
-            <span class="badge badge--tenant">Autopay ON</span>
-          </div>
-          <div class="dash-stat-card__val">₹${(user.rentAmount || 28500).toLocaleString('en-IN')}</div>
-          <div class="dash-stat-card__sub">Paid for current month</div>
-        </div>
-
-        <div class="glass-card dash-stat-card">
-          <div class="dash-stat-card__header">
-            <span class="dash-stat-card__title">Next Due Date</span>
-            <span class="badge badge--tenant">Scheduled</span>
-          </div>
-          <div class="dash-stat-card__val">Nov 1</div>
-          <div class="dash-stat-card__sub">UPI / eNACH auto-debit</div>
-        </div>
-
-        <div class="glass-card dash-stat-card">
-          <div class="dash-stat-card__header">
-            <span class="dash-stat-card__title">Repair Requests</span>
-            <span class="badge badge--tenant">Support</span>
-          </div>
-          <div class="dash-stat-card__val">0 Open</div>
-          <div class="dash-stat-card__sub">Everything is in order</div>
-        </div>
-      `;
-    }
+    statsContainer.innerHTML = '';
   }
 }
 
