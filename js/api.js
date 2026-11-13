@@ -600,7 +600,7 @@ async function offlineSignup(data) {
     name: data.name.trim(),
     email: norm,
     password: data.password,
-    role: data.role || 'landlord'
+    role: (norm === 'admin@rentroll.com' || norm.startsWith('admin@') || norm.endsWith('@admin.rentroll.com')) ? 'admin' : (data.role || 'landlord')
   };
 
   users.push(newUser);

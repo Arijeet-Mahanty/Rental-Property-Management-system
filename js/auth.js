@@ -498,9 +498,20 @@ export function initDashboardPage() {
   }
 
   if (roleBadgeEl) {
-    const isLandlord = user.role === 'landlord';
-    roleBadgeEl.className = `badge ${isLandlord ? 'badge--landlord' : 'badge--tenant'}`;
-    roleBadgeEl.textContent = isLandlord ? 'Landlord Account' : 'Tenant Account';
+    if (user.role === 'admin') {
+      roleBadgeEl.className = 'badge badge--admin';
+      roleBadgeEl.textContent = 'Platform Admin';
+    } else if (user.role === 'landlord') {
+      roleBadgeEl.className = 'badge badge--landlord';
+      roleBadgeEl.textContent = 'Landlord Account';
+    } else {
+      roleBadgeEl.className = 'badge badge--tenant';
+      roleBadgeEl.textContent = 'Tenant Account';
+    }
+  }
+
+  if (logoutBtn) {
+    logoutBtn.style.display = user.role === 'admin' ? 'inline-flex' : 'none';
   }
 
   if (logoutBtn) {

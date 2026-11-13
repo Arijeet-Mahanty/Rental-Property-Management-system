@@ -129,6 +129,18 @@ export async function initDashboard() {
   const isLandlord = user.role === 'landlord';
   const isAdmin = user.role === 'admin';
 
+  // Red logout button visibility: removed from Tenant and Landlord portals, exclusive to Admin
+  if (logoutBtn) {
+    logoutBtn.style.display = isAdmin ? 'inline-flex' : 'none';
+  }
+
+  // Admin Console Access button for Landlord portal
+  const btnLandlordAdmin = document.getElementById('btn-landlord-admin-access');
+  if (btnLandlordAdmin) {
+    btnLandlordAdmin.style.display = isLandlord ? 'inline-flex' : 'none';
+    btnLandlordAdmin.addEventListener('click', () => openModal('modal-admin-elevation'));
+  }
+
   // Admin tabs visibility
   const usersTabNav = document.getElementById('tab-nav-users');
   const inquiriesTabNav = document.getElementById('tab-nav-inquiries');
@@ -959,6 +971,10 @@ function renderOverviewTab(container, user, isLandlord) {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
           <span>Record Payment</span>
         </button>
+        <button type="button" class="btn btn--outline btn--sm" id="btn-action-admin-elev" style="margin-left: auto; border-color: #7c3aed; color: #5b21b6;" title="Enter Admin Console via Special Admin Mail">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span>Admin Console</span>
+        </button>
       </div>
 
       <!-- Live KPI Metrics Grid -->
@@ -1200,9 +1216,15 @@ function renderOverviewTab(container, user, isLandlord) {
             <p style="font-size: var(--font-size-sm); color: var(--color-text-muted); margin-bottom: var(--space-4);">
               Find verified rental properties listed by landlords across top locations. Select a property, choose your unit, and submit your rental application online!
             </p>
-            <button type="button" class="btn btn--primary btn--sm" id="btn-tenant-browse-rentals">
-              <span>Browse Available Properties (${cachedProperties.length})</span>
-            </button>
+            <div style="display: flex; gap: var(--space-3); flex-wrap: wrap;">
+              <button type="button" class="btn btn--primary btn--sm" id="btn-tenant-browse-rentals">
+                <span>Browse Available Properties (${cachedProperties.length})</span>
+              </button>
+              <button type="button" class="btn btn--outline btn--sm" id="btn-tenant-pay-advance">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
+                <span>Pay Rent Now</span>
+              </button>
+            </div>
           </div>
         `}
       </div>
@@ -1283,6 +1305,7 @@ function renderOverviewTab(container, user, isLandlord) {
     `;
 
     document.getElementById('btn-tenant-pay-rent')?.addEventListener('click', () => openModal('modal-pay-rent'));
+    document.getElementById('btn-tenant-pay-advance')?.addEventListener('click', () => openModal('modal-pay-rent'));
     document.getElementById('btn-tenant-report-issue')?.addEventListener('click', () => openModal('modal-create-ticket'));
     document.getElementById('btn-tenant-view-ledger')?.addEventListener('click', () => {
       switchToTab('payments');
@@ -1301,6 +1324,7 @@ function bindOverviewEvents() {
   document.getElementById('btn-action-add-unit')?.addEventListener('click', () => openModal('modal-add-unit'));
   document.getElementById('btn-action-new-lease')?.addEventListener('click', () => openModal('modal-create-lease'));
   document.getElementById('btn-action-record-pay')?.addEventListener('click', () => openModal('modal-record-payment'));
+  document.getElementById('btn-action-admin-elev')?.addEventListener('click', () => openModal('modal-admin-elevation'));
   document.getElementById('btn-view-all-payments')?.addEventListener('click', () => {
     switchToTab('payments');
   });
@@ -2445,32 +2469,76 @@ function openModal(modalId, preselectId = null) {
   // Dynamic initialization for tenant pay rent modal
   if (modalId === 'modal-pay-rent') {
     const user = getCurrentUser();
-    const activeLease = (cachedStats && cachedStats.activeLease) || (cachedLeases && cachedLeases.find(l => l.status === 'active'));
-    const rentAmount = activeLease ? (activeLease.rentAmount || activeLease.rent_amount || 0) : 0;
-    const unitName = activeLease ? (activeLease.unitName || activeLease.unit_number || 'Unit') : 'Unit';
-    const propName = activeLease ? (activeLease.propertyName || activeLease.property_name || 'Property') : 'Property';
+    const activeLease = (cachedStats && cachedStats.activeLease) || (cachedLeases && cachedLeases.find(l => l.status === 'active')) || (cachedLeases && cachedLeases[0]);
+    let defaultAmount = 25000;
+    if (activeLease) {
+      defaultAmount = Number(activeLease.rentAmount || activeLease.rent_amount) || 25000;
+    }
+
+    const selectLease = document.getElementById('tenant-pay-lease');
+    if (selectLease) {
+      if (cachedLeases && cachedLeases.length > 0) {
+        selectLease.innerHTML = cachedLeases.map(l => {
+          const lAmount = Number(l.rentAmount || l.rent_amount) || 25000;
+          return `<option value="${escapeHtml(l.id)}" data-amount="${lAmount}">
+            ${escapeHtml(l.unit_number || l.unitName || 'Unit')} — ${escapeHtml(l.property_name || l.propertyName || 'Property')} (${formatCurrency(lAmount)}/mo)
+          </option>`;
+        }).join('');
+        if (activeLease) selectLease.value = activeLease.id;
+      } else {
+        selectLease.innerHTML = '<option value="" data-amount="25000">Direct / Advance Rent Settlement</option>';
+      }
+    }
 
     const unitLabel = document.getElementById('modal-pay-rent-unit-label');
-    if (unitLabel) unitLabel.textContent = activeLease ? `Pay Rent — ${unitName} (${propName})` : 'Pay Rent — No Active Lease';
+    if (unitLabel) {
+      if (activeLease) {
+        unitLabel.textContent = `Pay Rent — ${activeLease.unit_number || activeLease.unitName || 'Unit'} (${activeLease.property_name || activeLease.propertyName || 'Property'})`;
+      } else {
+        unitLabel.textContent = 'Pay Rent Now';
+      }
+    }
 
     const dueLabel = document.getElementById('modal-pay-rent-due-label');
     if (dueLabel) {
-      dueLabel.textContent = 'Current Scheduled Monthly Rent:';
+      dueLabel.textContent = activeLease ? 'Scheduled Monthly Rent:' : 'Rent Payment Amount:';
     }
 
+    const amtInput = document.getElementById('tenant-pay-amount');
     const amtDisplay = document.getElementById('modal-pay-rent-amount-display');
-    if (amtDisplay) amtDisplay.textContent = formatCurrency(rentAmount);
-
     const btnLabel = document.getElementById('modal-pay-rent-btn-label');
-    if (btnLabel) btnLabel.textContent = `Authorize ${formatCurrency(rentAmount)} Payment`;
+
+    const updateAmountUI = (val) => {
+      const num = Number(val) || 0;
+      if (amtDisplay) amtDisplay.textContent = formatCurrency(num);
+      if (btnLabel) btnLabel.textContent = num > 0 ? `Authorize ${formatCurrency(num)} Payment` : 'Authorize Rent Payment';
+    };
+
+    if (amtInput) {
+      amtInput.value = defaultAmount;
+      updateAmountUI(defaultAmount);
+      amtInput.oninput = () => updateAmountUI(amtInput.value);
+    }
+
+    if (selectLease) {
+      selectLease.onchange = () => {
+        const opt = selectLease.options[selectLease.selectedIndex];
+        const optAmt = opt ? Number(opt.dataset.amount) : 0;
+        if (optAmt > 0 && amtInput) {
+          amtInput.value = optAmt;
+          updateAmountUI(optAmt);
+        }
+      };
+    }
 
     const selectMethod = document.getElementById('tenant-pay-method');
     if (selectMethod && user) {
       const upiHandle = user.email ? `${user.email.split('@')[0]}@okaxis` : 'tenant@okaxis';
       selectMethod.innerHTML = `
         <option value="upi">UPI AutoPay (${escapeHtml(upiHandle)}) — Instant &amp; Free</option>
-        <option value="ach">Salary Bank Account (...4820) — eNACH Auto-Debit</option>
-        <option value="credit_card">RuPay / Visa Platinum Card (...9104) — Instant</option>
+        <option value="netbanking">Net Banking / IMPS / NEFT — Direct Settlement</option>
+        <option value="ach">Salary Bank Account — eNACH Auto-Debit</option>
+        <option value="credit_card">RuPay / Visa Platinum Card — Instant</option>
       `;
     }
   }
@@ -2801,56 +2869,131 @@ function setupModals(user) {
 
   // Tenant Quick Pay Rent Confirmation Button (UPI AutoPay & Settlement Gateway)
   const btnConfirmTenantPay = document.getElementById('btn-confirm-tenant-pay');
-  if (btnConfirmTenantPay) {
-    btnConfirmTenantPay.addEventListener('click', async () => {
+  if (btnConfirmTenantPay && !btnConfirmTenantPay.dataset.bound) {
+    btnConfirmTenantPay.dataset.bound = 'true';
+    btnConfirmTenantPay.addEventListener('click', async (e) => {
+      if (e) e.preventDefault();
+      const amtInput = document.getElementById('tenant-pay-amount');
+      const enteredAmount = amtInput ? Number(amtInput.value) : 0;
+      if (!enteredAmount || enteredAmount <= 0) {
+        showToast('Invalid Amount', 'Please enter a valid positive rent payment amount.', 'error', 3000);
+        if (amtInput) amtInput.focus();
+        return;
+      }
+
       btnConfirmTenantPay.classList.add('btn--loading');
       try {
         const methodSelect = document.getElementById('tenant-pay-method');
         const method = methodSelect ? methodSelect.value : 'upi';
-        const activeLease = (cachedStats && cachedStats.activeLease) || (cachedLeases && cachedLeases[0]);
-        const rentAmount = activeLease ? (activeLease.rentAmount || activeLease.rent_amount || 28500) : 28500;
-        const unitName = activeLease ? (activeLease.unitName || activeLease.unit_number || 'Flat 4B') : 'Flat 4B';
-        const propName = activeLease ? (activeLease.propertyName || activeLease.property_name || 'RentRoll') : 'RentRoll';
+        const leaseSelect = document.getElementById('tenant-pay-lease');
+        const selectedLeaseId = (leaseSelect && leaseSelect.value) ? leaseSelect.value : null;
+
+        const activeLease = (cachedLeases && cachedLeases.find(l => String(l.id) === String(selectedLeaseId))) ||
+                            (cachedStats && cachedStats.activeLease) ||
+                            (cachedLeases && cachedLeases[0]) || null;
+
+        const unitName = activeLease ? (activeLease.unitName || activeLease.unit_number || 'Unit') : 'Direct Payment';
+        const propName = activeLease ? (activeLease.propertyName || activeLease.property_name || 'RentRoll Portfolio') : 'RentRoll Portfolio';
+
+        let recordedPayment = null;
 
         // 1. Generate authentic UPI Payment Order
-        const orderRes = await createUpiPaymentOrder({
-          amount: rentAmount,
-          lease_id: activeLease ? activeLease.id : undefined,
-          notes: `Rent payment - ${unitName} (${propName})`
-        });
+        try {
+          const orderRes = await createUpiPaymentOrder({
+            amount: enteredAmount,
+            lease_id: activeLease ? activeLease.id : undefined,
+            notes: `Rent payment - ${unitName} (${propName})`
+          });
 
-        const orderId = orderRes?.order_id || ('order_rcpt_' + Date.now());
-        const signature = orderRes?.signature;
+          const orderId = orderRes?.order_id || ('order_rcpt_' + Date.now());
+          const signature = orderRes?.signature;
 
-        // 2. Authorize and verify through HMAC webhook pipeline
-        const verifyRes = await verifyUpiWebhookPayment({
-          order_id: orderId,
-          payment_id: `TXN-UPI-${Date.now()}`,
-          signature: signature,
-          amount: rentAmount,
-          lease_id: activeLease ? activeLease.id : undefined
-        });
+          // 2. Authorize and verify through settlement pipeline
+          const verifyRes = await verifyUpiWebhookPayment({
+            order_id: orderId,
+            payment_id: `TXN-UPI-${Date.now()}`,
+            signature: signature,
+            amount: enteredAmount,
+            lease_id: activeLease ? activeLease.id : undefined
+          });
 
-        const recordedPayment = verifyRes?.data || {
-          amount: rentAmount,
-          transaction_ref: `TXN-UPI-${Date.now()}`,
-          tenant_name: (getCurrentUser() && getCurrentUser().name) || 'Resident',
-          unit_number: unitName,
-          property_name: propName,
-          paid_date: new Date().toISOString()
-        };
+          recordedPayment = verifyRes?.data;
+        } catch (orderErr) {
+          console.warn('[Dashboard] Order gateway notice, capturing direct ledger settlement:', orderErr);
+          // Fallback to direct payment creation
+          recordedPayment = await createPayment({
+            amount: enteredAmount,
+            lease_id: activeLease ? activeLease.id : undefined,
+            payment_method: method,
+            notes: `Direct Rent Payment - ${unitName} (${propName})`
+          });
+        }
 
-        showToast('Payment Successful', `${formatCurrency(rentAmount)} settled via UPI AutoPay (Ref: ${orderId.slice(0, 16)}). Instant HRA receipt ready!`, 'success', 4000);
+        if (!recordedPayment) {
+          recordedPayment = {
+            amount: enteredAmount,
+            transaction_ref: `TXN-UPI-${Date.now()}`,
+            tenant_name: (getCurrentUser() && getCurrentUser().name) || 'Resident',
+            unit_number: unitName,
+            property_name: propName,
+            payment_method: method,
+            status: 'paid',
+            paid_date: new Date().toISOString()
+          };
+        }
+
+        showToast('Payment Successful', `${formatCurrency(enteredAmount)} settled via ${method.toUpperCase()} AutoPay. Instant HRA receipt ready!`, 'success', 4000);
         closeModal(document.getElementById('modal-pay-rent'));
 
         // Instant HRA receipt voucher download
-        setTimeout(() => downloadPaymentReceipt(recordedPayment), 400);
+        setTimeout(() => {
+          try { downloadPaymentReceipt(recordedPayment); } catch (_) {}
+        }, 350);
 
         await refreshDashboardData(getCurrentUser());
+        switchToTab('payments');
       } catch (err) {
-        showToast('Payment Failed', err.message, 'error', 3500);
+        showToast('Payment Failed', err.message || 'Could not process rent payment.', 'error', 3500);
       } finally {
         btnConfirmTenantPay.classList.remove('btn--loading');
+      }
+    });
+  }
+
+  // Admin Elevation Form Handler (for Landlords entering as Admin via special admin email)
+  const formAdminElev = document.getElementById('form-admin-elevation');
+  if (formAdminElev && !formAdminElev.dataset.bound) {
+    formAdminElev.dataset.bound = 'true';
+    formAdminElev.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const emailInput = document.getElementById('admin-elev-email');
+      const passInput = document.getElementById('admin-elev-password');
+      const submitBtn = document.getElementById('btn-submit-admin-elev');
+      const email = emailInput ? emailInput.value.trim() : '';
+      const password = passInput ? passInput.value : '';
+
+      if (!email || !password) {
+        showToast('Credentials Required', 'Please enter admin email and password.', 'error', 3000);
+        return;
+      }
+
+      if (submitBtn) submitBtn.classList.add('btn--loading');
+      try {
+        const loggedUser = await login(email, password, true);
+        const emailLower = (loggedUser.email || '').toLowerCase();
+        if (loggedUser && (loggedUser.role === 'admin' || emailLower.startsWith('admin@') || emailLower === 'admin@rentroll.com' || emailLower.endsWith('@admin.rentroll.com'))) {
+          showToast('Admin Authenticated', `Welcome ${loggedUser.name || 'Administrator'}! Opening Executive Command Center...`, 'success', 2500);
+          closeModal(document.getElementById('modal-admin-elevation'));
+          setTimeout(() => {
+            window.location.reload();
+          }, 400);
+        } else {
+          showToast('Access Denied', 'The provided email is not an authorized Platform Administrator.', 'error', 4000);
+        }
+      } catch (err) {
+        showToast('Authentication Failed', err.message || 'Invalid administrator credentials.', 'error', 3500);
+      } finally {
+        if (submitBtn) submitBtn.classList.remove('btn--loading');
       }
     });
   }

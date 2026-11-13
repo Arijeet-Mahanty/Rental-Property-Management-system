@@ -44,7 +44,11 @@
             <span>Review Us on Landing Page</span>
           </a>
           <a href="index.html" class="btn btn--ghost btn--sm">View Landing Page</a>
-          <button id="dash-logout-btn" type="button" class="btn btn--danger btn--sm" onclick="try{localStorage.clear();sessionStorage.clear();}catch(e){}window.location.replace('login.html');">
+          <button id="btn-landlord-admin-access" type="button" class="btn btn--outline btn--sm" style="display: none;" title="Platform Admin Console Access">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+            <span>Admin Console</span>
+          </button>
+          <button id="dash-logout-btn" type="button" class="btn btn--danger btn--sm" style="display: none;" onclick="try{localStorage.clear();sessionStorage.clear();}catch(e){}window.location.replace('login.html');">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
             <span>Log Out</span>
           </button>
@@ -375,28 +379,75 @@
       <div class="neo-modal-header">
         <h2 class="neo-modal-title" id="modal-pay-rent-title">
           <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
-          <span id="modal-pay-rent-unit-label">Pay Rent — Flat 4B</span>
+          <span id="modal-pay-rent-unit-label">Pay Rent Now</span>
         </h2>
         <button type="button" class="neo-modal-close" aria-label="Close modal">&times;</button>
       </div>
-      <form id="form-tenant-pay-rent">
+      <form id="form-tenant-pay-rent" onsubmit="return false;">
         <div style="background-color: var(--color-bg-inset); padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-4); border: var(--neo-border-inset);">
-          <div style="font-size: var(--font-size-xs); color: var(--color-text-muted);" id="modal-pay-rent-due-label">Current Due for Rent:</div>
-          <div style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-extrabold); color: var(--color-text-main);" id="modal-pay-rent-amount-display">₹28,500.00</div>
-          <div style="font-size: 11px; color: var(--color-success);">&check; Zero late fees accrued &bull; Instant HRA Receipt</div>
+          <div style="font-size: var(--font-size-xs); color: var(--color-text-muted);" id="modal-pay-rent-due-label">Current Scheduled Monthly Rent:</div>
+          <div style="font-size: var(--font-size-3xl); font-weight: var(--font-weight-extrabold); color: var(--color-text-main);" id="modal-pay-rent-amount-display">₹25,000.00</div>
+          <div style="font-size: 11px; color: var(--color-success);">&check; Zero late fees accrued &bull; Instant HRA Digitally Signed Receipt</div>
         </div>
+
+        <div class="form-group" id="group-tenant-pay-lease">
+          <label class="form-label" for="tenant-pay-lease">Rental Lease / Door</label>
+          <select id="tenant-pay-lease" class="form-control"></select>
+        </div>
+
         <div class="form-group">
-          <label class="form-label" for="tenant-pay-method">Payment Source</label>
+          <label class="form-label" for="tenant-pay-amount">Payment Amount (₹) *</label>
+          <input type="number" id="tenant-pay-amount" class="form-control" placeholder="Enter payment amount" min="1" step="100" required>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="tenant-pay-method">Payment Rail</label>
           <select id="tenant-pay-method" class="form-control">
-            <option value="upi">UPI AutoPay (Google Pay / PhonePe / BHIM) — Instant &amp; Free</option>
+            <option value="upi">UPI AutoPay (Google Pay / PhonePe / Paytm / BHIM) — Instant &amp; Free</option>
+            <option value="netbanking">Net Banking / IMPS / NEFT — Direct Settlement</option>
             <option value="ach">Salary Bank Account — eNACH Auto-Debit</option>
             <option value="credit_card">Credit / Debit Card (RuPay / Visa / Mastercard)</option>
           </select>
         </div>
+
         <div class="neo-modal-footer">
           <button type="button" class="btn btn--ghost btn--sm btn-modal-cancel">Cancel</button>
           <button type="button" class="btn btn--primary btn--sm" id="btn-confirm-tenant-pay">
-            <span id="modal-pay-rent-btn-label">Authorize ₹28,500.00 Payment</span>
+            <span class="btn__spinner" aria-hidden="true"></span>
+            <span class="btn__text" id="modal-pay-rent-btn-label">Authorize Payment</span>
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal 8: Platform Admin Elevation Modal (Landlord Portal) -->
+  <div class="neo-modal-backdrop" id="modal-admin-elevation" role="dialog" aria-modal="true" aria-labelledby="modal-admin-elev-title" aria-hidden="true">
+    <div class="neo-modal-card">
+      <div class="neo-modal-header">
+        <h2 class="neo-modal-title" id="modal-admin-elev-title">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+          <span>Platform Admin Console Access</span>
+        </h2>
+        <button type="button" class="neo-modal-close" aria-label="Close modal">&times;</button>
+      </div>
+      <form id="form-admin-elevation" onsubmit="return false;" autocomplete="off">
+        <div style="background-color: var(--color-bg-inset); padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-4); border: var(--neo-border-inset); font-size: var(--font-size-xs); color: var(--color-text-muted);">
+          Enter the authorized Administrator credentials to access the Executive Command Center.
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="admin-elev-email">Special Admin Email *</label>
+          <input type="email" id="admin-elev-email" class="form-control" placeholder="e.g. admin@rentroll.com" autocomplete="off" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="admin-elev-password">Admin Password *</label>
+          <input type="password" id="admin-elev-password" class="form-control" placeholder="Enter admin password" autocomplete="off" required>
+        </div>
+        <div class="neo-modal-footer">
+          <button type="button" class="btn btn--ghost btn--sm btn-modal-cancel">Cancel</button>
+          <button type="button" class="btn btn--primary btn--sm" id="btn-submit-admin-elev">
+            <span class="btn__spinner" aria-hidden="true"></span>
+            <span class="btn__text">Enter Admin Console</span>
           </button>
         </div>
       </form>
