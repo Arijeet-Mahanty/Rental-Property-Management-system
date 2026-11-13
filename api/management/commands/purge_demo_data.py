@@ -29,3 +29,4 @@ class Command(BaseCommand):
                         cursor.execute(f"DELETE FROM {table};")
                         self.stdout.write(f"  [OK] Deleted rows from {table}")
         self.stdout.write(self.style.SUCCESS("[SUCCESS] All seeded data successfully purged!"))
+
