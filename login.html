@@ -39,6 +39,42 @@
 
       <!-- Login Form -->
       <form id="login-form" autocomplete="off" novalidate>
+        <!-- Role Selector (Two Glass Radio Cards: Landlord and Tenant) -->
+        <fieldset class="form-group" style="border: none; padding: 0; margin-bottom: var(--space-5);">
+          <legend class="form-label">I am signing in as a:</legend>
+          <div class="role-selector" role="radiogroup" aria-label="Select Account Role">
+            <!-- Landlord Role Card -->
+            <label class="role-card-label" for="login-role-landlord">
+              <input type="radio" id="login-role-landlord" name="role" value="landlord" checked>
+              <div class="role-card">
+                <div class="role-card__header">
+                  <div class="role-card__icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                  </div>
+                  <div class="role-card__indicator"></div>
+                </div>
+                <div class="role-card__title">Landlord / Owner</div>
+                <div class="role-card__desc">Manage properties, leases & finances.</div>
+              </div>
+            </label>
+
+            <!-- Tenant Role Card -->
+            <label class="role-card-label" for="login-role-tenant">
+              <input type="radio" id="login-role-tenant" name="role" value="tenant">
+              <div class="role-card">
+                <div class="role-card__header">
+                  <div class="role-card__icon">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                  </div>
+                  <div class="role-card__indicator"></div>
+                </div>
+                <div class="role-card__title">Tenant / Resident</div>
+                <div class="role-card__desc">Pay rent, view leases & report repairs.</div>
+              </div>
+            </label>
+          </div>
+        </fieldset>
+
         <!-- Email Field -->
         <div class="form-group">
           <label for="login-email" class="form-label">Email address</label>

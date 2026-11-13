@@ -319,11 +319,6 @@ export function injectNavbar() {
   if (mobileLogoutBtn) {
     mobileLogoutBtn.addEventListener('click', handleLogout);
   }
-
-  const dashLogoutBtn = document.getElementById('dash-logout-btn');
-  if (dashLogoutBtn) {
-    dashLogoutBtn.addEventListener('click', handleLogout);
-  }
 }
 
 /**

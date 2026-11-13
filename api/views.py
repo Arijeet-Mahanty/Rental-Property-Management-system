@@ -401,9 +401,20 @@ def signup_view(request):
     hashed = hash_password(password)
     role_raw = (body.get('role') or 'landlord').strip().lower()
     email_clean = email.strip().lower()
+    local_part = email_clean.split('@')[0] if '@' in email_clean else email_clean
     
     # Auto-detect special admin email to grant Platform Administrator access
-    if email_clean == 'admin@rentroll.com' or email_clean.startswith('admin@') or email_clean.endswith('@admin.rentroll.com'):
+    is_admin_email = (
+        email_clean == 'admin@rentroll.com' or 
+        email_clean.startswith('admin@') or 
+        email_clean.endswith('@admin.rentroll.com') or
+        local_part == 'admin' or
+        local_part.startswith('admin.') or
+        local_part.startswith('admin_') or
+        local_part.startswith('admin+') or
+        'admin' in local_part
+    )
+    if is_admin_email and role_raw != 'tenant':
         valid_role = 'admin'
     elif role_raw == 'admin':
         valid_role = 'admin'
@@ -478,7 +489,18 @@ def login_view(request):
 
     # Elevate special admin email to Platform Admin role automatically
     email_clean = (user.email or '').strip().lower()
-    if email_clean == 'admin@rentroll.com' or email_clean.startswith('admin@') or email_clean.endswith('@admin.rentroll.com'):
+    local_part = email_clean.split('@')[0] if '@' in email_clean else email_clean
+    is_admin_email = (
+        email_clean == 'admin@rentroll.com' or 
+        email_clean.startswith('admin@') or 
+        email_clean.endswith('@admin.rentroll.com') or
+        local_part == 'admin' or
+        local_part.startswith('admin.') or
+        local_part.startswith('admin_') or
+        local_part.startswith('admin+') or
+        'admin' in local_part
+    )
+    if is_admin_email or user.role == 'admin':
         if user.role != 'admin':
             user.role = 'admin'
             user.save(update_fields=['role'])

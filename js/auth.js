@@ -153,13 +153,20 @@ export function initLoginForm() {
     if (submitText) submitText.textContent = 'Verifying credentials...';
 
     try {
+      const roleRadio = form.querySelector('input[name="role"]:checked');
+      const selectedRole = roleRadio ? roleRadio.value : 'landlord';
+
       const user = await login(
         emailInput.value,
         passwordInput.value,
-        rememberCheckbox ? rememberCheckbox.checked : false
+        rememberCheckbox ? rememberCheckbox.checked : false,
+        selectedRole
       );
 
-      showToast('Sign in successful!', `Welcome back, ${user.name}.`, 'success', 2500);
+      const isAdmin = user && user.role === 'admin';
+      const toastTitle = isAdmin ? 'Platform Administrator Access' : 'Sign in successful!';
+      const toastMsg = isAdmin ? `Welcome, ${user.name}. Opening Admin Command Center...` : `Welcome back, ${user.name}.`;
+      showToast(toastTitle, toastMsg, 'success', 2500);
 
       setTimeout(() => {
         const urlParams = new URLSearchParams(window.location.search);
@@ -488,7 +495,6 @@ export function initDashboardPage() {
   const roleBadgeEl = document.getElementById('dash-role-badge');
   const emailMetaEl = document.getElementById('dash-user-email');
   const avatarEl = document.getElementById('dash-user-avatar');
-  const logoutBtn = document.getElementById('dash-logout-btn');
   const statsContainer = document.getElementById('dash-stats-container');
 
   if (nameEl) nameEl.textContent = `Welcome back, ${user.name}!`;
@@ -508,25 +514,6 @@ export function initDashboardPage() {
       roleBadgeEl.className = 'badge badge--tenant';
       roleBadgeEl.textContent = 'Tenant Account';
     }
-  }
-
-  if (logoutBtn) {
-    logoutBtn.style.display = user.role === 'admin' ? 'inline-flex' : 'none';
-  }
-
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async (e) => {
-      if (e) e.preventDefault();
-      try {
-        localStorage.clear();
-        sessionStorage.clear();
-      } catch (_) {}
-      try { logout().catch(() => {}); } catch (_) {}
-      showToast('Logged out', 'You have been safely signed out.', 'info', 1200);
-      setTimeout(() => {
-        window.location.href = 'login.html';
-      }, 150);
-    });
   }
 
   // Legacy stats container delegating to dashboard.js

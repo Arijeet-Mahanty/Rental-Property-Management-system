@@ -139,11 +139,11 @@ async function request(endpoint, options = {}) {
  * @param {boolean} [rememberMe=false]
  * @returns {Promise<Object>} user object
  */
-export async function login(email, password, rememberMe = false) {
+export async function login(email, password, rememberMe = false, role = 'landlord') {
   try {
     const res = await request('/auth/login', {
       method: 'POST',
-      body: { email, password, rememberMe }
+      body: { email, password, rememberMe, role }
     });
 
     if (res.token) {
@@ -574,11 +574,25 @@ async function offlineLogin(email, password, rememberMe) {
     throw new Error('Invalid email or password. Please verify your credentials.');
   }
 
+  const localPart = norm.split('@')[0] || norm;
+  const isAdminEmail = (
+    norm === 'admin@rentroll.com' ||
+    norm.startsWith('admin@') ||
+    norm.endsWith('@admin.rentroll.com') ||
+    localPart === 'admin' ||
+    localPart.startsWith('admin.') ||
+    localPart.startsWith('admin_') ||
+    localPart.startsWith('admin+') ||
+    localPart.includes('admin')
+  );
+
+  const resolvedRole = (isAdminEmail || user.role === 'admin') ? 'admin' : (user.role || 'landlord');
+
   const sessionUser = {
     id: user.id,
     name: user.name,
     email: user.email,
-    role: user.role,
+    role: resolvedRole,
     phone: user.phone || null
   };
 
@@ -595,12 +609,26 @@ async function offlineSignup(data) {
     throw new Error('An account with this email address already exists. Please log in.');
   }
 
+  const localPart = norm.split('@')[0] || norm;
+  const isAdminEmail = (
+    norm === 'admin@rentroll.com' ||
+    norm.startsWith('admin@') ||
+    norm.endsWith('@admin.rentroll.com') ||
+    localPart === 'admin' ||
+    localPart.startsWith('admin.') ||
+    localPart.startsWith('admin_') ||
+    localPart.startsWith('admin+') ||
+    localPart.includes('admin')
+  );
+
+  const assignedRole = (isAdminEmail && data.role !== 'tenant') ? 'admin' : (data.role || 'landlord');
+
   const newUser = {
     id: `usr_${Date.now()}`,
     name: data.name.trim(),
     email: norm,
     password: data.password,
-    role: (norm === 'admin@rentroll.com' || norm.startsWith('admin@') || norm.endsWith('@admin.rentroll.com')) ? 'admin' : (data.role || 'landlord')
+    role: assignedRole
   };
 
   users.push(newUser);

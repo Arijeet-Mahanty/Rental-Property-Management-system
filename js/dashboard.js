@@ -88,16 +88,6 @@ export async function initDashboard() {
     window.location.replace('login.html');
   };
 
-  const logoutBtn = document.getElementById('dash-logout-btn');
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', handleImmediateLogout);
-  }
-  document.addEventListener('click', (e) => {
-    if (e.target && e.target.closest('#dash-logout-btn')) {
-      handleImmediateLogout(e);
-    }
-  });
-
   let user = getCurrentUser();
   if (!user) {
     window.location.replace('login.html');
@@ -128,18 +118,6 @@ export async function initDashboard() {
 
   const isLandlord = user.role === 'landlord';
   const isAdmin = user.role === 'admin';
-
-  // Red logout button visibility: removed from Tenant and Landlord portals, exclusive to Admin
-  if (logoutBtn) {
-    logoutBtn.style.display = isAdmin ? 'inline-flex' : 'none';
-  }
-
-  // Admin Console Access button for Landlord portal
-  const btnLandlordAdmin = document.getElementById('btn-landlord-admin-access');
-  if (btnLandlordAdmin) {
-    btnLandlordAdmin.style.display = isLandlord ? 'inline-flex' : 'none';
-    btnLandlordAdmin.addEventListener('click', () => openModal('modal-admin-elevation'));
-  }
 
   // Admin tabs visibility
   const usersTabNav = document.getElementById('tab-nav-users');
@@ -971,10 +949,6 @@ function renderOverviewTab(container, user, isLandlord) {
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg>
           <span>Record Payment</span>
         </button>
-        <button type="button" class="btn btn--outline btn--sm" id="btn-action-admin-elev" style="margin-left: auto; border-color: #7c3aed; color: #5b21b6;" title="Enter Admin Console via Special Admin Mail">
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-          <span>Admin Console</span>
-        </button>
       </div>
 
       <!-- Live KPI Metrics Grid -->
@@ -1324,7 +1298,6 @@ function bindOverviewEvents() {
   document.getElementById('btn-action-add-unit')?.addEventListener('click', () => openModal('modal-add-unit'));
   document.getElementById('btn-action-new-lease')?.addEventListener('click', () => openModal('modal-create-lease'));
   document.getElementById('btn-action-record-pay')?.addEventListener('click', () => openModal('modal-record-payment'));
-  document.getElementById('btn-action-admin-elev')?.addEventListener('click', () => openModal('modal-admin-elevation'));
   document.getElementById('btn-view-all-payments')?.addEventListener('click', () => {
     switchToTab('payments');
   });
@@ -2956,44 +2929,6 @@ function setupModals(user) {
         showToast('Payment Failed', err.message || 'Could not process rent payment.', 'error', 3500);
       } finally {
         btnConfirmTenantPay.classList.remove('btn--loading');
-      }
-    });
-  }
-
-  // Admin Elevation Form Handler (for Landlords entering as Admin via special admin email)
-  const formAdminElev = document.getElementById('form-admin-elevation');
-  if (formAdminElev && !formAdminElev.dataset.bound) {
-    formAdminElev.dataset.bound = 'true';
-    formAdminElev.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const emailInput = document.getElementById('admin-elev-email');
-      const passInput = document.getElementById('admin-elev-password');
-      const submitBtn = document.getElementById('btn-submit-admin-elev');
-      const email = emailInput ? emailInput.value.trim() : '';
-      const password = passInput ? passInput.value : '';
-
-      if (!email || !password) {
-        showToast('Credentials Required', 'Please enter admin email and password.', 'error', 3000);
-        return;
-      }
-
-      if (submitBtn) submitBtn.classList.add('btn--loading');
-      try {
-        const loggedUser = await login(email, password, true);
-        const emailLower = (loggedUser.email || '').toLowerCase();
-        if (loggedUser && (loggedUser.role === 'admin' || emailLower.startsWith('admin@') || emailLower === 'admin@rentroll.com' || emailLower.endsWith('@admin.rentroll.com'))) {
-          showToast('Admin Authenticated', `Welcome ${loggedUser.name || 'Administrator'}! Opening Executive Command Center...`, 'success', 2500);
-          closeModal(document.getElementById('modal-admin-elevation'));
-          setTimeout(() => {
-            window.location.reload();
-          }, 400);
-        } else {
-          showToast('Access Denied', 'The provided email is not an authorized Platform Administrator.', 'error', 4000);
-        }
-      } catch (err) {
-        showToast('Authentication Failed', err.message || 'Invalid administrator credentials.', 'error', 3500);
-      } finally {
-        if (submitBtn) submitBtn.classList.remove('btn--loading');
       }
     });
   }

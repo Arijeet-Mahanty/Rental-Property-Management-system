@@ -44,14 +44,6 @@
             <span>Review Us on Landing Page</span>
           </a>
           <a href="index.html" class="btn btn--ghost btn--sm">View Landing Page</a>
-          <button id="btn-landlord-admin-access" type="button" class="btn btn--outline btn--sm" style="display: none;" title="Platform Admin Console Access">
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-            <span>Admin Console</span>
-          </button>
-          <button id="dash-logout-btn" type="button" class="btn btn--danger btn--sm" style="display: none;" onclick="try{localStorage.clear();sessionStorage.clear();}catch(e){}window.location.replace('login.html');">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
-            <span>Log Out</span>
-          </button>
         </div>
       </div>
 
@@ -415,39 +407,6 @@
           <button type="button" class="btn btn--primary btn--sm" id="btn-confirm-tenant-pay">
             <span class="btn__spinner" aria-hidden="true"></span>
             <span class="btn__text" id="modal-pay-rent-btn-label">Authorize Payment</span>
-          </button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <!-- Modal 8: Platform Admin Elevation Modal (Landlord Portal) -->
-  <div class="neo-modal-backdrop" id="modal-admin-elevation" role="dialog" aria-modal="true" aria-labelledby="modal-admin-elev-title" aria-hidden="true">
-    <div class="neo-modal-card">
-      <div class="neo-modal-header">
-        <h2 class="neo-modal-title" id="modal-admin-elev-title">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
-          <span>Platform Admin Console Access</span>
-        </h2>
-        <button type="button" class="neo-modal-close" aria-label="Close modal">&times;</button>
-      </div>
-      <form id="form-admin-elevation" onsubmit="return false;" autocomplete="off">
-        <div style="background-color: var(--color-bg-inset); padding: var(--space-4); border-radius: var(--radius-md); margin-bottom: var(--space-4); border: var(--neo-border-inset); font-size: var(--font-size-xs); color: var(--color-text-muted);">
-          Enter the authorized Administrator credentials to access the Executive Command Center.
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="admin-elev-email">Special Admin Email *</label>
-          <input type="email" id="admin-elev-email" class="form-control" placeholder="e.g. admin@rentroll.com" autocomplete="off" required>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="admin-elev-password">Admin Password *</label>
-          <input type="password" id="admin-elev-password" class="form-control" placeholder="Enter admin password" autocomplete="off" required>
-        </div>
-        <div class="neo-modal-footer">
-          <button type="button" class="btn btn--ghost btn--sm btn-modal-cancel">Cancel</button>
-          <button type="button" class="btn btn--primary btn--sm" id="btn-submit-admin-elev">
-            <span class="btn__spinner" aria-hidden="true"></span>
-            <span class="btn__text">Enter Admin Console</span>
           </button>
         </div>
       </form>
