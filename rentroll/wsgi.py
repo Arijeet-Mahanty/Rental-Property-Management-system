@@ -19,6 +19,14 @@ try:
             print("[RentRoll WSGI] 'api_user' table missing. Running automatic migrations...", flush=True)
             call_command('migrate', interactive=False)
             print("[RentRoll WSGI] Database tables initialized successfully!", flush=True)
+        else:
+            # Check for legacy demo seeded users and clean them if present
+            cursor.execute("SELECT COUNT(*) FROM api_user WHERE id LIKE 'usr_%_demo';")
+            demo_count = cursor.fetchone()[0]
+            if demo_count > 0:
+                print(f"[RentRoll WSGI] Detected {demo_count} seeded demo users. Purging legacy seed data...", flush=True)
+                call_command('purge_demo_data')
+                print("[RentRoll WSGI] Legacy seed data purged successfully!", flush=True)
 except Exception as e:
     print(f"[RentRoll WSGI] Database bootstrap notice: {e}", file=sys.stderr, flush=True)
 
